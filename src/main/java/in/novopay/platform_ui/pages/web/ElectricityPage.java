@@ -214,7 +214,7 @@ public class ElectricityPage extends BasePage {
 			String ifscState = "//li[contains(text(),'" + usrData.get("BILLERNAME") + "')]";
 			WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
 			ifscSearchState.click();
-			Log.info("Biller selected");
+			Log.info(usrData.get("BILLERNAME") + " selected");
 
 			if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
 				wait.until(ExpectedConditions.elementToBeClickable(id1));
