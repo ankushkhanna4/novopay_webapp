@@ -26,7 +26,7 @@ public class LogoutPage extends BasePage {
 	@FindBy(xpath = "//a[1]/i[contains(@class,'fa-bars')]")
 	WebElement navBar;
 
-	@FindBy(xpath = "//*[@id='sidebar']/div/div[1]/div[6]/ul/li/a")
+	@FindBy(xpath = "//span[contains(text(),'Logout')]")
 	WebElement logout;
 
 	@FindBy(id = "regMobileNumber")

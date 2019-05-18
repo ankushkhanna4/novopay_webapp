@@ -23,6 +23,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.JavaUtils;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
@@ -32,6 +33,7 @@ public class FlowMapper {
 	public WebDriver wdriver;
 	private String sheetName = "FLOWMAPPER";
 	private JavaUtils javaUtils = new JavaUtils();
+	private DBUtils dbUtils = new DBUtils();
 	private Map<String, String> usrData;
 	private Object obj;
 	private String errMsg;
@@ -52,7 +54,12 @@ public class FlowMapper {
 	public void flowMapperTest(HashMap<String, String> usrData) throws Throwable {
 		this.usrData = usrData;
 		System.out.println("Excuting flow: " + usrData.get("TCID"));
-		
+
+		System.out.println("Partner is " + usrData.get("PARTNER"));
+		if (!usrData.get("PARTNER").equalsIgnoreCase("RBL") && !usrData.get("PARTNER").equalsIgnoreCase("")) {
+			dbUtils.modifyContract(usrData.get("PARTNER"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
+		}
+
 		for (String flowTestID : flows) {
 			if ((!usrData.get(flowTestID).equalsIgnoreCase("SKIP")) && (!usrData.get(flowTestID).isEmpty())) {
 				testCaseID = usrData.get(flowTestID);
@@ -61,7 +68,7 @@ public class FlowMapper {
 
 				classNameWithPackage = currentPackage + ".api." + className;
 				Class<?> flow = null;
-				stepNo=flowTestID;
+				stepNo = flowTestID;
 				try {
 					flow = Class.forName(classNameWithPackage);
 					pack = "api";
@@ -97,9 +104,9 @@ public class FlowMapper {
 								Field webDriver = obj.getClass().getDeclaredField("wdriver");
 								mobileDriver.set(obj, mdriver);
 								webDriver.set(obj, wdriver);
-							
+
 								method[i].invoke(obj, data);
-								
+
 								wdriver = (WebDriver) webDriver.get(obj);
 							}
 
@@ -132,10 +139,10 @@ public class FlowMapper {
 	public Object[][] getData() throws EncryptedDocumentException, InvalidFormatException, IOException {
 		Object[][] data = javaUtils.returnAllUniqueValuesInMap(workbook, sheetName, "no-check");
 		if (data.length != 0) {
-			
+
 			@SuppressWarnings("unchecked")
 			HashMap<String, String> datamap = (HashMap<String, String>) data[0][0];
-			flows=new TreeSet<>(datamap.keySet());
+			flows = new TreeSet<>(datamap.keySet());
 			flows = new TreeSet<>(datamap.keySet().stream().filter(s -> s.toLowerCase().startsWith("step"))
 					.collect(Collectors.toSet()));
 		}
@@ -155,14 +162,14 @@ public class FlowMapper {
 	public void result(ITestResult result) throws InvalidFormatException, IOException {
 
 		String failureReason = "";
-		String testStartTime=javaUtils.getTestExcutionTime(result.getStartMillis());
-		String testEndTime=javaUtils.getTestExcutionTime(result.getEndMillis());
+		String testStartTime = javaUtils.getTestExcutionTime(result.getStartMillis());
+		String testEndTime = javaUtils.getTestExcutionTime(result.getEndMillis());
 		wBasePage.captureScreenshotOnFailedTest(result, testCaseID);
 		if (!result.isSuccess()) {
 			failureReason = errMsg;
-			failureReason = stepNo+": "+testCaseID+": "+result.getThrowable()+"";
+			failureReason = stepNo + ": " + testCaseID + ": " + result.getThrowable() + "";
 		}
-		String[] execeutionDtls = {usrData.get("TCID"), usrData.get("PARTNER"), usrData.get("DESCRIPTION"),
+		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("PARTNER"), usrData.get("DESCRIPTION"),
 				javaUtils.getExecutionResultStatus(result.getStatus()), failureReason, testStartTime, testEndTime };
 		javaUtils.writeExecutionStatusToExcel(execeutionDtls);
 	}

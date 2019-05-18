@@ -208,7 +208,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 					menu.click();
 					Thread.sleep(2000);
 					menu.click();
-					wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+//					wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 					scrollElementDown(scrollBar, reports);
 					Log.info("Reports option clicked");
 					wait.until(ExpectedConditions.elementToBeClickable(reportsPage));
@@ -577,7 +577,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 
 	// Get mobile number from Ini file
 	public String mobileNumFromIni() {
-		return getLoginMobileFromIni(partner().toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	// Get otp from Ini file

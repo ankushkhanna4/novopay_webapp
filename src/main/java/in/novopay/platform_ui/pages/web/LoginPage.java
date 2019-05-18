@@ -94,17 +94,17 @@ public class LoginPage extends BasePage {
 		// eyes.open(wdriver, "Hello World!", "My first Selenium Java test!",
 		// new RectangleSize(800, 600));
 		try {
-			String mobNumFromSheet = usrData.get("MOBILENUMBER");
+			String mobNumFromSheet = "";
+			if (usrData.get("MOBILENUMBER").equalsIgnoreCase("RetailerMobNum")) {
+				mobNumFromSheet = getLoginMobileFromIni(mobNumFromSheet);
+			} else {
+				mobNumFromSheet = usrData.get("MOBILENUMBER");
+			}
 			wait.until(ExpectedConditions.visibilityOf(mobNum));
 			mobNum.click();
 			mobNum.clear();
 			Log.info("entering mobile number");
-			if (mobNumFromSheet.startsWith("RBL") || mobNumFromSheet.startsWith("AXIS")
-					|| mobNumFromSheet.startsWith("FINO") || mobNumFromSheet.startsWith("YBL")) {
-				mobNum.sendKeys(getLoginMobileFromIni(mobNumFromSheet));
-			} else {
-				mobNum.sendKeys(mobNumFromSheet);
-			}
+			mobNum.sendKeys(mobNumFromSheet);
 			if (usrData.get("FORGOTPIN").equalsIgnoreCase("NO")) {
 				wait.until(ExpectedConditions.elementToBeClickable(mPin));
 				mPin.click();

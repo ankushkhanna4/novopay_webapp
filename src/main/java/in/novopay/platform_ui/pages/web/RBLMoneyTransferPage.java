@@ -374,7 +374,7 @@ public class RBLMoneyTransferPage extends BasePage {
 
 			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
 				menu.click();
-				WebElement moneyTransfer = wdriver.findElement(By.xpath("//a[@href='#/newportal/"
+				WebElement moneyTransfer = wdriver.findElement(By.xpath("//a[@href='/newportal/"
 						+ partner().toLowerCase() + "-transfer']/span[contains(text(),'Money Transfer')]"));
 				wait.until(ExpectedConditions.elementToBeClickable(moneyTransfer));
 				clickInvisibleElement(moneyTransfer);
@@ -735,13 +735,13 @@ public class RBLMoneyTransferPage extends BasePage {
 	// Click OK on Welcome pop-up (whenever displayed)
 	public void welcomePopup() {
 		try {
-//			waitWelcome.until(ExpectedConditions.visibilityOf(welcomeMessage));
-//			Log.info("Welcome pop-up displayed");
-			waitWelcome.until(ExpectedConditions.elementToBeClickable(banner));
-			clickElement(banner);
-			Log.info("I will check later button clicked");
+			waitWelcome.until(ExpectedConditions.visibilityOf(welcomeMessage));
+			Log.info("Welcome pop-up displayed");
+			waitWelcome.until(ExpectedConditions.elementToBeClickable(welcomeOKButton));
+			clickElement(welcomeOKButton);
+			Log.info("OK button clicked");
 			waitWelcome.until(ExpectedConditions
-					.invisibilityOfElementLocated(By.xpath("//button[contains(text(),'I Will Check Later')]")));
+					.invisibilityOfElementLocated(By.xpath("//button[contains(text(),'OK. Got it!')]")));
 			Log.info("Pop-up disappeared");
 		} catch (Exception e) {
 			Log.info("No pop-up displayed");
@@ -1567,7 +1567,7 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	// Get mobile number from Ini file
 	public String mobileNumFromIni() {
-		return getLoginMobileFromIni(partner().toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	// Get otp from Ini file

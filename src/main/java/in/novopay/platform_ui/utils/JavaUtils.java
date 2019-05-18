@@ -335,8 +335,7 @@ public class JavaUtils extends LoadableComponent {
 		Ini ini;
 		try {
 			ini = new Ini(new File("./data.ini"));
-			if (mobileNum.equalsIgnoreCase("RBLRetailerMobNum") || mobileNum.equalsIgnoreCase("AXISRetailerMobNum")
-					|| mobileNum.equalsIgnoreCase("FINORetailerMobNum")) {
+			if (mobileNum.equalsIgnoreCase("RetailerMobNum")) {
 				ini.put("MobileNumber", "GetRetailerMobNum", ini.get("MobileNumber", mobileNum));
 				ini.store();
 			}

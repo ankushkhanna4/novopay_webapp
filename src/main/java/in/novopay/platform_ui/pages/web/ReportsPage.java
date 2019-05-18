@@ -86,7 +86,7 @@ public class ReportsPage extends BasePage {
 			menu.click();
 			menu.click();
 			menu.click();
-			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+//			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, reports);
 			Log.info("Reports option clicked");
 			wait.until(ExpectedConditions.elementToBeClickable(reportsPage));
@@ -260,7 +260,7 @@ public class ReportsPage extends BasePage {
 	}
 
 	public String mobileNumFromIni(Map<String, String> usrData) {
-		return getLoginMobileFromIni(usrData.get("PARTNER").toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	public void waitForSpinner() {

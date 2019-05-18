@@ -179,7 +179,7 @@ public class DBUtils extends JavaUtils {
 				code = "MRCHNT_ON_DEMAND_WALLET_SETTLEMENT_DEFAULT_CHRG_YBL";
 			}
 			String query = "SELECT ROUND(`base_charge`/100,2) FROM `limit_charges`.`charge_category_slabs` "
-					+ "WHERE `category_code`='" + code +"'";
+					+ "WHERE `category_code`='" + code + "'";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -227,9 +227,9 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("limitCharges"));
 			String code = "";
 			if (txnType.equalsIgnoreCase("Deposit")) {
-				code = partner+"_AEPS_DEPOSIT_AGENT_COMM";
+				code = partner + "_AEPS_DEPOSIT_AGENT_COMM";
 			} else if (txnType.equalsIgnoreCase("Withdrawal")) {
-				code = partner+"_AEPS_WITHDRAWAL_AGENT_COMM";
+				code = partner + "_AEPS_WITHDRAWAL_AGENT_COMM";
 			}
 			String query = "SELECT IF(" + amount + "*`percentage`/10000<`max_charge`/100, ROUND(" + amount
 					+ "*`percentage`/10000,2), ROUND(`max_charge`/100,2)) charge FROM `limit_charges`.`charge_category_slabs` "
@@ -446,7 +446,7 @@ public class DBUtils extends JavaUtils {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void updateBatchStatus(String batchName, String status) throws ClassNotFoundException {
 		try {
 			String sql = "UPDATE batch_master SET `last_run_status` = '" + status + "' WHERE job_name ='" + batchName
@@ -694,7 +694,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String smsFt() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("smsLog"));
@@ -710,7 +710,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String smsNum1() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("smsLog"));
@@ -726,7 +726,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String smsNum2() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("smsLog"));
@@ -1027,7 +1027,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public List<String[]> accountStatementMTFt(String mobNum) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
@@ -1471,7 +1471,7 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public String updateOrgSettlementInfo(String mode, String status, String enabled, String remarks, String mobNum)
+	public void updateOrgSettlementInfo(String mode, String status, String enabled, String remarks, String mobNum)
 			throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));
@@ -1485,7 +1485,6 @@ public class DBUtils extends JavaUtils {
 			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}
-		return null;
 	}
 
 	public String cfcDate() throws ClassNotFoundException {
@@ -1503,7 +1502,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String cfcRefNum() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
@@ -1518,5 +1517,28 @@ public class DBUtils extends JavaUtils {
 			sqe.printStackTrace();
 		}
 		return null;
+	}
+
+	public void modifyContract(String contract, String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String deleteQuery = "DELETE FROM master.contract WHERE organization = (SELECT u.`organization` FROM `master`.`user` u "
+					+ "JOIN `master`.`user_attribute` ua ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
+					+ "AND u.status = 'ACTIVE') AND partner_organization NOT IN (SELECT id FROM master.organization WHERE "
+					+ "CODE = 'rbl')";
+
+			String insertQuery = "INSERT INTO `contract` (`organization`, `partner_organization`) "
+					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
+					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
+					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = '" + contract
+					+ "'));";
+
+			stmt = conn.createStatement();
+			stmt.executeUpdate(deleteQuery);
+			stmt.executeUpdate(insertQuery);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			sqe.printStackTrace();
+		}
 	}
 }

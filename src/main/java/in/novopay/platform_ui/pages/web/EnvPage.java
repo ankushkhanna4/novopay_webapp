@@ -12,29 +12,20 @@ public class EnvPage extends JavaUtils {
 	public void env(Map<String, String> usrData) throws ClassNotFoundException {
 
 		changeEnvURLfromIni(usrData.get("ENV"));
-		String partner = usrData.get("PARTNER");
 		String amount = usrData.get("AMOUNT");
 
 		if (usrData.get("UPDATERETAILERBALANCE").equals("YES")) {
-			updateBalance(partner,amount,"retailer");
+			updateBalance("retailer", amount);
 		}
 		if (usrData.get("UPDATECASHOUTBALANCE").equals("YES")) {
-			updateBalance(partner,amount,"cashout");
+			updateBalance("cashout", amount);
 		}
 		if (usrData.get("UPDATEMERCHANTBALANCE").equals("YES")) {
-			updateBalance(partner,amount,"merchant");
+			updateBalance("merchant", amount);
 		}
 	}
 
-	public void updateBalance(String partner, String amount, String wallet) throws ClassNotFoundException {
-		if (partner.equalsIgnoreCase("ALL")) {
-			dbUtils.updateWalletBalance(getLoginMobileFromIni("RBLRetailerMobNum"), wallet, amount);
-			dbUtils.updateWalletBalance(getLoginMobileFromIni("AXISRetailerMobNum"), wallet, amount);
-			dbUtils.updateWalletBalance(getLoginMobileFromIni("FINORetailerMobNum"), wallet, amount);
-			dbUtils.updateWalletBalance(getLoginMobileFromIni("YBLRetailerMobNum"), wallet, amount);
-		} else {
-			dbUtils.updateWalletBalance(getLoginMobileFromIni(partner.toUpperCase() + "RetailerMobNum"), "retailer",
-					amount);
-		}
+	public void updateBalance(String wallet, String amount) throws ClassNotFoundException {
+		dbUtils.updateWalletBalance(getLoginMobileFromIni("RetailerMobNum"), wallet, amount);
 	}
 }

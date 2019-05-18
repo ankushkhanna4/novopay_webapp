@@ -637,6 +637,6 @@ public class SettlementPage extends BasePage {
 
 	// Get mobile number from Ini file
 	public String mobileNumFromIni() {
-		return getLoginMobileFromIni(partner().toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 }

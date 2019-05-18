@@ -635,7 +635,7 @@ public class YBLAEPSStatusEnquiryPage extends BasePage {
 
 	// Get mobile number from Ini file
 	public String mobileNumFromIni() {
-		return getLoginMobileFromIni(partner().toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	// Click OK on Welcome pop-up (whenever displayed)

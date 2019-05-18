@@ -141,7 +141,7 @@ public class SettingsPage extends BasePage {
 	@FindBy(id = "settlement-mode-retailer-account-number")
 	WebElement accNumber;
 
-	@FindBy(xpath = "//*[@class='custom-file-upload']")
+	@FindBy(xpath = "//*[@for='file-upload']")
 	WebElement uploadFile;
 
 	@FindBy(id = "settlement-mode-retailer-file-name")
@@ -222,7 +222,7 @@ public class SettingsPage extends BasePage {
 				}
 
 				menu.click();
-				wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+//				wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 				scrollElementDown(scrollBar, settings);
 				Log.info("Settings option clicked");
 				wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
@@ -627,7 +627,7 @@ public class SettingsPage extends BasePage {
 
 	// Get mobile number from Ini file
 	public String mobileNumFromIni() {
-		return getLoginMobileFromIni(partner().toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 	
 	public void scrollElementDown(WebElement draggablePartOfScrollbar, WebElement elementToClick)

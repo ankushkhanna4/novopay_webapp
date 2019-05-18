@@ -25,7 +25,7 @@ public class RBLBankingPage extends BasePage {
 	ServerUtils srvUtils = new ServerUtils();
 	DecimalFormat df = new DecimalFormat("#.00");
 
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
+	WebDriverWait wait = new WebDriverWait(wdriver, 10);
 	WebDriverWait waitWelcome = new WebDriverWait(wdriver, 3);
 
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
@@ -169,6 +169,18 @@ public class RBLBankingPage extends BasePage {
 	@FindBy(xpath = "//app-withdrawl/div//button[contains(text(),'Clear')]")
 	WebElement withdrawalClear;
 
+	@FindBy(xpath = "//*[contains(text(),'Confirm the details')]")
+	WebElement confirmScreen;
+
+	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div/div[6]//strong")
+	WebElement confirmScreenAmount;
+
+	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div[2]/button[contains(text(),'Submit')]")
+	WebElement confirmScreenSubmit;
+
+	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div[2]/button[contains(text(),'Cancel')]")
+	WebElement confirmScreenCancel;
+
 	@FindBy(xpath = "//app-aepsbalanceenquiry//span[contains(text(),'Select...')]/parent::span")
 	WebElement balanceEnquiryDropdown;
 
@@ -279,10 +291,10 @@ public class RBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//li[1][contains(@class,'notifications')]/span[2]")
 	WebElement fcmContent;
-	
+
 	@FindBy(xpath = "//*[@class='slimScrollBar']")
 	WebElement scrollBar;
-	
+
 	String batchConfigSection = "rblaepsstatusenquiry";
 
 	// Load all objects
@@ -300,7 +312,7 @@ public class RBLBankingPage extends BasePage {
 			refreshBalance();
 			menu.click();
 			menu.click();
-			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+//			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, banking);
 			Log.info("Banking option clicked");
 			wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
@@ -468,8 +480,8 @@ public class RBLBankingPage extends BasePage {
 			} else {
 				submitMpin.click();
 				Log.info("MPIN submitted");
-				wait.until(ExpectedConditions.visibilityOf(processingScreen));
-				Log.info("Processing screen displayed");
+//				wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//				Log.info("Processing screen displayed");
 
 				if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 					wait.until(ExpectedConditions.visibilityOf(processInBackgroundButton));
@@ -533,8 +545,8 @@ public class RBLBankingPage extends BasePage {
 							Log.info("MPIN entered");
 							submitMpin.click();
 							Log.info("MPIN submitted");
-							wait.until(ExpectedConditions.visibilityOf(processingScreen));
-							Log.info("Processing screen displayed");
+//							wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//							Log.info("Processing screen displayed");
 							wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
 							Log.info("Txn screen displayed");
 							assertionOnDepositFailedScreen(usrData);
@@ -657,8 +669,11 @@ public class RBLBankingPage extends BasePage {
 			wait.until(ExpectedConditions.elementToBeClickable(withdrawalSubmit));
 			withdrawalSubmit.click();
 			Log.info("Submit button clicked");
-			wait.until(ExpectedConditions.visibilityOf(processingScreen));
-			Log.info("Processing screen displayed");
+
+			confirmScreen(usrData);
+
+//			wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//			Log.info("Processing screen displayed");
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 				wait.until(ExpectedConditions.visibilityOf(processInBackgroundButton));
@@ -715,8 +730,9 @@ public class RBLBankingPage extends BasePage {
 						wait.until(ExpectedConditions.elementToBeClickable(withdrawalSubmit));
 						withdrawalSubmit.click();
 						Log.info("Submit button clicked");
-						wait.until(ExpectedConditions.visibilityOf(processingScreen));
-						Log.info("Processing screen displayed");
+//						wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//						Log.info("Processing screen displayed");
+						confirmScreen(usrData);
 						wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
 						Log.info("Txn screen displayed");
 						assertionOnWithdrawalFailedScreen(usrData);
@@ -815,8 +831,8 @@ public class RBLBankingPage extends BasePage {
 			wait.until(ExpectedConditions.visibilityOf(balanceEnquirySubmit));
 			balanceEnquirySubmit.click();
 			Log.info("Submit button clicked");
-			wait.until(ExpectedConditions.visibilityOf(processingScreen));
-			Log.info("Processing screen displayed");
+//			wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//			Log.info("Processing screen displayed");
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 				wait.until(ExpectedConditions.visibilityOf(processInBackgroundButton));
@@ -873,8 +889,8 @@ public class RBLBankingPage extends BasePage {
 						Thread.sleep(1000);
 						balanceEnquirySubmit.click();
 						Log.info("Submit button clicked");
-						wait.until(ExpectedConditions.visibilityOf(processingScreen));
-						Log.info("Processing screen displayed");
+//						wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//						Log.info("Processing screen displayed");
 						wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
 						Log.info("Txn screen displayed");
 						assertionOnBalanceEnquiryFailedScreen(usrData);
@@ -913,7 +929,7 @@ public class RBLBankingPage extends BasePage {
 
 	// Get mobile number from Ini file
 	public String mobileNumFromIni() {
-		return getLoginMobileFromIni(partner().toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	// Verify details on success screen
@@ -1269,5 +1285,16 @@ public class RBLBankingPage extends BasePage {
 		wait.until(ExpectedConditions.elementToBeClickable(syncButton));
 		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
 		Log.info("Balance refreshed successfully");
+	}
+
+	// Confirm screen
+	public void confirmScreen(Map<String, String> usrData) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOf(confirmScreen));
+		Log.info("Confirm the details screen displayed");
+		Assert.assertEquals(replaceSymbols(confirmScreenAmount.getText()), usrData.get("AMOUNT") + ".00");
+		wait.until(ExpectedConditions.visibilityOf(confirmScreenSubmit));
+		confirmScreenSubmit.click();
+		Thread.sleep(2000);
+		Log.info("Submit button clicked");
 	}
 }

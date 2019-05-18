@@ -134,7 +134,7 @@ public class SwiggyPage extends BasePage {
 			refreshBalance(); // refresh wallet balances
 			menu.click();
 			menu.click();
-			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+//			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, cashManagement);
 			Log.info("Cash Management option clicked");
 			wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
@@ -372,7 +372,7 @@ public class SwiggyPage extends BasePage {
 
 	// Get mobile number from Ini file
 	public String mobileNumFromIni() {
-		return getLoginMobileFromIni(partner().toUpperCase() + "RetailerMobNum");
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	// Remove rupee symbol and comma from the string

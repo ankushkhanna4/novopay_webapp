@@ -768,8 +768,8 @@ public class BasePage extends JavaUtils {
 		while (true) {
 			try {
 				// this causes a gradual drag of the scroll bar downwards, 10 units at a time
-				dragger.moveToElement(scrollbar).clickAndHold().moveByOffset(0, numberOfPixelsToDragTheScrollbarDown)
-						.release().perform();
+//				dragger.moveToElement(scrollbar).clickAndHold().moveByOffset(0, numberOfPixelsToDragTheScrollbarDown)
+//						.release().perform();
 				elementToClick.click();
 				break;
 			} catch (Exception e1) {
