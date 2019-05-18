@@ -56,7 +56,7 @@ public class FlowMapper {
 		System.out.println("Excuting flow: " + usrData.get("TCID"));
 
 		System.out.println("Partner is " + usrData.get("PARTNER"));
-		if (!usrData.get("PARTNER").equalsIgnoreCase("RBL") && !usrData.get("PARTNER").equalsIgnoreCase("")) {
+		if (!usrData.get("PARTNER").equalsIgnoreCase("RBL") && !usrData.get("PARTNER").equalsIgnoreCase("-")) {
 			dbUtils.modifyContract(usrData.get("PARTNER"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
 

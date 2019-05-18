@@ -374,7 +374,7 @@ public class FinoMoneyTransferPage extends BasePage {
 
 			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
 				menu.click();
-				WebElement moneyTransfer = wdriver.findElement(By.xpath("//a[@href='#/newportal/"
+				WebElement moneyTransfer = wdriver.findElement(By.xpath("//a[@href='/newportal/"
 						+ partner().toLowerCase() + "-transfer']/span[contains(text(),'Money Transfer')]"));
 				wait.until(ExpectedConditions.elementToBeClickable(moneyTransfer));
 				clickInvisibleElement(moneyTransfer);

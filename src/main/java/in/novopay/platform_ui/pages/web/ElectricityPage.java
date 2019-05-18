@@ -34,7 +34,7 @@ public class ElectricityPage extends BasePage {
 	@FindBy(xpath = "//*[@class='slimScrollBar']")
 	WebElement scrollBar;
 
-	@FindBy(xpath = "//span[contains(text(),'Bill Payments')]")
+	@FindBy(xpath = "//span[contains(text(),'Bill Payment')]")
 	WebElement billPayments;
 
 	@FindBy(xpath = "//i[contains(@class,'np np-refresh')]")
@@ -160,8 +160,8 @@ public class ElectricityPage extends BasePage {
 
 			menu.click();
 			refreshBalance(); // refresh wallet balances
-			menu.click();
-			menu.click();
+//			menu.click();
+//			menu.click();
 //			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, billPayments);
 			Log.info("Bill Payments clicked");
@@ -186,7 +186,7 @@ public class ElectricityPage extends BasePage {
 				payerName.clear();
 				payerName.sendKeys(getCustomerDetailsFromIni("NewName"));
 				Log.info("Payer name entered");
-			} else {
+			} else if (usrData.get("PAYERNAME").equalsIgnoreCase("ExistingName")){
 				Assert.assertEquals(payerName.getText(), getCustomerDetailsFromIni("ExistingName"));
 				Log.info("Payer name is " + payerName.getText());
 			}

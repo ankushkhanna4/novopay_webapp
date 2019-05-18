@@ -132,8 +132,8 @@ public class SwiggyPage extends BasePage {
 		try {
 			menu.click();
 			refreshBalance(); // refresh wallet balances
-			menu.click();
-			menu.click();
+//			menu.click();
+//			menu.click();
 //			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, cashManagement);
 			Log.info("Cash Management option clicked");

@@ -145,8 +145,8 @@ public class CapitalFirstConsumerPage extends BasePage {
 
 			menu.click();
 			refreshBalance(); // refresh wallet balances
-			menu.click();
-			menu.click();
+//			menu.click();
+//			menu.click();
 //			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, cashManagement);
 //			wait.until(ExpectedConditions.elementToBeClickable(cashManagement));

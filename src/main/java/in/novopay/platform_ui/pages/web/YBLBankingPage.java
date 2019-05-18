@@ -348,8 +348,8 @@ public class YBLBankingPage extends BasePage {
 		try {
 			menu.click();
 			refreshBalance();
-			menu.click();
-			menu.click();
+//			menu.click();
+//			menu.click();
 //			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, banking);
 			Log.info("Banking option clicked");

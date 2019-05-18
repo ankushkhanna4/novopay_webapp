@@ -201,12 +201,10 @@ public class YBLStatusEnquiryPage extends BasePage {
 					Thread.sleep(2000);
 				} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
 					menu.click();
-					menu.click();
-					menu.click();
-					wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+//					menu.click();
+//					menu.click();
+//					wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 					scrollElementDown(scrollBar, reports);
-//					wait.until(ExpectedConditions.elementToBeClickable(reports));
-//					clickInvisibleElement(reports);
 					Log.info("Reports option clicked");
 					wait.until(ExpectedConditions.elementToBeClickable(reportsPage));
 					wait.until(ExpectedConditions.elementToBeClickable(reportsDropdown));

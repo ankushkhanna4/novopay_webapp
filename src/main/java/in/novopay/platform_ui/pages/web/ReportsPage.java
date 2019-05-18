@@ -84,8 +84,8 @@ public class ReportsPage extends BasePage {
 	public void reports(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 		try {
 			menu.click();
-			menu.click();
-			menu.click();
+//			menu.click();
+//			menu.click();
 //			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 			scrollElementDown(scrollBar, reports);
 			Log.info("Reports option clicked");

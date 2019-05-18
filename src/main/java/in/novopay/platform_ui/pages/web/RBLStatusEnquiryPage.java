@@ -205,9 +205,9 @@ public class RBLStatusEnquiryPage extends BasePage {
 					Thread.sleep(2000);
 				} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
 					menu.click();
-					menu.click();
-					Thread.sleep(2000);
-					menu.click();
+//					menu.click();
+//					Thread.sleep(2000);
+//					menu.click();
 //					wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
 					scrollElementDown(scrollBar, reports);
 					Log.info("Reports option clicked");
