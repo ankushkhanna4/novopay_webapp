@@ -320,10 +320,11 @@ public class JavaUtils extends LoadableComponent {
 				return ini.get("CustomerData", "GetCustomerMobNum");
 			} else if (data.equalsIgnoreCase("GetBeneNum")) {
 				return ini.get("BeneData", "BeneNum");
-			} else if (data.equalsIgnoreCase("Skip")) {
-				ini.put("CustomerData", "GetCustomerName", "");
-				ini.store();
+			} else if (data.equalsIgnoreCase("Skip") || data.equalsIgnoreCase("ExistingName")) {
 				return ini.get("CustomerData", "GetCustomerName");
+			} else {
+				System.out.println("Skipping money transfer flow");
+				return "";
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

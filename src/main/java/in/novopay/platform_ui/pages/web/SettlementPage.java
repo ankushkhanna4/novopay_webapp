@@ -226,6 +226,7 @@ public class SettlementPage extends BasePage {
 				menu.click();
 
 				wait.until(ExpectedConditions.elementToBeClickable(cashoutTab));
+				Thread.sleep(2000);
 				cashoutTab.click();
 				Log.info("Cashout tab clicked");
 

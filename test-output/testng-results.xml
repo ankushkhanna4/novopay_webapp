@@ -5,27 +5,27 @@
       <![CDATA[Shutdown the Web Application]]>
     </line>
   </reporter-output>
-  <suite name="Default suite" duration-ms="105667" started-at="2019-05-18T13:48:12Z" finished-at="2019-05-18T13:49:58Z">
+  <suite name="Default suite" duration-ms="34990" started-at="2019-07-08T20:06:01Z" finished-at="2019-07-08T20:06:36Z">
     <groups>
     </groups>
-    <test name="Default test" duration-ms="105667" started-at="2019-05-18T13:48:12Z" finished-at="2019-05-18T13:49:58Z">
+    <test name="Default test" duration-ms="34990" started-at="2019-07-08T20:06:01Z" finished-at="2019-07-08T20:06:36Z">
       <class name="tests.FlowMapper">
-        <test-method status="PASS" signature="generateIniFile()[pri:0, instance:tests.FlowMapper@754ba872]" name="generateIniFile" is-config="true" duration-ms="20" started-at="2019-05-18T19:18:12Z" finished-at="2019-05-18T19:18:12Z">
+        <test-method status="PASS" signature="generateIniFile()[pri:0, instance:tests.FlowMapper@754ba872]" name="generateIniFile" is-config="true" duration-ms="21" started-at="2019-07-09T01:36:01Z" finished-at="2019-07-09T01:36:01Z">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- generateIniFile -->
-        <test-method status="PASS" signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@754ba872]" name="flowMapperTest" duration-ms="2145" started-at="2019-05-18T19:18:14Z" data-provider="getData" finished-at="2019-05-18T19:18:16Z">
+        <test-method status="PASS" signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@754ba872]" name="flowMapperTest" duration-ms="1792" started-at="2019-07-09T01:36:03Z" data-provider="getData" finished-at="2019-07-09T01:36:04Z">
           <params>
             <param index="0">
               <value>
-                <![CDATA[{PARTNER=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=EnvTest_QA2, STEP12=, STEP06=, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, DESCRIPTION=Set environment to run test cases on, TESTTYPE=no-check, STEP08=, STEP09=, FEATURE=-}]]>
+                <![CDATA[{PARTNER=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=EnvTest_QA1, STEP12=, STEP06=, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, DESCRIPTION=Set environment to run test cases, TESTTYPE=no-check, STEP08=, STEP09=, FEATURE=-}]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- flowMapperTest -->
-        <test-method status="PASS" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@754ba872]" name="result" is-config="true" duration-ms="195" started-at="2019-05-18T19:18:16Z" finished-at="2019-05-18T19:18:16Z">
+        <test-method status="PASS" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@754ba872]" name="result" is-config="true" duration-ms="148" started-at="2019-07-09T01:36:04Z" finished-at="2019-07-09T01:36:05Z">
           <params>
             <param index="0">
               <value>
@@ -36,18 +36,18 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- result -->
-        <test-method status="PASS" signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@754ba872]" name="flowMapperTest" duration-ms="101324" started-at="2019-05-18T19:18:16Z" data-provider="getData" finished-at="2019-05-18T19:19:57Z">
+        <test-method status="PASS" signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@754ba872]" name="flowMapperTest" duration-ms="29717" started-at="2019-07-09T01:36:05Z" data-provider="getData" finished-at="2019-07-09T01:36:34Z">
           <params>
             <param index="0">
               <value>
-                <![CDATA[{PARTNER=FINO, STEP10=, PRIORITY=P1, STEP02=FinoMoneyTransferTest_002, STEP13=, TCID=FlowMapper_103, STEP03=LogoutTest_001, STEP11=, STEP01=LoginTest_022, STEP12=, STEP06=LogoutTest_001, STEP07=, STEP04=LoginTest_001, STEP05=RBLMoneyTransferTest_049, RUNMODE=Yes, DESCRIPTION=Do RBL remittance with Fino pending beneficiary, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Money Transfer}]]>
+                <![CDATA[{PARTNER=BILLPAY, STEP10=, PRIORITY=P2, STEP02=RBLMoneyTransferTest_098, STEP13=, TCID=FlowMapper_321, STEP03=ElectricityTest_017, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, DESCRIPTION=Bill was not fetched while fetching the bill, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity}]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- flowMapperTest -->
-        <test-method status="PASS" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@754ba872]" name="result" is-config="true" duration-ms="61" started-at="2019-05-18T19:19:57Z" finished-at="2019-05-18T19:19:58Z">
+        <test-method status="PASS" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@754ba872]" name="result" is-config="true" duration-ms="1364" started-at="2019-07-09T01:36:34Z" finished-at="2019-07-09T01:36:36Z">
           <params>
             <param index="0">
               <value>
@@ -58,7 +58,7 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- result -->
-        <test-method status="PASS" signature="killDriver()[pri:0, instance:tests.FlowMapper@754ba872]" name="killDriver" is-config="true" duration-ms="633" started-at="2019-05-18T19:19:58Z" finished-at="2019-05-18T19:19:58Z">
+        <test-method status="PASS" signature="killDriver()[pri:0, instance:tests.FlowMapper@754ba872]" name="killDriver" is-config="true" duration-ms="621" started-at="2019-07-09T01:36:36Z" finished-at="2019-07-09T01:36:36Z">
           <reporter-output>
             <line>
               <![CDATA[Shutdown the Web Application]]>

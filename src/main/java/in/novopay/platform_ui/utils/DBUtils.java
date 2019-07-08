@@ -192,6 +192,30 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
+	
+	public String getBillPaymentCharges(String vendor) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("limitCharges"));
+			String code = "";
+			if (vendor.equalsIgnoreCase("Cyberplat")) {
+				code = "CP_ELECTRICITY_BILLPAY_CHARGE_DISPLAY";
+			} else if (vendor.equalsIgnoreCase("Billavenue")) {
+				code = "BILL_AVENUE_ELECTRICITY_BILLPAY_CHARGE_DISPLAY";
+			}
+			String query = "SELECT ROUND(`base_charge`/100,2) FROM `limit_charges`.`charge_category_slabs` "
+					+ "WHERE `category_code`='" + code + "'";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
 
 	public String getRemittanceComm(String amount, String category, String partner) throws ClassNotFoundException {
 		try {
@@ -1290,7 +1314,8 @@ public class DBUtils extends JavaUtils {
 					+ "txn_type, (SELECT `value` FROM np_actor.platform_master_data WHERE `code` = "
 					+ "(SELECT bank_code FROM np_aepstxn.aeps_transactions ORDER BY id DESC LIMIT 1) "
 					+ "AND data_sub_type = (SELECT txn_type FROM np_aepstxn.aeps_transactions WHERE novopay_txn_ref = '"
-					+ txnRefNo + "') AND partner_code = 'RBL') bank, LEFT(txn_amount, LENGTH(txn_amount)-2) amount, "
+					+ txnRefNo + "') AND partner_code = 'RBL') bank, CONCAT(LEFT(txn_amount, LENGTH(txn_amount)-2),'.',"
+					+ "RIGHT(txn_amount, 2)) amount, "
 					+ "IF(`status`='FAIL' AND refund_status='COMPLETED','REFUNDED',IF(`status`='SUSPECT','SUCCESS',"
 					+ "IF(refund_status = 'ELIGIBLE','Ready For Refund',`status`))) `status` "
 					+ "FROM np_aepstxn.aeps_transactions WHERE novopay_txn_ref = '" + txnRefNo + "'";
@@ -1470,6 +1495,23 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
+	
+	public String billPaymentDate() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npActor"));
+			String query = "SELECT DATE_FORMAT(created_on, '%d-%m-%Y %H:%i') FROM service_repo.service_data_audit "
+					+ "WHERE api_name = 'doTransfer' ORDER BY id DESC LIMIT 1";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+		}
+		return null;
+	}
 
 	public void updateOrgSettlementInfo(String mode, String status, String enabled, String remarks, String mobNum)
 			throws ClassNotFoundException {
@@ -1537,6 +1579,41 @@ public class DBUtils extends JavaUtils {
 			stmt.executeUpdate(deleteQuery);
 			stmt.executeUpdate(insertQuery);
 		} catch (SQLException sqe) {
+			System.out.println("Duplicate entry for " + contract);
+		}
+	}
+
+	public void insertContract(String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			stmt = conn.createStatement();
+
+			List<String> org_code = new ArrayList<String>();
+			org_code.add("rbl");
+			org_code.add("ybl");
+			org_code.add("paytm");
+			org_code.add("fino");
+			org_code.add("cms");
+			org_code.add("billpay");
+			org_code.add("recharges");
+			org_code.add("wallet");
+			org_code.add("pg-wallet");
+			org_code.add("gold");
+
+			for (String code : org_code) {
+				String insertQuery = "INSERT INTO `contract` (`organization`, `partner_organization`) "
+						+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
+						+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' AND u.status "
+						+ "= 'ACTIVE'),(SELECT id FROM master.organization WHERE `CODE` = '" + code + "'));";
+				try {
+					stmt.executeUpdate(insertQuery);
+				} catch (Exception e) {
+					System.out.println("Duplicate entry for " + code);
+				}
+			}
+		} catch (
+
+		SQLException sqe) {
 			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}

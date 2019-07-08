@@ -53,10 +53,10 @@ public class FlowMapper {
 	@Test(dataProvider = "getData")
 	public void flowMapperTest(HashMap<String, String> usrData) throws Throwable {
 		this.usrData = usrData;
-		System.out.println("Excuting flow: " + usrData.get("TCID"));
+		System.out.println("Executing flow: " + usrData.get("TCID"));
 
 		System.out.println("Partner is " + usrData.get("PARTNER"));
-		if (!usrData.get("PARTNER").equalsIgnoreCase("RBL") && !usrData.get("PARTNER").equalsIgnoreCase("-")) {
+		if (!usrData.get("PARTNER").equalsIgnoreCase("-")) {
 			dbUtils.modifyContract(usrData.get("PARTNER"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
 
@@ -131,6 +131,9 @@ public class FlowMapper {
 					wdriver.navigate().refresh();
 					throw e.getCause();
 				}
+//				finally {
+//					dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
+//				}
 			}
 		}
 	}
@@ -159,7 +162,7 @@ public class FlowMapper {
 
 	// STORING EXECUTION RESULTS IN EXCEL
 	@AfterMethod
-	public void result(ITestResult result) throws InvalidFormatException, IOException {
+	public void result(ITestResult result) throws InvalidFormatException, IOException, ClassNotFoundException {
 
 		String failureReason = "";
 		String testStartTime = javaUtils.getTestExcutionTime(result.getStartMillis());
@@ -172,5 +175,9 @@ public class FlowMapper {
 		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("PARTNER"), usrData.get("DESCRIPTION"),
 				javaUtils.getExecutionResultStatus(result.getStatus()), failureReason, testStartTime, testEndTime };
 		javaUtils.writeExecutionStatusToExcel(execeutionDtls);
+		
+		if (!usrData.get("PARTNER").equalsIgnoreCase("-")) {
+			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
+		}
 	}
 }

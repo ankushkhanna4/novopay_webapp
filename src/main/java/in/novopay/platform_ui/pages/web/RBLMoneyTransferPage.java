@@ -402,9 +402,9 @@ public class RBLMoneyTransferPage extends BasePage {
 
 			if (usrData.get("ASSERTION").contains("FCM")) {
 				assertionOnFCM(usrData);
+			} else {
+				customerDetails(usrData);
 			}
-
-			customerDetails(usrData);
 
 			// Provide beneficiary details based on user data
 			if (usrData.get("BENE").equalsIgnoreCase("New")) { // when beneficiary is new
@@ -642,6 +642,7 @@ public class RBLMoneyTransferPage extends BasePage {
 
 				wait.until(ExpectedConditions.elementToBeClickable(amount));
 				clickElement(amount);
+				Thread.sleep(1000);
 				amount.sendKeys(usrData.get("AMOUNT"));
 				Log.info("amount entered");
 
@@ -692,6 +693,7 @@ public class RBLMoneyTransferPage extends BasePage {
 				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
 					wait.until(ExpectedConditions.elementToBeClickable(amount));
 					clickElement(amount);
+					Thread.sleep(1000);
 					amount.sendKeys(usrData.get("AMOUNT"));
 					Log.info("amount entered");
 				}
@@ -701,7 +703,7 @@ public class RBLMoneyTransferPage extends BasePage {
 					wait.until(ExpectedConditions.visibilityOf(amountErrorMsg));
 					Assert.assertEquals(amountErrorMsg.getText(), "Insufficient wallet balance");
 					Log.info(amountErrorMsg.getText());
-					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "999998");
+					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Limit")
 						|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
 					wait.until(ExpectedConditions.visibilityOf(amountErrorMsg));
@@ -721,6 +723,7 @@ public class RBLMoneyTransferPage extends BasePage {
 					wait.until(ExpectedConditions.visibilityOf(applicableChargesScreen));
 					assertionOnApplicableCharges(usrData);
 					applicableChargesOkButton.click();
+					Log.info("Charges verified");
 				}
 			}
 
@@ -755,6 +758,7 @@ public class RBLMoneyTransferPage extends BasePage {
 		clickElement(custMobNum);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
+		Log.info("Customer mobile number " + custMobNum.getText() + " entered");
 
 		// Provide customer details based on user data
 		if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
@@ -1376,6 +1380,8 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	// FCM assertion
 	public void assertionOnFCM(Map<String, String> usrData) throws ClassNotFoundException {
+		String successSummaryFCMHeading = "Cash To Account: Success";
+		String failSummaryFCMHeading = "Cash To Account: Failed";
 		String successFCMHeading = "Cash To Account : SUCCESS";
 		String failFCMHeading = "Cash To Account : FAIL";
 		String beneSuccessFCMHeading = "Beneficiary Validation:SUCCESS";
@@ -1386,6 +1392,10 @@ public class RBLMoneyTransferPage extends BasePage {
 		String balance = df.format(getInitialBalance("retailer"));
 		double beneAmount = Double.parseDouble(dbUtils.getBeneAmount(partner().toUpperCase()));
 		String beneAmt = df.format(beneAmount);
+		String successSummaryFCMContent = "Cash to account request has been processed. Rs " + usrData.get("AMOUNT")
+				+ ".00 transferred successfully. Click here for details";
+		String failSummaryFCMContent = "Cash to account request has been processed. However, Rs "
+				+ usrData.get("AMOUNT") + ".00 transfer failed. Click here for details";
 		String successFCMContent = "Customer: " + getCustomerDetailsFromIni("ExistingNum") + " Money Transfer of ₹"
 				+ usrData.get("AMOUNT") + ".00" + " has been accepted for IFSC:" + usrData.get("BENEIFSC") + ", A/C:"
 				+ getAccountNumberFromIni("GetNum") + ", charges ₹" + txnDetailsFromIni("GetCharges", "")
@@ -1410,23 +1420,35 @@ public class RBLMoneyTransferPage extends BasePage {
 
 		switch (usrData.get("ASSERTION")) {
 		case "Success FCM":
-			fcmMethod(successFCMHeading, successFCMContent);
+			try {
+				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
+				fcmMethod2(successFCMHeading, successFCMContent);
+			} catch (Exception e) {
+				fcmMethod1(successFCMHeading, successFCMContent);
+				fcmMethod2(successSummaryFCMHeading, successSummaryFCMContent);
+			}
 			break;
 		case "Failed FCM":
-			fcmMethod(failFCMHeading, failFCMContent);
+			try {
+				fcmMethod1(failSummaryFCMHeading, failSummaryFCMContent);
+				fcmMethod2(failFCMHeading, failFCMContent);
+			} catch (Exception e) {
+				fcmMethod1(failFCMHeading, failFCMContent);
+				fcmMethod2(failSummaryFCMHeading, failSummaryFCMContent);
+			}
 			break;
 		case "Queued FCM":
 			try {
-				fcmMethod(successFCMHeading, queuedTxnFCMContent);
+				fcmMethod1(successFCMHeading, queuedTxnFCMContent);
 			} catch (Exception e) {
 				fcmMethod2(successFCMHeading, queuedTxnFCMContent);
 			}
 			break;
 		case "BeneSuccess FCM":
-			fcmMethod(beneSuccessFCMHeading, beneSuccessFCMContent);
+			fcmMethod1(beneSuccessFCMHeading, beneSuccessFCMContent);
 			break;
 		case "BeneFailed FCM":
-			fcmMethod(beneFailFCMHeading, beneFailFCMContent);
+			fcmMethod1(beneFailFCMHeading, beneFailFCMContent);
 			break;
 		case "EnableQueuing FCM":
 			if (fcmHeading1.getText().equals(queuingEnableFCMHeading)) {
@@ -1444,12 +1466,12 @@ public class RBLMoneyTransferPage extends BasePage {
 			}
 			break;
 		case "DisableQueuing FCM":
-			fcmMethod(queuingDisableFCMHeading, queuingDisableFCMContent);
+			fcmMethod1(queuingDisableFCMHeading, queuingDisableFCMContent);
 			break;
 		}
 	}
 
-	public void fcmMethod(String heading, String content) {
+	public void fcmMethod1(String heading, String content) {
 		Assert.assertEquals(fcmHeading1.getText(), heading);
 		Assert.assertEquals(fcmContent1.getText(), content);
 		Log.info(fcmHeading1.getText());
