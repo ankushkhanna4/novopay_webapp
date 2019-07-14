@@ -22,13 +22,13 @@ public class MongoDBUtils extends JavaUtils {
 
 	// private static Logger log = Logger.getLogger(MongoDBUtils.class);
 
-	public void connectMongo(String db_name, String db_col_name) {
+	public void connectMongo(String mongoDbUsername, String mongoDbPassword, String db_name, String db_col_name) {
 
 		BasicConfigurator.configure();
 
 		// Mongodb initialization parameters.
-		String auth_user = getMongoDetailsfromIni("mongoDbUserName"),
-				auth_pwd = getMongoDetailsfromIni("mongoDbPassword"), dbUrl = getMongoDetailsfromIni("mongoDbUrl"),
+		String auth_user = getMongoDetailsfromIni(mongoDbUsername),
+				auth_pwd = getMongoDetailsfromIni(mongoDbPassword), dbUrl = getMongoDetailsfromIni("mongoDbUrl"),
 				encoded_pwd = "";
 
 		try {
@@ -54,7 +54,7 @@ public class MongoDBUtils extends JavaUtils {
 
 	public void getDocument() {
 
-		connectMongo("novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("collectionOfficerEmployeeId", "111"));
@@ -68,9 +68,9 @@ public class MongoDBUtils extends JavaUtils {
 		}
 	}
 
-	public String getOffMobNum() {
+	public String getOfficerMobNum() {
 
-		connectMongo("novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("collectionOfficerEmployeeId", "111"));
@@ -86,7 +86,7 @@ public class MongoDBUtils extends JavaUtils {
 	
 	public String getAddMobNum() {
 
-		connectMongo("novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("collectionOfficerEmployeeId", "111"));
@@ -102,7 +102,7 @@ public class MongoDBUtils extends JavaUtils {
 	
 	public String billpayInputParams(String billerName) {
 
-		connectMongo("novopayBillpay", "biller_info");
+		connectMongo("mongoDbUsernameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("name", billerName));
@@ -119,7 +119,7 @@ public class MongoDBUtils extends JavaUtils {
 	public void updateValues(String empId, String date, int totalDueAmount, int totalPaidAmount, String status,
 			String officerMobNum, String addMobNum) {
 
-		connectMongo("novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		BasicDBObject employeeId = new BasicDBObject("collectionOfficerEmployeeId", empId);
 		BasicDBObject dueDate = new BasicDBObject("dueDate", date);
@@ -137,6 +137,16 @@ public class MongoDBUtils extends JavaUtils {
 		coll.updateOne(new BasicDBObject(), new BasicDBObject("$set", payStatus));
 		coll.updateOne(new BasicDBObject(), new BasicDBObject("$set", offMobNumber));
 		coll.updateOne(new BasicDBObject(), new BasicDBObject("$set", addMobNumber));
+		System.out.println("Records updated");
+	}
+	
+	public void updateBillpayVendor(String biller, String vendor) {
+
+		connectMongo("mongoDbUsernameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
+
+		BasicDBObject billVendor = new BasicDBObject("vendor", vendor);
+		
+		coll.updateOne(new BasicDBObject("name",biller), new BasicDBObject("$set", billVendor));
 		System.out.println("Records updated");
 	}
 }

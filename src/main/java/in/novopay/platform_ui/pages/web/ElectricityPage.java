@@ -111,6 +111,12 @@ public class ElectricityPage extends BasePage {
 
 	@FindBy(xpath = "//electricity-form//div[contains(text(),'Consumer Number')]/following-sibling::div")
 	WebElement fetchedBillerIdMsedc;
+	
+	@FindBy(xpath = "//electricity-form//div[contains(text(),'Bill Number')]/following-sibling::div")
+	WebElement fetchedBillNumber;
+	
+	@FindBy(xpath = "//electricity-form//div[contains(text(),'Customer Name')]/following-sibling::div")
+	WebElement fetchedCustomerName;
 
 	@FindBy(xpath = "//electricity-form//div[contains(text(),'Bill Amount')]/following-sibling::div")
 	WebElement fetchedBillAmount;
@@ -168,6 +174,12 @@ public class ElectricityPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Consumer Number')]/parent::div/following-sibling::div/div")
 	WebElement txnScreenConsumerNumber;
+	
+	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Bill Number')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenBillNumber;
+	
+	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenCustomerName;
 
 	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Bill Amount')]/parent::div/following-sibling::div/span")
 	WebElement txnScreenBillAmount;
@@ -213,6 +225,9 @@ public class ElectricityPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
+			displayInitialBalance(usrData, "retailer"); // display wallet balances in console
+			double initialWalletBalance = getInitialBalance("retailer"); // store wallet balance as double datatype
+			
 			// Update retailer wallet balance to 0 for scenario where amount > wallet
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 				dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "0");
@@ -227,10 +242,6 @@ public class ElectricityPage extends BasePage {
 			Log.info("Bill Payments clicked");
 			wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
 			menu.click();
-
-			displayInitialBalance(usrData, "retailer"); // display wallet balances in console
-
-			double initialWalletBalance = getInitialBalance("retailer"); // store wallet balance as double datatype
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Clear")) {
 				clickElement(clearButton);
@@ -323,6 +334,8 @@ public class ElectricityPage extends BasePage {
 					Log.info("Processing cycle entered");
 				}
 			}
+			
+			mongoDbUtils.updateBillpayVendor(usrData.get("BILLERNAME"),usrData.get("VENDOR"));
 
 			if (usrData.get("FETCHBUTTON").equalsIgnoreCase("YES")) {
 				// Click on Proceed button
@@ -330,23 +343,34 @@ public class ElectricityPage extends BasePage {
 				clickElement(proceedButton);
 
 				waitForSpinner();
-
+				
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Bill not fetched")) {
 					wait.until(ExpectedConditions.visibilityOf(toasterMsg));
 					Assert.assertEquals(toasterMsg.getText(), "Something went wrong, please try again later.");
 					Log.info(toasterMsg.getText());
 				} else {
-
 					wait.until(ExpectedConditions.elementToBeClickable(fetchedBillerName));
 					Assert.assertEquals(fetchedBillerName.getText(), usrData.get("BILLERNAME"));
 					Log.info("Biller name is " + usrData.get("BILLERNAME"));
 
 					if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
 						Assert.assertEquals(fetchedBillerIdBescom.getText(), usrData.get("ACCOUNTID"));
+						Log.info("Account Id fetched: " + usrData.get("ACCOUNTID"));
+						
+						Assert.assertEquals(fetchedBillNumber.getText(), usrData.get("BILLNUMBER"));
+						Log.info("Bill Number fetched: " + usrData.get("BILLNUMBER"));
+						
+						Assert.assertEquals(fetchedCustomerName.getText(), usrData.get("CUSTOMERNAME"));
+						Log.info("Customer Name fetched: " + usrData.get("CUSTOMERNAME"));
+						
 					} else if (usrData.get("BILLERNAME").equalsIgnoreCase("MSEDC Limited")) {
 						Assert.assertEquals(fetchedBillerIdMsedc.getText(), usrData.get("ACCOUNTID"));
+						Log.info("Consumer Number fetched: " + usrData.get("ACCOUNTID"));
+						
+						Assert.assertEquals(fetchedCustomerName.getText(), usrData.get("CUSTOMERNAME"));
+						Log.info("Customer Name fetched: " + usrData.get("CUSTOMERNAME"));
 					}
-					Log.info("Account Id fetched: " + usrData.get("ACCOUNTID"));
+					
 
 					Assert.assertEquals(replaceSymbols(fetchedBillAmount.getText()), usrData.get("BILLAMOUNT"));
 					Log.info("Bill Amount fetched: " + usrData.get("BILLAMOUNT"));
@@ -579,8 +603,19 @@ public class ElectricityPage extends BasePage {
 		if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
 			Assert.assertEquals(txnScreenAccountID.getText(), usrData.get("ACCOUNTID"));
 			Log.info("Account Id: " + usrData.get("ACCOUNTID"));
+			
+			Assert.assertEquals(txnScreenBillNumber.getText(), usrData.get("BILLNUMBER"));
+			Log.info("Bill Number: " + usrData.get("BILLNUMBER"));
+			
+			Assert.assertEquals(txnScreenCustomerName.getText(), usrData.get("CUSTOMERNAME"));
+			Log.info("Customer Name: " + usrData.get("CUSTOMERNAME"));
+			
 		} else if (usrData.get("BILLERNAME").equalsIgnoreCase("MSEDC Limited")) {
 			Assert.assertEquals(txnScreenConsumerNumber.getText(), usrData.get("ACCOUNTID"));
+			Log.info("Consumer Number: " + usrData.get("ACCOUNTID"));
+			
+			Assert.assertEquals(txnScreenCustomerName.getText(), usrData.get("CUSTOMERNAME"));
+			Log.info("Customer Name: " + usrData.get("CUSTOMERNAME"));
 		}
 
 		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), txnDetailsFromIni("GetTxfAmount", ""));

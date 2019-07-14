@@ -465,7 +465,7 @@ public class FullertonPage extends BasePage {
 			Assert.assertEquals(successSMS, dbUtils.sms());
 			Assert.assertEquals(successSMS, dbUtils.smsFt());
 			try {
-			Assert.assertEquals(mongoDbUtils.getOffMobNum(), dbUtils.smsNum2());
+			Assert.assertEquals(mongoDbUtils.getOfficerMobNum(), dbUtils.smsNum2());
 			Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum1());
 			} catch (Exception e) {
 			Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum1());
@@ -475,7 +475,7 @@ public class FullertonPage extends BasePage {
 			Log.info("SMS sent successfully to " + dbUtils.smsNum2() + " and " + dbUtils.smsNum1());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Reversed SMS")) {
 			Assert.assertEquals(failSMS, dbUtils.sms());
-			Assert.assertEquals(mongoDbUtils.getOffMobNum(), dbUtils.smsNum1());
+			Assert.assertEquals(mongoDbUtils.getOfficerMobNum(), dbUtils.smsNum1());
 			Log.info(failSMS);
 			Log.info("SMS sent successfully to " + dbUtils.smsNum1());
 		}
