@@ -199,7 +199,6 @@ public class JavaUtils extends LoadableComponent {
 			}
 			ini.store();
 			BasePage.wdriver = null;
-			BasePage.mdriver = null;
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -217,36 +216,9 @@ public class JavaUtils extends LoadableComponent {
 		return null;
 	}
 
-	public String getMongoDetailsfromIni(String key) {
-		Ini ini;
-		try {
-			ini = new Ini(new File("./config.ini"));
-			return ini.get("Common", key);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public String getMobileFromIni(String mobileNumber) {
-		Ini ini;
-		try {
-			ini = new Ini(new File("./data.ini"));
-			if (mobileNumber.equalsIgnoreCase("Random")) {
-				ini.put("CustomerData", "CustomerMobNum", generateRandomMobileNumber());
-				ini.store();
-				return ini.get("CustomerData", "CustomerMobNum");
-			} else if (mobileNumber.equalsIgnoreCase("GetCustomerMobNum")) {
-				return ini.get("CustomerData", "GetCustomerMobNum");
-			} else {
-				ini.put("CustomerData", "CustomerMobNum", mobileNumber);
-				ini.store();
-				return ini.get("CustomerData", "CustomerMobNum");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+	// Get mobile number from Ini file
+	public String mobileNumFromIni() {
+		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	public String getAEPSMobNum(String mobileNumber) {
@@ -434,7 +406,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String getPartner(String name) {
 		Ini ini;
 		try {
@@ -571,21 +543,21 @@ public class JavaUtils extends LoadableComponent {
 		return null;
 	}
 
-	public String getvalueFromIni(String name) {
+	public String getValueFromIni(String key) {
 		Ini ini;
 		try {
-			ini = new Ini(new File("./testData.ini"));
-			return ini.get("Common", name);
+			ini = new Ini(new File("./config.ini"));
+			return ini.get("Common", key);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public String setvalueToIni(String user, String value) {
+	public String setValueToIni(String user, String value) {
 		Ini ini;
 		try {
-			ini = new Ini(new File("./testData.ini"));
+			ini = new Ini(new File("./config.ini"));
 			ini.put("Common", user + "Id", value);
 			ini.store();
 		} catch (IOException e) {
@@ -1558,6 +1530,16 @@ public class JavaUtils extends LoadableComponent {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	// Remove rupee symbol and comma from the string
+	public String replaceSymbols(String value) {
+		String editedElement = value.replaceAll("₹", "").replaceAll(",", "").trim();
+		return editedElement;
+	}
+
+	public double roundTo2Decimals(double value) {
+		return Math.round(value * 100.0) / 100.0;
 	}
 
 	@Override

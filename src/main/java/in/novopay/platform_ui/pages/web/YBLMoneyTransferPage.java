@@ -349,6 +349,24 @@ public class YBLMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//li[3][contains(@class,'notifications')]/span[2]")
 	WebElement fcmContent3;
 
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]")
+	WebElement chooseWalletScreen;
+
+	@FindBy(xpath = "//*[@for='agent-wallet']")
+	WebElement mainWalletRadioButton;
+
+	@FindBy(xpath = "//*[@for='cashout-wallet']")
+	WebElement cashoutWalletRadioButton;
+
+	@FindBy(xpath = "//h5[contains(text(),'Main Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement mainWalletScreenBalance;
+
+	@FindBy(xpath = "//h5[contains(text(),'Cashout Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement cashoutWalletScreenBalance;
+
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
+	WebElement chooseWalletProceedButton;
+
 	// Load all objects
 	public YBLMoneyTransferPage(WebDriver wdriver) {
 		super(wdriver);
@@ -639,6 +657,11 @@ public class YBLMoneyTransferPage extends BasePage {
 				moneyTransferSubmitButton.click();
 				Log.info("Submit button clicked");
 
+				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+				} else {
+					chooseWalletScreen(usrData);
+				}
 				confirmScreen(usrData);
 
 				// Provide OTP if beneficiary is to be added during money transfer
@@ -743,6 +766,11 @@ public class YBLMoneyTransferPage extends BasePage {
 		wait.until(ExpectedConditions.elementToBeClickable(validateBeneButton));
 		Log.info("validating beneficiary");
 		validateBeneButton.click();
+		if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+			Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+		} else {
+			chooseWalletScreen(usrData);
+		}
 		waitForSpinner();
 		wait.until(ExpectedConditions.visibilityOf(OTPScreen));
 		Log.info("OTP screen displayed");
@@ -760,8 +788,7 @@ public class YBLMoneyTransferPage extends BasePage {
 		Log.info("OTP entered");
 		String buttonName = usrData.get("OTPSCREENBUTTON");
 		String otpScreenButtonXpath = "//h5[contains(text(),'Enter Bene. Registration OTP')]/parent::div/"
-				+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'"
-				+ buttonName + "')]";
+				+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'" + buttonName + "')]";
 		WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
 		wait.until(ExpectedConditions.elementToBeClickable(otpScreenButton));
 		otpScreenButton.click();
@@ -777,8 +804,7 @@ public class YBLMoneyTransferPage extends BasePage {
 				String otpFailedScreenButtonName = usrData.get("OTPFAILEDSCREENBUTTON");
 				String otpFailedScreenButtonXpath = "//div[contains(@class,'add-bene-retry-modal')]//button[contains(text(),'"
 						+ otpFailedScreenButtonName + "')]";
-				WebElement otpFailedScreenButton = wdriver
-						.findElement(By.xpath(otpFailedScreenButtonXpath));
+				WebElement otpFailedScreenButton = wdriver.findElement(By.xpath(otpFailedScreenButtonXpath));
 				wait.until(ExpectedConditions.elementToBeClickable(otpFailedScreenButton));
 				otpFailedScreenButton.click();
 				Log.info(otpFailedScreenButtonName + " button clicked");
@@ -1227,7 +1253,6 @@ public class YBLMoneyTransferPage extends BasePage {
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
 	}
-	
 
 	// Verify table details on transaction screen
 	public void tableAssertion() {
@@ -1477,8 +1502,8 @@ public class YBLMoneyTransferPage extends BasePage {
 			return commission;
 		} else
 			return tds;
-	}	
-	
+	}
+
 	// Show balances in console
 	public void displayInitialBalance(Map<String, String> usrData, String wallet) throws ClassNotFoundException {
 		String walletBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "retailer");
@@ -1550,7 +1575,7 @@ public class YBLMoneyTransferPage extends BasePage {
 
 	// Get otp from Ini file
 	public String otpFromIni() {
-		return partner().toUpperCase()+"OTP";
+		return partner().toUpperCase() + "OTP";
 	}
 
 	// Scroll down the page
@@ -1583,5 +1608,25 @@ public class YBLMoneyTransferPage extends BasePage {
 
 	public double roundTo2Decimals(double value) {
 		return Math.round(value * 100.0) / 100.0;
+	}
+
+	// Confirm screen
+	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletScreen));
+		Log.info("Choose a Wallet screen displayed");
+//			Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
+//					getWalletBalanceFromIni("GetRetailer", ""));
+		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
+		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
+				getWalletBalanceFromIni("GetCashout", ""));
+		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
+		mainWalletRadioButton.click();
+		Log.info("Main wallet radio button clicked");
+//			cashoutWalletRadioButton.click();
+//			Log.info("Cashout wallet radio button clicked");
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletProceedButton));
+		chooseWalletProceedButton.click();
+//			Thread.sleep(2000);
+		Log.info("Proceed button clicked");
 	}
 }

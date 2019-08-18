@@ -642,12 +642,12 @@ public class RBLBankingPage extends BasePage {
 			withdrawalAadhaarNum.click();
 			wait.until(ExpectedConditions.visibilityOf(withdrawalAmountError));
 			Assert.assertEquals(withdrawalAmountError.getText(),
-					"Amount entered exceeds your transaction limit ₹ 10,000.00");
+					"Amount entered exceeds your transaction limit ₹10,000.00");
 			Log.info(withdrawalAmountError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
 			withdrawalAadhaarNum.click();
 			wait.until(ExpectedConditions.visibilityOf(withdrawalAmountError));
-			Assert.assertEquals(withdrawalAmountError.getText(), "Minimum amount should be ₹ 10.00");
+			Assert.assertEquals(withdrawalAmountError.getText(), "Minimum amount should be ₹10.00");
 			Log.info(withdrawalAmountError.getText());
 		}
 
@@ -676,7 +676,7 @@ public class RBLBankingPage extends BasePage {
 //			Log.info("Processing screen displayed");
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
-				wait.until(ExpectedConditions.visibilityOf(processInBackgroundButton));
+				wait.until(ExpectedConditions.elementToBeClickable(processInBackgroundButton));
 				processInBackgroundButton.click();
 				Log.info("Process in Background button clicked");
 			} else {

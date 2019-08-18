@@ -21,18 +21,16 @@ import in.novopay.platform_ui.utils.JavaUtils;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 
-
 public class SettlementTest {
 	String featureName = "Settlement page";
-	public AndroidDriver<MobileElement> mdriver;
 	public WebDriver wdriver;
 	private BasePage mBasePage = new BasePage(wdriver);
 	private SettlementPage wSettlementPage;
 	private Map<String, String> usrData;
-	public String sheetname = "SettlementPage", workbook="WebAppUITestData";
-	
+	public String sheetname = "SettlementPage", workbook = "WebAppUITestData";
+
 	private JavaUtils javaUtils = new JavaUtils();
-	
+
 	// Start adding all the page objects below this line
 	@BeforeSuite
 	public void generateIniFile() throws EncryptedDocumentException, InvalidFormatException, IOException {
@@ -40,34 +38,18 @@ public class SettlementTest {
 	}
 
 	@Test(dataProvider = "getData")
-	public void settlementTest(HashMap<String, String> usrData) throws InterruptedException, AWTException, IOException, ClassNotFoundException{
+	public void settlementTest(HashMap<String, String> usrData)
+			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		this.usrData = usrData;
-		String testOn = usrData.get("TESTON");
-		if (testOn.toUpperCase().equals("MOBILE")) {
-			System.out.println("LAUNCHING THE MOBILE APP FOR FLOW : " + usrData.get("TCID"));
-			if (mdriver == null) {
-				try {
-					mdriver = mBasePage.launchApp(usrData.get("DEVICE"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-		} else if (testOn.toUpperCase().equals("WEB")) {
-			if (wdriver == null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-				wdriver = mBasePage.launchBrowser();
-			}else if((wdriver != null)){
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-			}
-			
-			wSettlementPage = new SettlementPage(wdriver);
-			
-			wSettlementPage.settlement(usrData);
-			
+		if (wdriver == null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
+			wdriver = mBasePage.launchBrowser();
+		} else if ((wdriver != null)) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
 		}
-		
+
+		wSettlementPage = new SettlementPage(wdriver);
+		wSettlementPage.settlement(usrData);
 	}
 
 	@AfterClass

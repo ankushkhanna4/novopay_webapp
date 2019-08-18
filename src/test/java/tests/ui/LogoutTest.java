@@ -21,18 +21,15 @@ import in.novopay.platform_ui.utils.JavaUtils;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 
-
 public class LogoutTest {
 	String featureName = "Logout";
-	public AndroidDriver<MobileElement> mdriver;
 	public WebDriver wdriver;
 	private BasePage mBasePage = new BasePage(wdriver);
 	private LogoutPage wLogoutPage;
 	private Map<String, String> usrData;
-	public String sheetname = "LogoutPage", workbook="WebAppUITestData";
+	public String sheetname = "LogoutPage", workbook = "WebAppUITestData";
 	private JavaUtils javaUtils = new JavaUtils();
-	
-	
+
 	// Start adding all the page objects below this line
 	@BeforeSuite
 	public void generateIniFile() throws EncryptedDocumentException, InvalidFormatException, IOException {
@@ -40,33 +37,17 @@ public class LogoutTest {
 	}
 
 	@Test(dataProvider = "getData")
-	public void logoutTest(HashMap<String, String> usrData) throws AWTException{
+	public void logoutTest(HashMap<String, String> usrData) throws AWTException {
 		this.usrData = usrData;
-		String testOn = usrData.get("TESTON");
-		if (testOn.toUpperCase().equals("MOBILE")) {
-			System.out.println("LAUNCHING THE MOBILE APP FOR FLOW : " + usrData.get("TCID"));
-			if (mdriver == null) {
-				try {
-					mdriver = mBasePage.launchApp(usrData.get("DEVICE"));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-		} else if (testOn.toUpperCase().equals("WEB")) {
-			if (wdriver == null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-				wdriver = mBasePage.launchBrowser();
-			}else if (wdriver != null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-			}
-			
-			wLogoutPage = new LogoutPage(wdriver);
-			
-			wLogoutPage.logout(usrData);
-			
+		if (wdriver == null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
+			wdriver = mBasePage.launchBrowser();
+		} else if (wdriver != null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
 		}
-		
+
+		wLogoutPage = new LogoutPage(wdriver);
+		wLogoutPage.logout(usrData);
 	}
 
 	@AfterClass

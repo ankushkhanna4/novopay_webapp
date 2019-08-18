@@ -12,20 +12,14 @@ public class EnvPage extends JavaUtils {
 	public void env(Map<String, String> usrData) throws ClassNotFoundException {
 
 		changeEnvURLfromIni(usrData.get("ENV"));
-		String amount = usrData.get("AMOUNT");
 
 		if (usrData.get("UPDATERETAILERBALANCE").equals("YES")) {
-			updateBalance("retailer", amount);
+			dbUtils.updateWalletBalance(getLoginMobileFromIni("RetailerMobNum"), "retailer",
+					usrData.get("RETAILERAMOUNT"));
 		}
 		if (usrData.get("UPDATECASHOUTBALANCE").equals("YES")) {
-			updateBalance("cashout", amount);
+			dbUtils.updateWalletBalance(getLoginMobileFromIni("RetailerMobNum"), "cashout",
+					usrData.get("CASHOUTAMOUNT"));
 		}
-		if (usrData.get("UPDATEMERCHANTBALANCE").equals("YES")) {
-			updateBalance("merchant", amount);
-		}
-	}
-
-	public void updateBalance(String wallet, String amount) throws ClassNotFoundException {
-		dbUtils.updateWalletBalance(getLoginMobileFromIni("RetailerMobNum"), wallet, amount);
 	}
 }

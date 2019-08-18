@@ -124,6 +124,24 @@ public class FullertonPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'toast-message')]")
 	WebElement toasterMsg;
 
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]")
+	WebElement chooseWalletScreen;
+
+	@FindBy(xpath = "//*[@for='agent-wallet']")
+	WebElement mainWalletRadioButton;
+
+	@FindBy(xpath = "//*[@for='cashout-wallet']")
+	WebElement cashoutWalletRadioButton;
+
+	@FindBy(xpath = "//h5[contains(text(),'Main Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement mainWalletScreenBalance;
+
+	@FindBy(xpath = "//h5[contains(text(),'Cashout Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement cashoutWalletScreenBalance;
+
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
+	WebElement chooseWalletProceedButton;
+
 	// Load all objects
 	public FullertonPage(WebDriver wdriver) {
 		super(wdriver);
@@ -217,6 +235,7 @@ public class FullertonPage extends BasePage {
 					fetchedAmount.sendKeys(usrData.get("AMOUNT"));
 					cmsDetailsFromIni("StoreFtAmount", usrData.get("AMOUNT"));
 				}
+				
 				// Click on Submit button
 				wait.until(ExpectedConditions.elementToBeClickable(ftSubmitButton));
 
@@ -232,6 +251,13 @@ public class FullertonPage extends BasePage {
 				} else {
 
 					clickElement(ftSubmitButton);
+					
+					if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+						Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+					} else {
+						chooseWalletScreen(usrData);
+					}
+					
 					Thread.sleep(1000);
 					wait.until(ExpectedConditions.visibilityOf(MPINScreen));
 					Log.info("MPIN screen displayed");
@@ -465,11 +491,11 @@ public class FullertonPage extends BasePage {
 			Assert.assertEquals(successSMS, dbUtils.sms());
 			Assert.assertEquals(successSMS, dbUtils.smsFt());
 			try {
-			Assert.assertEquals(mongoDbUtils.getOfficerMobNum(), dbUtils.smsNum2());
-			Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum1());
+				Assert.assertEquals(mongoDbUtils.getOfficerMobNum(), dbUtils.smsNum2());
+				Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum1());
 			} catch (Exception e) {
-			Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum1());
-			Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum2());
+				Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum1());
+				Assert.assertEquals(mongoDbUtils.getAddMobNum(), dbUtils.smsNum2());
 			}
 			Log.info(successSMS);
 			Log.info("SMS sent successfully to " + dbUtils.smsNum2() + " and " + dbUtils.smsNum1());
@@ -495,5 +521,25 @@ public class FullertonPage extends BasePage {
 		String newWalletBalance = df.format(newWalletBal);
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+	}
+
+	// Confirm screen
+	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletScreen));
+		Log.info("Choose a Wallet screen displayed");
+//				Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
+//						getWalletBalanceFromIni("GetRetailer", ""));
+		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
+		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
+				getWalletBalanceFromIni("GetCashout", ""));
+		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
+		mainWalletRadioButton.click();
+		Log.info("Main wallet radio button clicked");
+//				cashoutWalletRadioButton.click();
+//				Log.info("Cashout wallet radio button clicked");
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletProceedButton));
+		chooseWalletProceedButton.click();
+//				Thread.sleep(2000);
+		Log.info("Proceed button clicked");
 	}
 }

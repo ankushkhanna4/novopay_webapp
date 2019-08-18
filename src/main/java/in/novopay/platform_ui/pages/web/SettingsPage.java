@@ -355,10 +355,6 @@ public class SettingsPage extends BasePage {
 								accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
 								Log.info("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 							}
-							// uploadFile.sendKeys("C:/Users/ANKUSH/Pictures/Sample Pictures/Testing.jpg");
-							// JavascriptExecutor jse = (JavascriptExecutor) wdriver;
-							// jse.executeScript("document.getElementById('settlement-mode-retailer-file-name').value
-							// = 'Testing.jpg';");
 							uploadFile(uploadFile);
 							Log.info("Image selected");
 
@@ -448,6 +444,7 @@ public class SettingsPage extends BasePage {
 										wait.until(ExpectedConditions.visibilityOf(MPINScreen));
 										Log.info("MPIN screen displayed");
 										wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
+										Thread.sleep(1000);
 										enterMPIN.click();
 										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 										Log.info("MPIN entered");
@@ -590,7 +587,7 @@ public class SettingsPage extends BasePage {
 	public void assertionOnInfoScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(settingsTxnScreenMessage.getText(),
-				"Please change settlement mode to Retailer Credit before updating bank details");
+				"Please change settlement mode to 'Do Not Settle' before updating bank details");
 		Log.info(settingsTxnScreenMessage.getText());
 	}
 
@@ -600,7 +597,7 @@ public class SettingsPage extends BasePage {
 		Thread.sleep(2000);
 		cancelledCheque.click();
 		Thread.sleep(500);
-		String uploadFile = "C:\\Users\\Ankush\\Documents\\AutoIt Scripts\\UploadFile.exe";
+		String uploadFile = "./test-data/UploadFile.exe";
 		Runtime.getRuntime().exec(uploadFile);
 		Thread.sleep(500);
 	}

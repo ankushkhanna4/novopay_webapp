@@ -27,8 +27,8 @@ public class MongoDBUtils extends JavaUtils {
 		BasicConfigurator.configure();
 
 		// Mongodb initialization parameters.
-		String auth_user = getMongoDetailsfromIni(mongoDbUsername),
-				auth_pwd = getMongoDetailsfromIni(mongoDbPassword), dbUrl = getMongoDetailsfromIni("mongoDbUrl"),
+		String auth_user = getValueFromIni(mongoDbUsername),
+				auth_pwd = getValueFromIni(mongoDbPassword), dbUrl = getValueFromIni("mongoDbUrl"),
 				encoded_pwd = "";
 
 		try {

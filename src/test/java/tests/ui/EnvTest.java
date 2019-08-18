@@ -39,7 +39,7 @@ public class EnvTest {
 	@Test(dataProvider = "getData")
 	public void envTest(HashMap<String, String> usrData) throws ClassNotFoundException {
 		this.usrData = usrData;
-		System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
+		System.out.println("Running the test case --> " + usrData.get("TCID"));
 		wEnvPage = new EnvPage();
 		wEnvPage.env(usrData);
 		wdriver = BasePage.wdriver;

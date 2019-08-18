@@ -24,7 +24,6 @@ import io.appium.java_client.android.AndroidDriver;
 
 public class FinoStatusEnquiryTest {
 	String featureName = "Fino Status Enquiry page";
-	public AndroidDriver<MobileElement> mdriver;
 	public WebDriver wdriver;
 	private BasePage mBasePage = new BasePage(wdriver);
 	private FinoStatusEnquiryPage wFinoStatusEnquiryPage;
@@ -43,36 +42,20 @@ public class FinoStatusEnquiryTest {
 	public void finoStatusEnquiryTest(HashMap<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		this.usrData = usrData;
-		String testOn = usrData.get("TESTON");
-		if (testOn.toUpperCase().equals("MOBILE")) {
-			System.out.println("LAUNCHING THE MOBILE APP FOR FLOW : " + usrData.get("TCID"));
-			if (mdriver == null) {
-				try {
-					mdriver = mBasePage.launchApp(usrData.get("DEVICE"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		} else if (testOn.toUpperCase().equals("WEB")) {
-			if (wdriver == null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-				wdriver = mBasePage.launchBrowser();
-			} else if ((wdriver != null)) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-			}
-			
-//			HashMap<String, String> batchFileConfig = javaUtils.readSectionFromIni("axisimpsstatusenquiry");
-//			if (!usrData.get("KEY").isEmpty()) {
-//				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
-//			}
-			
-			wFinoStatusEnquiryPage = new FinoStatusEnquiryPage(wdriver);
-			wFinoStatusEnquiryPage.finoStatusEnquiry(usrData);
-
+		if (wdriver == null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
+			wdriver = mBasePage.launchBrowser();
+		} else if ((wdriver != null)) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
 		}
 
+//		HashMap<String, String> batchFileConfig = javaUtils.readSectionFromIni("axisimpsstatusenquiry");
+//		if (!usrData.get("KEY").isEmpty()) {
+//			srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
+//		}
+
+		wFinoStatusEnquiryPage = new FinoStatusEnquiryPage(wdriver);
+		wFinoStatusEnquiryPage.finoStatusEnquiry(usrData);
 	}
 
 	@AfterClass

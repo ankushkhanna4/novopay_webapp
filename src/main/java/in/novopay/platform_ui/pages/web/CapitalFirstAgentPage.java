@@ -128,6 +128,24 @@ public class CapitalFirstAgentPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'toast-message')]")
 	WebElement toasterMsg;
 
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]")
+	WebElement chooseWalletScreen;
+
+	@FindBy(xpath = "//*[@for='agent-wallet']")
+	WebElement mainWalletRadioButton;
+
+	@FindBy(xpath = "//*[@for='cashout-wallet']")
+	WebElement cashoutWalletRadioButton;
+
+	@FindBy(xpath = "//h5[contains(text(),'Main Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement mainWalletScreenBalance;
+
+	@FindBy(xpath = "//h5[contains(text(),'Cashout Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement cashoutWalletScreenBalance;
+
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
+	WebElement chooseWalletProceedButton;
+
 	// Load all objects
 	public CapitalFirstAgentPage(WebDriver wdriver) {
 		super(wdriver);
@@ -206,9 +224,16 @@ public class CapitalFirstAgentPage extends BasePage {
 			}
 
 			if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
+				
 				// Click on Submit button
 				wait.until(ExpectedConditions.elementToBeClickable(cfSubmitButton));
 				clickElement(cfSubmitButton);
+				
+				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+				} else {
+					chooseWalletScreen(usrData);
+				}
 
 				wait.until(ExpectedConditions.visibilityOf(MPINScreen));
 				Log.info("MPIN screen displayed");
@@ -237,7 +262,7 @@ public class CapitalFirstAgentPage extends BasePage {
 
 					wait.until(ExpectedConditions.visibilityOf(cmsTxnScreen));
 					Log.info("Txn screen displayed");
-					
+
 					// Update retailer wallet balance to 1000000 for scenario where amount > wallet
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 						dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
@@ -467,5 +492,25 @@ public class CapitalFirstAgentPage extends BasePage {
 		String newWalletBalance = df.format(newWalletBal);
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+	}
+
+	// Confirm screen
+	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletScreen));
+		Log.info("Choose a Wallet screen displayed");
+//			Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
+//					getWalletBalanceFromIni("GetRetailer", ""));
+		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
+		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
+				getWalletBalanceFromIni("GetCashout", ""));
+		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
+		mainWalletRadioButton.click();
+		Log.info("Main wallet radio button clicked");
+//			cashoutWalletRadioButton.click();
+//			Log.info("Cashout wallet radio button clicked");
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletProceedButton));
+		chooseWalletProceedButton.click();
+//			Thread.sleep(2000);
+		Log.info("Proceed button clicked");
 	}
 }

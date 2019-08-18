@@ -23,7 +23,6 @@ import io.appium.java_client.android.AndroidDriver;
 
 public class RBLAEPSStatusEnquiryTest {
 	String featureName = "RBL AEPS Status Enquiry page";
-	public AndroidDriver<MobileElement> mdriver;
 	public WebDriver wdriver;
 	private BasePage mBasePage = new BasePage(wdriver);
 	private RBLAEPSStatusEnquiryPage wRBLAEPSStatusEnquiryPage;
@@ -41,28 +40,15 @@ public class RBLAEPSStatusEnquiryTest {
 	public void rBLAEPSStatusEnquiryTest(HashMap<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		this.usrData = usrData;
-		String testOn = usrData.get("TESTON");
-		if (testOn.toUpperCase().equals("MOBILE")) {
-			System.out.println("LAUNCHING THE MOBILE APP FOR FLOW : " + usrData.get("TCID"));
-			if (mdriver == null) {
-				try {
-					mdriver = mBasePage.launchApp(usrData.get("DEVICE"));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-		} else if (testOn.toUpperCase().equals("WEB")) {
-			if (wdriver == null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-				wdriver = mBasePage.launchBrowser();
-			} else if ((wdriver != null)) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-			}
-
-			wRBLAEPSStatusEnquiryPage = new RBLAEPSStatusEnquiryPage(wdriver);
-			wRBLAEPSStatusEnquiryPage.rBLAEPSStatusEnquiry(usrData);
+		if (wdriver == null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
+			wdriver = mBasePage.launchBrowser();
+		} else if ((wdriver != null)) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
 		}
+
+		wRBLAEPSStatusEnquiryPage = new RBLAEPSStatusEnquiryPage(wdriver);
+		wRBLAEPSStatusEnquiryPage.rBLAEPSStatusEnquiry(usrData);
 	}
 
 	@AfterClass

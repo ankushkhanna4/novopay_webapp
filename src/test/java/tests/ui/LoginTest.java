@@ -20,18 +20,15 @@ import in.novopay.platform_ui.utils.JavaUtils;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 
-
 public class LoginTest {
 	String featureName = "Login";
-	public AndroidDriver<MobileElement> mdriver;
 	public WebDriver wdriver;
 	private BasePage mBasePage = new BasePage(wdriver);
 	private LoginPage wLoginPage;
 	private Map<String, String> usrData;
-	public String sheetname = "LoginPage", workbook="WebAppUITestData";
+	public String sheetname = "LoginPage", workbook = "WebAppUITestData";
 	private JavaUtils javaUtils = new JavaUtils();
-	
-	
+
 	// Start adding all the page objects below this line
 	@BeforeSuite
 	public void generateIniFile() throws EncryptedDocumentException, InvalidFormatException, IOException {
@@ -39,32 +36,17 @@ public class LoginTest {
 	}
 
 	@Test(dataProvider = "getData")
-	public void loginTest(HashMap<String, String> usrData) throws ClassNotFoundException, InterruptedException{
+	public void loginTest(HashMap<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 		this.usrData = usrData;
-		String testOn = usrData.get("TESTON");
-		if (testOn.toUpperCase().equals("MOBILE")) {
-			System.out.println("LAUNCHING THE MOBILE APP FOR FLOW : " + usrData.get("TCID"));
-			if (mdriver == null) {
-				try {
-					mdriver = mBasePage.launchApp(usrData.get("DEVICE"));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-		} else if (testOn.toUpperCase().equals("WEB")) {
-			if (wdriver == null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-				wdriver = mBasePage.launchBrowser();
-			}else if (wdriver != null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-			}
-			
-			wLoginPage = new LoginPage(wdriver);
-			wLoginPage.login(usrData);
-			
+		if (wdriver == null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
+			wdriver = mBasePage.launchBrowser();
+		} else if (wdriver != null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
 		}
-		
+
+		wLoginPage = new LoginPage(wdriver);
+		wLoginPage.login(usrData);
 	}
 
 	@AfterClass

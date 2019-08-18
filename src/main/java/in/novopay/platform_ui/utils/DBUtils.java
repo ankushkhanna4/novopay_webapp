@@ -192,7 +192,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String getBillPaymentCharges(String vendor) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("limitCharges"));
@@ -1495,7 +1495,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String billPaymentDate() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
@@ -1566,18 +1566,36 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("master"));
 			String deleteQuery = "DELETE FROM master.contract WHERE organization = (SELECT u.`organization` FROM `master`.`user` u "
 					+ "JOIN `master`.`user_attribute` ua ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
-					+ "AND u.status = 'ACTIVE') AND partner_organization NOT IN (SELECT id FROM master.organization WHERE "
-					+ "CODE = 'rbl')";
+					+ "AND u.status = 'ACTIVE')";
 
-			String insertQuery = "INSERT INTO `contract` (`organization`, `partner_organization`) "
-					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
-					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
-					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = '" + contract
-					+ "'));";
+			String insertQuery = "", insertQuery1 = "", insertQuery2 = "";
+			if (contract.equalsIgnoreCase("FINO | RBL")) {
+				insertQuery1 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
+						+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
+						+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
+						+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'rbl'));";
+				insertQuery2 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
+						+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
+						+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
+						+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'fino'));";
+			} else {
+				insertQuery = "INSERT INTO `contract` (`organization`, `partner_organization`) "
+						+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
+						+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
+						+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = '"
+						+ contract + "'));";
+			}
 
 			stmt = conn.createStatement();
 			stmt.executeUpdate(deleteQuery);
-			stmt.executeUpdate(insertQuery);
+			System.out.println("Deleting all contracts");
+			if (contract.equals("FINO | RBL")) {
+				stmt.executeUpdate(insertQuery1);
+				stmt.executeUpdate(insertQuery2);
+			} else {
+				stmt.executeUpdate(insertQuery);
+			}
+			System.out.println("Inserting " + contract.toLowerCase());
 		} catch (SQLException sqe) {
 			System.out.println("Duplicate entry for " + contract);
 		}

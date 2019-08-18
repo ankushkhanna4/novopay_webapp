@@ -24,7 +24,6 @@ import io.appium.java_client.android.AndroidDriver;
 
 public class AxisStatusEnquiryTest {
 	String featureName = "Axis Status Enquiry page";
-	public AndroidDriver<MobileElement> mdriver;
 	public WebDriver wdriver;
 	private BasePage mBasePage = new BasePage(wdriver);
 	private AxisStatusEnquiryPage wAxisStatusEnquiryPage;
@@ -43,47 +42,20 @@ public class AxisStatusEnquiryTest {
 	public void axisStatusEnquiryTest(HashMap<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		this.usrData = usrData;
-		String testOn = usrData.get("TESTON");
-		if (testOn.toUpperCase().equals("MOBILE")) {
-			System.out.println("LAUNCHING THE MOBILE APP FOR FLOW : " + usrData.get("TCID"));
-			if (mdriver == null) {
-				try {
-					mdriver = mBasePage.launchApp(usrData.get("DEVICE"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		} else if (testOn.toUpperCase().equals("WEB")) {
-			if (wdriver == null) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-				wdriver = mBasePage.launchBrowser();
-			} else if ((wdriver != null)) {
-				System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-			}
-			
-			HashMap<String, String> batchFileConfig = javaUtils.readSectionFromIni("axisimpsstatusenquiry");
-			if (!usrData.get("KEY").isEmpty()) {
-				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
-			}
-			
-			wAxisStatusEnquiryPage = new AxisStatusEnquiryPage(wdriver);
-			wAxisStatusEnquiryPage.axisStatusEnquiry(usrData);
-
+		if (wdriver == null) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
+			wdriver = mBasePage.launchBrowser();
+		} else if ((wdriver != null)) {
+			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
 		}
 
-		// if(usrData.get("Status").equalsIgnoreCase("success")){
-		// batchFileConfig.put("batch.execution.summary","response string
-		// :00\\|Success\\|"+paymentRefCode);
-		// } else if(usrData.get("Status").equalsIgnoreCase("fail")){
-		// batchFileConfig.put("batch.execution.summary","response string
-		// :92\\|Success\\|"+paymentRefCode);
-		// } else if(usrData.get("Status").equalsIgnoreCase("unknown")){
-		// batchFileConfig.put("batch.execution.summary","response string
-		// :T1\\|Success\\|"+paymentRefCode);
-		// }
+		HashMap<String, String> batchFileConfig = javaUtils.readSectionFromIni("axisimpsstatusenquiry");
+		if (!usrData.get("KEY").isEmpty()) {
+			srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
+		}
 
+		wAxisStatusEnquiryPage = new AxisStatusEnquiryPage(wdriver);
+		wAxisStatusEnquiryPage.axisStatusEnquiry(usrData);
 	}
 
 	@AfterClass

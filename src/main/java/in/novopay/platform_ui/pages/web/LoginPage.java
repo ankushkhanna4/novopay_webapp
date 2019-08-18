@@ -64,8 +64,8 @@ public class LoginPage extends BasePage {
 	@FindBy(xpath = "//button[@class='toast-close-button']")
 	WebElement toastCloseButton;
 
-	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
-	WebElement pageTitle;
+	@FindBy(xpath = "//a[contains(@aria-describedby,'tooltip')][1]")
+	WebElement hambergerMenu;
 
 	@FindBy(xpath = "//*[@id='regMobileNumber']/parent::div/ul/li")
 	WebElement mobNumErrorMsg;
@@ -144,8 +144,8 @@ public class LoginPage extends BasePage {
 					proceedOTP.click();
 					if (txnOtp.equals("342360")) {
 						waitForSpinner();
-						wait.until(ExpectedConditions.visibilityOf(pageTitle));
-						Log.info(pageTitle.getText() + " page displayed");
+						wait.until(ExpectedConditions.visibilityOf(hambergerMenu));
+						Log.info("Page displayed");
 						/*
 						 * if (usrData.get("NEWPIN").equalsIgnoreCase("1111")) {
 						 * dbUtils.updateMPIN(getLoginMobileFromIni(mobNumFromSheet)); }

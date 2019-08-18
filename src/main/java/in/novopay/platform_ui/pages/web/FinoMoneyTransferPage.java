@@ -18,33 +18,22 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 
 public class FinoMoneyTransferPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 	DecimalFormat df = new DecimalFormat("#.00");
 
 	WebDriverWait wait = new WebDriverWait(wdriver, 100);
-	WebDriverWait waitWelcome = new WebDriverWait(wdriver, 3);
 
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
-	
+
 	@FindBy(xpath = "//button[contains(text(),'I Will Check Later')]")
 	WebElement banner;
-
-	@FindBy(xpath = "//h4[contains(text(),'Welcome')]")
-	WebElement welcomeMessage;
-
-	@FindBy(xpath = "//h4[contains(text(),'Welcome')]/parent::div/following-sibling::div[2]/button")
-	WebElement welcomeOKButton;
-
-	@FindBy(xpath = "//i[contains(@class,'np np-refresh')]")
-	WebElement refreshButton;
-
-	@FindBy(xpath = "//i[contains(@class,'np np-sync')]")
-	WebElement syncButton;
 
 	@FindBy(xpath = "//span[contains(text(),'wallet balance')]")
 	WebElement retailerWallet;
@@ -115,7 +104,7 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//input[contains(@type,'checkbox')]")
 	WebElement deleteBeneCheckbox;
 
-	@FindBy(xpath = "//div[contains(@class,'pull-right m-0-16-0-8 mr-0')]/button")
+	@FindBy(xpath = "//div[@class='card-layout']//button[contains(text(),'Clear')]/parent::div/following-sibling::div/button")
 	WebElement moneyTransferSubmitButton;
 
 	@FindBy(xpath = "//*[contains(text(),'Clear')]")
@@ -186,6 +175,27 @@ public class FinoMoneyTransferPage extends BasePage {
 
 	@FindBy(xpath = "//h4[contains(text(),'Applicable charges')]/parent::div/following-sibling::div[2]/button")
 	WebElement applicableChargesOkButton;
+
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]")
+	WebElement chooseWalletScreen;
+
+	@FindBy(xpath = "//*[@for='agent-wallet']")
+	WebElement mainWalletRadioButton;
+
+	@FindBy(xpath = "//*[@for='cashout-wallet']")
+	WebElement cashoutWalletRadioButton;
+
+	@FindBy(xpath = "//h5[contains(text(),'Main Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement mainWalletScreenBalance;
+
+	@FindBy(xpath = "//h5[contains(text(),'Cashout Wallet')]/following-sibling::p[contains(text(),' ₹')]")
+	WebElement cashoutWalletScreenBalance;
+
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
+	WebElement chooseWalletProceedButton;
+
+	@FindBy(xpath = "//*[@for='agent-wallet']//small")
+	WebElement chooseWalletErrorMsg;
 
 	@FindBy(xpath = "//*[contains(text(),'Confirm the details')]")
 	WebElement confirmScreen;
@@ -322,7 +332,7 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'add-bene-retry-modal')]/form/div/div/following-sibling::div/span")
 	WebElement addBeneFailedMessage;
 
-	@FindBy(xpath = "//div[contains(@class,'delete-bene-retry-modal')]/form/div/div")
+	@FindBy(xpath = "//div[contains(@class,'delete-bene-retry-modal')]/form/div/div/h4[contains(text(),'!')]")
 	WebElement deleteBeneFailedScreen;
 
 	@FindBy(xpath = "//div[contains(@class,'delete-bene-retry-modal')]/form/div/div/following-sibling::div/span")
@@ -366,21 +376,21 @@ public class FinoMoneyTransferPage extends BasePage {
 			getPartner(partner());
 
 			// Click OK on Welcome pop-up (whenever displayed)
-			if (usrData.get("WELCOMEPOPUP").equalsIgnoreCase("YES")) {
-				welcomePopup();
-			}
+//			if (usrData.get("WELCOMEPOPUP").equalsIgnoreCase("YES")) {
+//				welcomePopup();
+//			}
 
 			Thread.sleep(2000);
 
 			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
-				menu.click();
+				clickElement(menu);
 				WebElement moneyTransfer = wdriver.findElement(By.xpath("//a[@href='/newportal/"
 						+ partner().toLowerCase() + "-transfer']/span[contains(text(),'Money Transfer')]"));
 				wait.until(ExpectedConditions.elementToBeClickable(moneyTransfer));
 				clickInvisibleElement(moneyTransfer);
 				Log.info("Money Transfer option clicked");
 				wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
-				menu.click();
+				clickElement(menu);
 			}
 
 			// Update retailer wallet balance to 0 for scenario where amount > wallet
@@ -389,22 +399,23 @@ public class FinoMoneyTransferPage extends BasePage {
 			}
 			// Refresh wallet balances whenever required
 			if (usrData.get("REFRESH").equalsIgnoreCase("YES")) {
-				menu.click();
-				refreshBalance(); // refresh wallet balances
-				menu.click();
+				clickElement(menu);
+				commonUtils.refreshBalance(); // refresh wallet balances
+				clickElement(menu);
 			}
 
 			// display wallet balances in console
-			displayInitialBalance(usrData, "retailer");
-			displayInitialBalance(usrData, "cashout");
+			commonUtils.displayInitialBalance(usrData, "retailer");
+			commonUtils.displayInitialBalance(usrData, "cashout");
 
-			double initialWalletBalance = getInitialBalance("retailer"); // store wallet balance as double datatype
+			double initialMainBalance = commonUtils.getInitialBalance("retailer"); // store wallet balance as double
+			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store wallet balance as double
 
 			if (usrData.get("ASSERTION").contains("FCM")) {
 				assertionOnFCM(usrData);
+			} else {
+				customerDetails(usrData);
 			}
-
-			customerDetails(usrData);
 
 			// Provide beneficiary details based on user data
 			if (usrData.get("BENE").equalsIgnoreCase("New")) { // when beneficiary is new
@@ -471,7 +482,7 @@ public class FinoMoneyTransferPage extends BasePage {
 					Log.info("IFSC branch entered");
 					ifscSearchButton.click();
 					Log.info("Search button clicked");
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					wait.until(ExpectedConditions.visibilityOf(ifscSearchBack));
 					String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
 							+ usrData.get("BENEIFSC") + "')]/parent::li";
@@ -497,7 +508,7 @@ public class FinoMoneyTransferPage extends BasePage {
 
 				// Validate beneficiary before registration
 				if (usrData.get("VALIDATEBENE").equalsIgnoreCase("BEFOREREG")) {
-					validateBene(usrData, getInitialBalance("retailer"));
+					validateBene(usrData, commonUtils.getInitialBalance("retailer"));
 				}
 			}
 
@@ -550,7 +561,7 @@ public class FinoMoneyTransferPage extends BasePage {
 				clickElement(addBeneButton);
 				Log.info("Add Bene button clicked");
 				if (!usrData.get("ASSERTION").equalsIgnoreCase("Bene Limit")) {
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					wait.until(ExpectedConditions.visibilityOf(OTPScreen));
 					Log.info("OTP screen displayed");
 					wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
@@ -573,7 +584,7 @@ public class FinoMoneyTransferPage extends BasePage {
 					wait.until(ExpectedConditions.elementToBeClickable(otpScreenButton));
 					otpScreenButton.click();
 					Log.info(buttonName + " button clicked");
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
 						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 							// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
@@ -590,7 +601,7 @@ public class FinoMoneyTransferPage extends BasePage {
 							otpFailedScreenButton.click();
 							Log.info(otpFailedScreenButtonName + " button clicked");
 							if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Retry")) {
-								waitForSpinner();
+								commonUtils.waitForSpinner();
 								wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
 								enterOTP.click();
 								enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
@@ -598,7 +609,7 @@ public class FinoMoneyTransferPage extends BasePage {
 								wait.until(ExpectedConditions.elementToBeClickable(confirmOTP));
 								confirmOTP.click();
 								Log.info("Confirm button clicked");
-								waitForSpinner();
+								commonUtils.waitForSpinner();
 								// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
 								// Log.info(toasterMsg.getText());
 							}
@@ -613,7 +624,7 @@ public class FinoMoneyTransferPage extends BasePage {
 			}
 			// Validate beneficiary after registration
 			if (usrData.get("VALIDATEBENE").equalsIgnoreCase("AFTERREG")) {
-				validateBene(usrData, getInitialBalance("retailer"));
+				validateBene(usrData, commonUtils.getInitialBalance("retailer"));
 			}
 
 			// Delete Beneficiary
@@ -633,6 +644,7 @@ public class FinoMoneyTransferPage extends BasePage {
 
 				wait.until(ExpectedConditions.elementToBeClickable(amount));
 				clickElement(amount);
+				Thread.sleep(1000);
 				amount.sendKeys(usrData.get("AMOUNT"));
 				Log.info("amount entered");
 
@@ -641,11 +653,16 @@ public class FinoMoneyTransferPage extends BasePage {
 				moneyTransferSubmitButton.click();
 				Log.info("Submit button clicked");
 
+				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+				} else {
+					chooseWalletScreen(usrData);
+				}
 				confirmScreen(usrData);
 
 				// Provide OTP if beneficiary is to be added during money transfer
 				if (usrData.get("ADDBENE").equalsIgnoreCase("Directly")) {
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					wait.until(ExpectedConditions.visibilityOf(OTPScreen));
 					Log.info("OTP screen displayed");
 					wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
@@ -668,13 +685,15 @@ public class FinoMoneyTransferPage extends BasePage {
 					wait.until(ExpectedConditions.elementToBeClickable(otpScreenButton));
 					otpScreenButton.click();
 					Log.info(buttonName + " button clicked");
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
-						moneyTransfer(usrData, initialWalletBalance);
+						moneyTransfer(usrData, initialMainBalance);
+//						moneyTransfer(usrData, initialCashoutBalance);
 					}
 				} else if (usrData.get("ADDBENE").equalsIgnoreCase("Indirectly")
 						|| usrData.get("ADDBENE").equalsIgnoreCase("No")) {
-					moneyTransfer(usrData, initialWalletBalance);
+					moneyTransfer(usrData, initialMainBalance);
+//					moneyTransfer(usrData, initialCashoutBalance);
 				}
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
 				wait.until(ExpectedConditions.elementToBeClickable(moneyTransferClearButton));
@@ -683,17 +702,19 @@ public class FinoMoneyTransferPage extends BasePage {
 				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
 					wait.until(ExpectedConditions.elementToBeClickable(amount));
 					clickElement(amount);
+					Thread.sleep(1000);
 					amount.sendKeys(usrData.get("AMOUNT"));
 					Log.info("amount entered");
 				}
 
 				// Field level validation in Amount field
-				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-					wait.until(ExpectedConditions.visibilityOf(amountErrorMsg));
-					Assert.assertEquals(amountErrorMsg.getText(), "Insufficient wallet balance");
-					Log.info(amountErrorMsg.getText());
-					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "999998");
-				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Limit")
+//				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
+//					wait.until(ExpectedConditions.visibilityOf(chooseWalletErrorMsg));
+//					Assert.assertEquals(chooseWalletErrorMsg.getText(), " Balance is low! ");
+//					Log.info(amountErrorMsg.getText());
+//					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
+//				}
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Limit")
 						|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
 					wait.until(ExpectedConditions.visibilityOf(amountErrorMsg));
 					Assert.assertEquals(amountErrorMsg.getText().substring(0, 43),
@@ -701,7 +722,7 @@ public class FinoMoneyTransferPage extends BasePage {
 					Log.info(amountErrorMsg.getText());
 				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
 					wait.until(ExpectedConditions.visibilityOf(amountErrorMsg));
-					Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹ 100.00");
+					Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹100.00");
 					Log.info(amountErrorMsg.getText());
 				}
 
@@ -712,6 +733,7 @@ public class FinoMoneyTransferPage extends BasePage {
 					wait.until(ExpectedConditions.visibilityOf(applicableChargesScreen));
 					assertionOnApplicableCharges(usrData);
 					applicableChargesOkButton.click();
+					Log.info("Charges verified");
 				}
 			}
 
@@ -723,22 +745,6 @@ public class FinoMoneyTransferPage extends BasePage {
 		}
 	}
 
-	// Click OK on Welcome pop-up (whenever displayed)
-		public void welcomePopup() {
-			try {
-//				waitWelcome.until(ExpectedConditions.visibilityOf(welcomeMessage));
-//				Log.info("Welcome pop-up displayed");
-				waitWelcome.until(ExpectedConditions.elementToBeClickable(banner));
-				clickElement(banner);
-				Log.info("I will check later button clicked");
-				waitWelcome.until(
-						ExpectedConditions.invisibilityOfElementLocated(By.xpath("//button[contains(text(),'I Will Check Later')]")));
-				Log.info("Pop-up disappeared");
-			} catch (Exception e) {
-				Log.info("No pop-up displayed");
-			}
-		}
-
 	public void customerDetails(Map<String, String> usrData)
 			throws InterruptedException, NumberFormatException, ClassNotFoundException {
 		// Click on customer Mobile Number field
@@ -746,11 +752,12 @@ public class FinoMoneyTransferPage extends BasePage {
 		clickElement(custMobNum);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
+		Log.info("Customer mobile number " + custMobNum.getText() + " entered");
 
 		// Provide customer details based on user data
 		if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
-			Log.info("Customer mobile number entered");
-			waitForSpinner();
+			Log.info("New customer mobile number entered");
+			commonUtils.waitForSpinner();
 			Thread.sleep(1000);
 			limitCheck(usrData); // check limit remaining
 			wait.until(ExpectedConditions.elementToBeClickable(custName));
@@ -770,8 +777,8 @@ public class FinoMoneyTransferPage extends BasePage {
 			Log.info("Gender selected");
 		} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")
 				|| usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("GetBeneNum")) { // when customer is existing
-			Log.info("Customer mobile number entered");
-			waitForSpinner();
+			Log.info("Existing customer mobile number entered");
+			commonUtils.waitForSpinner();
 			limitCheck(usrData); // check limit remaining
 		}
 	}
@@ -782,7 +789,12 @@ public class FinoMoneyTransferPage extends BasePage {
 		wait.until(ExpectedConditions.elementToBeClickable(validateBeneButton));
 		Log.info("validating beneficiary");
 		validateBeneButton.click();
-		waitForSpinner();
+		if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+			Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+		} else {
+			chooseWalletScreen(usrData);
+		}
+		commonUtils.waitForSpinner();
 		wait.until(ExpectedConditions.visibilityOf(beneValidationScreen));
 		Log.info(beneValidationMessage.getText());
 		assertionOnBeneValidationScreen(usrData, initialWalletBalance);
@@ -810,7 +822,7 @@ public class FinoMoneyTransferPage extends BasePage {
 		}
 		deleteConfirmButton.click();
 		Log.info("Confirm button clicked");
-		waitForSpinner();
+		commonUtils.waitForSpinner();
 		wait.until(ExpectedConditions.visibilityOf(deleteBeneOTPScreen));
 		Log.info("OTP screen displayed");
 		wait.until(ExpectedConditions.elementToBeClickable(deleteBeneEnterOTP));
@@ -832,7 +844,7 @@ public class FinoMoneyTransferPage extends BasePage {
 		wait.until(ExpectedConditions.elementToBeClickable(otpScreenButton));
 		otpScreenButton.click();
 		Log.info(buttonName + " button clicked");
-		waitForSpinner();
+		commonUtils.waitForSpinner();
 		if (buttonName.equalsIgnoreCase("Confirm")) {
 			if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 				// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
@@ -848,7 +860,7 @@ public class FinoMoneyTransferPage extends BasePage {
 				otpFailedScreenButton.click();
 				Log.info(otpFailedScreenButtonName + " button clicked");
 				if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Retry")) {
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					wait.until(ExpectedConditions.elementToBeClickable(deleteBeneEnterOTP));
 					deleteBeneEnterOTP.click();
 					deleteBeneEnterOTP.sendKeys(getAuthfromIni(otpFromIni()));
@@ -856,12 +868,32 @@ public class FinoMoneyTransferPage extends BasePage {
 					wait.until(ExpectedConditions.elementToBeClickable(deleteBeneConfirmOTP));
 					deleteBeneConfirmOTP.click();
 					Log.info("Confirm button clicked");
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
 					// Log.info(toasterMsg.getText());
 				}
 			}
 		}
+	}
+
+	// Choose Wallet screen
+	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException {
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletScreen));
+		Log.info("Choose a Wallet screen displayed");
+//		Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
+//				getWalletBalanceFromIni("GetRetailer", ""));
+		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
+		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
+				getWalletBalanceFromIni("GetCashout", ""));
+		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
+		mainWalletRadioButton.click();
+		Log.info("Main wallet radio button clicked");
+//		cashoutWalletRadioButton.click();
+//		Log.info("Cashout wallet radio button clicked");
+		wait.until(ExpectedConditions.visibilityOf(chooseWalletProceedButton));
+		chooseWalletProceedButton.click();
+//		Thread.sleep(2000);
+		Log.info("Proceed button clicked");
 	}
 
 	// Confirm screen
@@ -908,13 +940,13 @@ public class FinoMoneyTransferPage extends BasePage {
 		mpinScreenButton.click();
 		Log.info(mpinButtonName + " button clicked");
 		if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-			waitForSpinner();
+			commonUtils.waitForSpinner();
 		} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 				wait.until(ExpectedConditions.visibilityOf(processingScreen));
 				Log.info("Processing screen displayed");
-				wait.until(ExpectedConditions.visibilityOf(processInBackgroundButton));
-				processInBackgroundButton.click();
+				wait.until(ExpectedConditions.elementToBeClickable(processInBackgroundButton));
+				clickElement(processInBackgroundButton);
 				Log.info("Process in Background button clicked");
 			} else {
 				if (usrData.get("BLACKOUTCHECK").equalsIgnoreCase("Yes")
@@ -968,7 +1000,7 @@ public class FinoMoneyTransferPage extends BasePage {
 					remittanceTxnScreenDoneButton.click();
 					Log.info("Done button clicked");
 					if (!usrData.get("ASSERTION").equalsIgnoreCase("Processing")) {
-						refreshBalance();
+						commonUtils.refreshBalance();
 						verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
 					}
 				} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Failed!")) {
@@ -1001,7 +1033,7 @@ public class FinoMoneyTransferPage extends BasePage {
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "999998");
 						} else {
-							refreshBalance();
+							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterFailTxn(usrData, initialWalletBalance);
 						}
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
@@ -1016,7 +1048,7 @@ public class FinoMoneyTransferPage extends BasePage {
 								|| usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 							remittanceTxnScreenRetryButton.click();
 							Log.info("Retry button clicked");
-							waitForSpinner();
+							commonUtils.waitForSpinner();
 //							wait.until(ExpectedConditions.visibilityOf(OTPScreen));
 //							Log.info("OTP screen displayed");
 //							wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
@@ -1029,6 +1061,7 @@ public class FinoMoneyTransferPage extends BasePage {
 							wait.until(ExpectedConditions.visibilityOf(MPINScreen));
 							Log.info("MPIN screen displayed");
 							wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
+							Thread.sleep(1000);
 							enterMPIN.click();
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 							Log.info("MPIN entered");
@@ -1042,7 +1075,7 @@ public class FinoMoneyTransferPage extends BasePage {
 							assertionOnSuccessScreen(usrData);
 							remittanceTxnScreenDoneButton.click();
 							Log.info("Done button clicked");
-							refreshBalance();
+							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
 						}
 					}
@@ -1091,8 +1124,8 @@ public class FinoMoneyTransferPage extends BasePage {
 		double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 		double charges = Double.parseDouble(txnDetailsFromIni("GetCharges", ""));
 		double totalAmount = amount + charges;
-		double commission = commissionAndTDS("comm");
-		double tds = commissionAndTDS("tds");
+		double commission = commonUtils.commissionAndTDS("comm", 22.5, 2.6, 22.5);
+		double tds = commonUtils.commissionAndTDS("tds", 22.5, 2.6, 22.5);
 		double newWalletBal = 0.00;
 		if (usrData.get("VALIDATEBENECASE").equalsIgnoreCase("1")
 				|| usrData.get("VALIDATEBENECASE").equalsIgnoreCase("2")
@@ -1214,7 +1247,7 @@ public class FinoMoneyTransferPage extends BasePage {
 			newWalletBal = oldWalletBalance - beneAmt;
 		}
 		newWalletBalance = df.format(newWalletBal);
-		refreshBalance();
+		commonUtils.refreshBalance();
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
 	}
@@ -1374,7 +1407,7 @@ public class FinoMoneyTransferPage extends BasePage {
 		String queuingDisableFCMHeading = dbUtils.getBank(usrData.get("BENEIFSC")) + " IMPS service is working";
 		String queuingEnableFCMHeading = dbUtils.getBank(usrData.get("BENEIFSC")) + " IMPS service is down";
 
-		String balance = df.format(getInitialBalance("retailer"));
+		String balance = df.format(commonUtils.getInitialBalance("retailer"));
 		double beneAmount = Double.parseDouble(dbUtils.getBeneAmount(partner().toUpperCase()));
 		String beneAmt = df.format(beneAmount);
 		String successFCMContent = "Customer: " + getCustomerDetailsFromIni("ExistingNum") + " Money Transfer of ₹"
@@ -1400,19 +1433,19 @@ public class FinoMoneyTransferPage extends BasePage {
 
 		switch (usrData.get("ASSERTION")) {
 		case "Success FCM":
-			fcmMethod(successFCMHeading, successFCMContent);
+			fcmMethod1(successFCMHeading, successFCMContent);
 			break;
 		case "Failed FCM":
-			fcmMethod(failFCMHeading, failFCMContent);
+			fcmMethod1(failFCMHeading, failFCMContent);
 			break;
 		case "Queued FCM":
-			fcmMethod(successFCMHeading, queuedTxnFCMContent);
+			fcmMethod1(successFCMHeading, queuedTxnFCMContent);
 			break;
 		case "BeneSuccess FCM":
-			fcmMethod(beneSuccessFCMHeading, beneSuccessFCMContent);
+			fcmMethod1(beneSuccessFCMHeading, beneSuccessFCMContent);
 			break;
 		case "BeneFailed FCM":
-			fcmMethod(beneFailFCMHeading, beneFailFCMContent);
+			fcmMethod1(beneFailFCMHeading, beneFailFCMContent);
 			break;
 		case "EnableQueuing FCM":
 			if (fcmHeading1.getText().equals(queuingEnableFCMHeading)) {
@@ -1430,12 +1463,12 @@ public class FinoMoneyTransferPage extends BasePage {
 			}
 			break;
 		case "DisableQueuing FCM":
-			fcmMethod(queuingDisableFCMHeading, queuingDisableFCMContent);
+			fcmMethod1(queuingDisableFCMHeading, queuingDisableFCMContent);
 			break;
 		}
 	}
 
-	public void fcmMethod(String heading, String content) {
+	public void fcmMethod1(String heading, String content) {
 		Assert.assertEquals(fcmHeading1.getText(), heading);
 		Assert.assertEquals(fcmContent1.getText(), content);
 		Log.info(fcmHeading1.getText());
@@ -1456,98 +1489,9 @@ public class FinoMoneyTransferPage extends BasePage {
 		Log.info(fcmContent3.getText());
 	}
 
-	public double commissionAndTDS(String commOrTds) throws NumberFormatException, ClassNotFoundException {
-		int amnt = (int) Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
-		int a = 0, b = 0;
-		// 2250
-		if (amnt > 5000) {
-			a = amnt % 5000; // 250
-			b = amnt / 5000; // 4
-		} else {
-			a = amnt;
-			b = 0;
-		}
-
-		String amount = Integer.toString(a);
-		String comm = dbUtils.getRemittanceComm(amount, dbUtils.getChargeCategory(mobileNumFromIni()), partner());
-		double commission = 30.5 * b + Double.parseDouble(comm);
-		double tds = roundTo2Decimals(
-				commission * Double.parseDouble(dbUtils.getTDSPercentage(mobileNumFromIni())) / 10000);
-
-		if (commOrTds.equalsIgnoreCase("comm")) {
-			return commission;
-		} else
-			return tds;
-	}
-
-	// Show balances in console
-	public void displayInitialBalance(Map<String, String> usrData, String wallet) throws ClassNotFoundException {
-		String walletBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "retailer");
-		String walletBal = walletBalance.substring(0, walletBalance.length() - 4);
-		String cashoutBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "cashout");
-		String cashoutBal = cashoutBalance.substring(0, cashoutBalance.length() - 4);
-		String merchantBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "merchant");
-		String merchantBal = merchantBalance.substring(0, merchantBalance.length() - 4);
-
-		wait.until(ExpectedConditions.elementToBeClickable(retailerWalletBalance));
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Compare wallet balance shown in WebApp to DB
-		if (usrData.get("ASSERTION").equals("Initial Balance")) {
-			Assert.assertEquals(walletBal, initialWalletBal);
-			Assert.assertEquals(cashoutBal, initialCashoutBal);
-			Assert.assertEquals(merchantBal, initialMerchantBal);
-		}
-
-		if (wallet.equalsIgnoreCase("retailer")) {
-			Log.info("Retailer Balance: " + initialWalletBal);
-			getWalletBalanceFromIni(wallet.toLowerCase(), replaceSymbols(retailerWalletBalance.getText()));
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			Log.info("Cashout Balance: " + initialCashoutBal);
-			getWalletBalanceFromIni(wallet.toLowerCase(), replaceSymbols(cashoutWalletBalance.getText()));
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			Log.info("Merchant Balance: " + initialMerchantBal);
-			getWalletBalanceFromIni(wallet.toLowerCase(), replaceSymbols(merchantWalletBalance.getText()));
-		}
-	}
-
-	// Get wallet(s) balance
-	@SuppressWarnings("null")
-	public double getInitialBalance(String wallet) throws ClassNotFoundException {
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Converting balance from String to Double and returning the same
-		if (wallet.equalsIgnoreCase("retailer")) {
-			return Double.parseDouble(initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			return Double.parseDouble(initialCashoutBal);
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			return Double.parseDouble(initialMerchantBal);
-		}
-		return (Double) null;
-	}
-
-	// To refresh the wallet balance
-	public void refreshBalance() throws InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		clickInvisibleElement(refreshButton);
-		wait.until(ExpectedConditions.visibilityOf(syncButton));
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		Log.info("Balance refreshed successfully");
-	}
-
 	// Get Partner name
 	public String partner() {
 		return "FINO";
-	}
-
-	// Get mobile number from Ini file
-	public String mobileNumFromIni() {
-		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	// Get otp from Ini file
@@ -1555,35 +1499,4 @@ public class FinoMoneyTransferPage extends BasePage {
 		return partner().toUpperCase() + "OTP";
 	}
 
-	// Scroll down the page
-	public void pageScrollDown() {
-		JavascriptExecutor jse = (JavascriptExecutor) wdriver;
-		jse.executeScript("scroll(0, 250);");
-	}
-
-	// Wait for screen to complete loading
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
-	}
-
-	// Remove rupee symbol and comma from the string
-	public String replaceSymbols(String element) {
-		String editedElement = element.replaceAll("₹", "").replaceAll(",", "").trim();
-		return editedElement;
-	}
-
-	// click on WebElement forcefully
-	public void clickElement(WebElement element) {
-		try {
-			element.click();
-		} catch (Exception e) {
-			clickInvisibleElement(element);
-		}
-	}
-
-	public double roundTo2Decimals(double value) {
-		return Math.round(value * 100.0) / 100.0;
-	}
 }

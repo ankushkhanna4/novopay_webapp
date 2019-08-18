@@ -53,11 +53,9 @@ public class FlowMapper {
 	@Test(dataProvider = "getData")
 	public void flowMapperTest(HashMap<String, String> usrData) throws Throwable {
 		this.usrData = usrData;
-		System.out.println("Executing flow: " + usrData.get("TCID"));
-
-		System.out.println("Partner is " + usrData.get("PARTNER"));
-		if (!usrData.get("PARTNER").equalsIgnoreCase("-")) {
-			dbUtils.modifyContract(usrData.get("PARTNER"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
+		System.out.println("Executing --> " + usrData.get("TCID"));
+		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
+			dbUtils.modifyContract(usrData.get("CONTRACT"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
 
 		for (String flowTestID : flows) {
@@ -172,11 +170,12 @@ public class FlowMapper {
 			failureReason = errMsg;
 			failureReason = stepNo + ": " + testCaseID + ": " + result.getThrowable() + "";
 		}
-		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("PARTNER"), usrData.get("DESCRIPTION"),
+		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("CONTRACT"), usrData.get("DESCRIPTION"),
 				javaUtils.getExecutionResultStatus(result.getStatus()), failureReason, testStartTime, testEndTime };
 		javaUtils.writeExecutionStatusToExcel(execeutionDtls);
 		
-		if (!usrData.get("PARTNER").equalsIgnoreCase("-")) {
+		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
+			System.out.println("Inserting all contracts");
 			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
 	}
