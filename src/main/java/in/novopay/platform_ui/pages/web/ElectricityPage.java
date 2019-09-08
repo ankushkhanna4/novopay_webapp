@@ -7,26 +7,22 @@ import java.text.ParseException;
 import java.util.Map;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 import in.novopay.platform_ui.utils.MongoDBUtils;
 
 public class ElectricityPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 	MongoDBUtils mongoDbUtils = new MongoDBUtils();
 	DecimalFormat df = new DecimalFormat("#.00");
-
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
-	WebDriverWait waitWelcome = new WebDriverWait(wdriver, 3);
 
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
@@ -36,12 +32,6 @@ public class ElectricityPage extends BasePage {
 
 	@FindBy(xpath = "//span[contains(text(),'Bill Payment')]")
 	WebElement billPayments;
-
-	@FindBy(xpath = "//i[contains(@class,'np np-refresh')]")
-	WebElement refreshButton;
-
-	@FindBy(xpath = "//i[contains(@class,'np np-sync')]")
-	WebElement syncButton;
 
 	@FindBy(xpath = "//span[contains(text(),'wallet balance')]")
 	WebElement retailerWallet;
@@ -54,12 +44,6 @@ public class ElectricityPage extends BasePage {
 
 	@FindBy(xpath = "//span[contains(text(),'cashout balance')]/parent::p/following-sibling::p/span")
 	WebElement cashoutWalletBalance;
-
-	@FindBy(xpath = "//span[contains(text(),'merchant balance')]")
-	WebElement merchantWallet;
-
-	@FindBy(xpath = "//span[contains(text(),'merchant balance')]/parent::p/following-sibling::p/span")
-	WebElement merchantWalletBalance;
 
 	@FindBy(xpath = "//h1[contains(text(),'Billers')]")
 	WebElement pageTitle;
@@ -76,9 +60,9 @@ public class ElectricityPage extends BasePage {
 	@FindBy(xpath = "//label[contains(text(),'Payer Name')]/parent::div/div/input")
 	WebElement disabledPayerName;
 
-	@FindBy(xpath = "//div[contains(text(),'Pay New Bill')]/parent::div/parent::div")
+	@FindBy(xpath = "//div[contains(text(),'Pay New Bill')]")
 	WebElement payNewBillButton;
-	// *[@class='biller-cards']
+
 	@FindBy(className = "biller-cards")
 	WebElement billerCards;
 
@@ -151,9 +135,6 @@ public class ElectricityPage extends BasePage {
 	@FindBy(xpath = "//pin-modal/div//button[contains(text(),'Submit')]")
 	WebElement mpinSubmitButton;
 
-	@FindBy(xpath = "//h4[contains(text(),'Processing...')]")
-	WebElement processingScreen;
-
 	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]/div/div/div/h4[contains(text(),'!')]")
 	WebElement elecTxnScreen;
 
@@ -214,24 +195,6 @@ public class ElectricityPage extends BasePage {
 	@FindBy(xpath = "//li[1][contains(@class,'notifications')]/span[2]")
 	WebElement fcmContent1;
 
-	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]")
-	WebElement chooseWalletScreen;
-
-	@FindBy(xpath = "//*[@for='agent-wallet']")
-	WebElement mainWalletRadioButton;
-
-	@FindBy(xpath = "//*[@for='cashout-wallet']")
-	WebElement cashoutWalletRadioButton;
-
-	@FindBy(xpath = "//h5[contains(text(),'Main Wallet')]/following-sibling::p[contains(text(),' ₹')]")
-	WebElement mainWalletScreenBalance;
-
-	@FindBy(xpath = "//h5[contains(text(),'Cashout Wallet')]/following-sibling::p[contains(text(),' ₹')]")
-	WebElement cashoutWalletScreenBalance;
-
-	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
-	WebElement chooseWalletProceedButton;
-
 	// Load all objects
 	public ElectricityPage(WebDriver wdriver) {
 		super(wdriver);
@@ -243,23 +206,24 @@ public class ElectricityPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
-			displayInitialBalance(usrData, "retailer"); // display wallet balances in console
-			double initialWalletBalance = getInitialBalance("retailer"); // store wallet balance as double datatype
+			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
+			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
+
+			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
+			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store cashout wallet balance
 
 			// Update retailer wallet balance to 0 for scenario where amount > wallet
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 				dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "0");
 			}
 
-			menu.click();
-			refreshBalance(); // refresh wallet balances
-//			menu.click();
-//			menu.click();
-//			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+			clickElement(menu);
+			commonUtils.refreshBalance(); // refresh wallet balances
 			scrollElementDown(scrollBar, billPayments);
 			Log.info("Bill Payments clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
-			menu.click();
+			waitUntilElementIsClickableAndClickTheElement(pageTitle);
+			System.out.println(pageTitle.getText() + " page displayed");
+			clickElement(menu);
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Clear")) {
 				clickElement(clearButton);
@@ -268,64 +232,47 @@ public class ElectricityPage extends BasePage {
 			if (usrData.get("ASSERTION").contains("FCM")) {
 				assertionOnFCM(usrData);
 			} else {
+				// Click on electricity icon
+				waitUntilElementIsClickableAndClickTheElement(electricityIcon);
+				Log.info("Electricity icon clicked");
+				
+				commonUtils.waitForSpinner();
+				
 				// Click on payer mobile number field
-				wait.until(ExpectedConditions.elementToBeClickable(payerMobNum));
-				clickElement(payerMobNum);
+				waitUntilElementIsClickableAndClickTheElement(payerMobNum);
 				payerMobNum.clear();
 				payerMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("PAYERMOBILENUMBER")));
 				Log.info("Payer mobile number " + payerMobNum.getText() + " entered");
 
-				if (usrData.get("PAYERNAME").equalsIgnoreCase("NewName")) {
-					// Click on payer name number field
-					wait.until(ExpectedConditions.elementToBeClickable(payerName));
-					clickElement(payerName);
-					payerName.clear();
-					payerName.sendKeys(getCustomerDetailsFromIni("NewName"));
-					Log.info("Payer name entered");
-				}
-
-				// Click on electricity icon
-				wait.until(ExpectedConditions.elementToBeClickable(electricityIcon));
-				clickElement(electricityIcon);
-				Log.info("Electricity icon clicked");
-
-				waitForSpinner();
-			}
-
-			if (usrData.get("PAYERMOBILENUMBER").equalsIgnoreCase("ExistingNum")) {
-				wait.until(ExpectedConditions.elementToBeClickable(billerCards));
-				Assert.assertTrue(disabledPayerName.getAttribute("class").contains("pointer-none"));
-				Log.info("Payer name is " + getCustomerDetailsFromIni("ExistingName"));
+				commonUtils.waitForSpinner();
 			}
 
 			if (usrData.get("BILLTYPE").equalsIgnoreCase("Existing")) {
-				wait.until(ExpectedConditions.elementToBeClickable(billerCards));
-				clickElement(billerCards);
+				waitUntilElementIsClickableAndClickTheElement(billerCards);
 				Log.info("Biller Card is clicked");
 
 				if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
-					wait.until(ExpectedConditions.elementToBeClickable(idLabel1));
+					waitUntilElementIsVisible(idLabel1);
 					Assert.assertTrue(idLabel1.getText().contains("Account ID"));
 					Log.info("Account Id verified");
 				} else if (usrData.get("BILLERNAME").equalsIgnoreCase("MSEDC Limited")) {
-					wait.until(ExpectedConditions.elementToBeClickable(idLabel1));
+					waitUntilElementIsVisible(idLabel1);
 					Assert.assertTrue(idLabel1.getText().contains("Consumer Number"));
 					Log.info("Consumer Number verified");
-					wait.until(ExpectedConditions.elementToBeClickable(idLabel2));
+					waitUntilElementIsVisible(idLabel2);
 					Assert.assertTrue(idLabel2.getText().contains("Billing Unit"));
 					Log.info("Billing Unit verified");
-					wait.until(ExpectedConditions.elementToBeClickable(idLabel3));
+					waitUntilElementIsVisible(idLabel3);
 					Assert.assertTrue(idLabel3.getText().contains("Processing Cycle"));
 					Log.info("Processing cycle verified");
 				}
 			} else if (usrData.get("BILLTYPE").equalsIgnoreCase("New")) {
 				// Click on pay new bill button
-				wait.until(ExpectedConditions.elementToBeClickable(payNewBillButton));
-				clickElement(payNewBillButton);
+				waitUntilElementIsClickableAndClickTheElement(payNewBillButton);
 				Log.info("Pay New Bill button clicked");
+				Thread.sleep(1000);
 
-				wait.until(ExpectedConditions.elementToBeClickable(billerList));
-				billerList.click();
+				waitUntilElementIsClickableAndClickTheElement(billerList);
 				Log.info("Biller drop down clicked");
 				String ifscState = "//li[contains(text(),'" + usrData.get("BILLERNAME") + "')]";
 				WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
@@ -333,21 +280,17 @@ public class ElectricityPage extends BasePage {
 				Log.info(usrData.get("BILLERNAME") + " selected");
 
 				if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
-					wait.until(ExpectedConditions.elementToBeClickable(id1));
-					clickElement(id1);
+					waitUntilElementIsClickableAndClickTheElement(id1);
 					id1.sendKeys(usrData.get("ACCOUNTID"));
 					Log.info("Account Id entered");
 				} else if (usrData.get("BILLERNAME").equalsIgnoreCase("MSEDC Limited")) {
-					wait.until(ExpectedConditions.elementToBeClickable(id1));
-					clickElement(id1);
+					waitUntilElementIsClickableAndClickTheElement(id1);
 					id1.sendKeys(usrData.get("ACCOUNTID"));
 					Log.info("Account Id entered");
-					wait.until(ExpectedConditions.elementToBeClickable(id2));
-					clickElement(id2);
+					waitUntilElementIsClickableAndClickTheElement(id2);
 					id2.sendKeys(usrData.get("BILLINGUNIT"));
 					Log.info("Billing Unit entered");
-					wait.until(ExpectedConditions.elementToBeClickable(id3));
-					clickElement(id3);
+					waitUntilElementIsClickableAndClickTheElement(id3);
 					id3.sendKeys(usrData.get("PROSCYCLE"));
 					Log.info("Processing cycle entered");
 				}
@@ -357,17 +300,16 @@ public class ElectricityPage extends BasePage {
 
 			if (usrData.get("FETCHBUTTON").equalsIgnoreCase("YES")) {
 				// Click on Proceed button
-				wait.until(ExpectedConditions.elementToBeClickable(proceedButton));
-				clickElement(proceedButton);
+				waitUntilElementIsClickableAndClickTheElement(proceedButton);
 
-				waitForSpinner();
+				commonUtils.waitForSpinner();
 
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Bill not fetched")) {
-					wait.until(ExpectedConditions.visibilityOf(toasterMsg));
+					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Bill was not fetched");
 					Log.info(toasterMsg.getText());
 				} else {
-					wait.until(ExpectedConditions.elementToBeClickable(fetchedBillerName));
+					waitUntilElementIsVisible(fetchedBillerName);
 					Assert.assertEquals(fetchedBillerName.getText(), usrData.get("BILLERNAME"));
 					Log.info("Biller name is " + usrData.get("BILLERNAME"));
 
@@ -417,19 +359,17 @@ public class ElectricityPage extends BasePage {
 			if (usrData.get("PAYBUTTON").equalsIgnoreCase("Yes")) {
 				
 				// Click on Proceed to pay button
-				wait.until(ExpectedConditions.visibilityOf(proceedToPayButton));
-				clickElement(proceedToPayButton);
+				waitUntilElementIsClickableAndClickTheElement(proceedToPayButton);
 				
 				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
 					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 				} else {
-					chooseWalletScreen(usrData);
+					commonUtils.chooseWalletScreen(usrData);
 				}
 
-				wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+				waitUntilElementIsVisible(MPINScreen);
 				Log.info("MPIN screen displayed");
-				wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
-				enterMPIN.click();
+				waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 				if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 					enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 				} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
@@ -442,15 +382,14 @@ public class ElectricityPage extends BasePage {
 						+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName
 						+ "')]";
 				WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-				wait.until(ExpectedConditions.elementToBeClickable(mpinScreenButton));
-				mpinScreenButton.click();
+				waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
 				Log.info(mpinButtonName + " button clicked");
 				if (mpinButtonName.equalsIgnoreCase("Cancel")) {
 					Log.info("Cancel button clicked");
 				} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 
-					wait.until(ExpectedConditions.visibilityOf(elecTxnScreen));
+					waitUntilElementIsVisible(elecTxnScreen);
 					Log.info("Txn screen displayed");
 
 					// Update retailer wallet balance to 1000000 for scenario where amount > wallet
@@ -471,15 +410,14 @@ public class ElectricityPage extends BasePage {
 						}
 						doneButton.click();
 						Log.info("Done button clicked");
-						refreshBalance();
+						commonUtils.refreshBalance();
 						verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
 					} else if (elecTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 							assertionOnFailedScreen(usrData);
-							wait.until(ExpectedConditions.elementToBeClickable(exitButton));
-							exitButton.click();
+							waitUntilElementIsClickableAndClickTheElement(exitButton);
 							Log.info("Exit button clicked");
-							refreshBalance();
+							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterFailTxn(usrData, initialWalletBalance);
 						} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 							assertionOnFailedScreen(usrData);
@@ -488,21 +426,19 @@ public class ElectricityPage extends BasePage {
 								Log.info("Exit button clicked");
 							} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 								retryButton.click();
-								wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+								waitUntilElementIsVisible(MPINScreen);
 								Log.info("MPIN screen displayed");
-								wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
-								enterMPIN.click();
+								waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 								enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 								Log.info("MPIN entered");
-								wait.until(ExpectedConditions.elementToBeClickable(submitMPIN));
-								submitMPIN.click();
+								waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 								Log.info("Submit button clicked");
-								wait.until(ExpectedConditions.visibilityOf(elecTxnScreen));
+								waitUntilElementIsVisible(elecTxnScreen);
 								Log.info("Txn screen displayed");
 								assertionOnSuccessScreen(usrData);
 								doneButton.click();
 								Log.info("Done button clicked");
-								refreshBalance();
+								commonUtils.refreshBalance();
 								verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
 							}
 						}
@@ -517,102 +453,6 @@ public class ElectricityPage extends BasePage {
 			e.printStackTrace();
 			Log.info("Test Case Failed");
 			Assert.fail();
-		}
-	}
-
-	// Show balances in console
-	public void displayInitialBalance(Map<String, String> usrData, String wallet) throws ClassNotFoundException {
-		String walletBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "retailer");
-		String walletBal = walletBalance.substring(0, walletBalance.length() - 4);
-		String cashoutBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "cashout");
-		String cashoutBal = cashoutBalance.substring(0, cashoutBalance.length() - 4);
-		String merchantBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "merchant");
-		String merchantBal = merchantBalance.substring(0, merchantBalance.length() - 4);
-
-		wait.until(ExpectedConditions.elementToBeClickable(retailerWalletBalance));
-
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Compare wallet balance shown in WebApp to DB
-		if (usrData.get("ASSERTION").equals("Initial Balance")) {
-			Assert.assertEquals(walletBal, initialWalletBal);
-			Assert.assertEquals(cashoutBal, initialCashoutBal);
-			Assert.assertEquals(merchantBal, initialMerchantBal);
-		}
-
-		if (wallet.equalsIgnoreCase("retailer")) {
-			Log.info("Retailer Balance: " + initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			Log.info("Cashout Balance: " + initialCashoutBal);
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			Log.info("Merchant Balance: " + initialMerchantBal);
-		}
-	}
-
-	// Get wallet(s) balance
-	@SuppressWarnings("null")
-	public double getInitialBalance(String wallet) throws ClassNotFoundException {
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Converting balance from String to Double and returning the same
-		if (wallet.equalsIgnoreCase("retailer")) {
-			return Double.parseDouble(initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			return Double.parseDouble(initialCashoutBal);
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			return Double.parseDouble(initialMerchantBal);
-		}
-		return (Double) null;
-	}
-
-	// To refresh the wallet balance
-	public void refreshBalance() throws InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		clickInvisibleElement(refreshButton);
-		wait.until(ExpectedConditions.elementToBeClickable(syncButton));
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		Log.info("Balance refreshed successfully");
-	}
-
-	// Scroll down the page
-	public void pageScrollDown() {
-		JavascriptExecutor jse = (JavascriptExecutor) wdriver;
-		jse.executeScript("scroll(0, 250);");
-	}
-
-	// Wait for screen to complete loading
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
-	}
-
-	// Get Partner name
-	public String partner() {
-		return "RBL";
-	}
-
-	// Get mobile number from Ini file
-	public String mobileNumFromIni() {
-		return getLoginMobileFromIni("RetailerMobNum");
-	}
-
-	// Remove rupee symbol and comma from the string
-	public String replaceSymbols(String element) {
-		String editedElement = element.replaceAll("₹", "").replaceAll(",", "").trim();
-		return editedElement;
-	}
-
-	// click on WebElement forcefully
-	public void clickElement(WebElement element) {
-		try {
-			element.click();
-		} catch (Exception e) {
-			clickInvisibleElement(element);
 		}
 	}
 
@@ -739,23 +579,4 @@ public class ElectricityPage extends BasePage {
 		Log.info(fcmContent1.getText());
 	}
 
-	// Confirm screen
-	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOf(chooseWalletScreen));
-		Log.info("Choose a Wallet screen displayed");
-//			Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
-//					getWalletBalanceFromIni("GetRetailer", ""));
-		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
-		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
-				getWalletBalanceFromIni("GetCashout", ""));
-		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
-		mainWalletRadioButton.click();
-		Log.info("Main wallet radio button clicked");
-//			cashoutWalletRadioButton.click();
-//			Log.info("Cashout wallet radio button clicked");
-		wait.until(ExpectedConditions.visibilityOf(chooseWalletProceedButton));
-		chooseWalletProceedButton.click();
-//			Thread.sleep(2000);
-		Log.info("Proceed button clicked");
-	}
 }

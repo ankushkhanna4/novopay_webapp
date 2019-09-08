@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -27,10 +28,11 @@ public class RBLMoneyTransferPage extends BasePage {
 	CommonUtils commonUtils = new CommonUtils(wdriver);
 	DecimalFormat df = new DecimalFormat("#.00");
 
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
-
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
+	
+	@FindBy(xpath = "//*[@class='slimScrollBar']")
+	WebElement scrollBar;
 
 	@FindBy(xpath = "//button[contains(text(),'I Will Check Later')]")
 	WebElement banner;
@@ -175,27 +177,6 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	@FindBy(xpath = "//h4[contains(text(),'Applicable charges')]/parent::div/following-sibling::div[2]/button")
 	WebElement applicableChargesOkButton;
-
-	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]")
-	WebElement chooseWalletScreen;
-
-	@FindBy(xpath = "//*[@for='agent-wallet']")
-	WebElement mainWalletRadioButton;
-
-	@FindBy(xpath = "//*[@for='cashout-wallet']")
-	WebElement cashoutWalletRadioButton;
-
-	@FindBy(xpath = "//h5[contains(text(),'Main Wallet')]/following-sibling::p[contains(text(),' ₹')]")
-	WebElement mainWalletScreenBalance;
-
-	@FindBy(xpath = "//h5[contains(text(),'Cashout Wallet')]/following-sibling::p[contains(text(),' ₹')]")
-	WebElement cashoutWalletScreenBalance;
-
-	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
-	WebElement chooseWalletProceedButton;
-
-	@FindBy(xpath = "//*[@for='agent-wallet']//small")
-	WebElement chooseWalletErrorMsg;
 
 	@FindBy(xpath = "//*[contains(text(),'Confirm the details')]")
 	WebElement confirmScreen;
@@ -375,21 +356,16 @@ public class RBLMoneyTransferPage extends BasePage {
 		try {
 			getPartner(partner());
 
-			// Click OK on Welcome pop-up (whenever displayed)
-//			if (usrData.get("WELCOMEPOPUP").equalsIgnoreCase("YES")) {
-//				welcomePopup();
-//			}
-
-			Thread.sleep(2000);
+			String moneyTransferXpath = "//a[@href='/newportal/"
+					+ partner().toLowerCase() + "-transfer']/span[contains(text(),'Money Transfer')]";
 
 			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
 				clickElement(menu);
-				WebElement moneyTransfer = wdriver.findElement(By.xpath("//a[@href='/newportal/"
-						+ partner().toLowerCase() + "-transfer']/span[contains(text(),'Money Transfer')]"));
-				wait.until(ExpectedConditions.elementToBeClickable(moneyTransfer));
-				clickInvisibleElement(moneyTransfer);
+				WebElement moneyTransfer = wdriver.findElement(By.xpath(moneyTransferXpath));
+				scrollElementDown(scrollBar, moneyTransfer);
 				Log.info("Money Transfer option clicked");
-				wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
+				waitUntilElementIsVisible(pageTitle);
+				System.out.println(pageTitle.getText() + " page displayed");
 				clickElement(menu);
 			}
 
@@ -405,11 +381,11 @@ public class RBLMoneyTransferPage extends BasePage {
 			}
 
 			// display wallet balances in console
-			commonUtils.displayInitialBalance(usrData, "retailer");
-			commonUtils.displayInitialBalance(usrData, "cashout");
+			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
+			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
-			double initialMainBalance = commonUtils.getInitialBalance("retailer"); // store wallet balance as double
-			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store wallet balance as double
+			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
+			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store cashout wallet balance
 
 			if (usrData.get("ASSERTION").contains("FCM")) {
 				assertionOnFCM(usrData);
@@ -420,46 +396,39 @@ public class RBLMoneyTransferPage extends BasePage {
 			// Provide beneficiary details based on user data
 			if (usrData.get("BENE").equalsIgnoreCase("New")) { // when beneficiary is new
 				Thread.sleep(2000);
-				wait.until(ExpectedConditions.elementToBeClickable(beneList));
-				clickElement(beneList);
+				waitUntilElementIsClickableAndClickTheElement(beneList);
 				Log.info("Clicked on bene list drop down");
 				beneList.sendKeys("add new beneficiary");
 				try {
-					wait.until(ExpectedConditions.elementToBeClickable(addNewBene));
+					waitUntilElementIsClickableAndClickTheElement(addNewBene);
 				} catch (Exception e) {
 					customerDetails(usrData);
 					Thread.sleep(2000);
-					wait.until(ExpectedConditions.elementToBeClickable(beneList));
-					clickElement(beneList);
+					waitUntilElementIsClickableAndClickTheElement(beneList);
 					Log.info("Clicked on bene list drop down");
 					beneList.sendKeys("add new beneficiary");
-					wait.until(ExpectedConditions.elementToBeClickable(addNewBene));
+					waitUntilElementIsClickableAndClickTheElement(addNewBene);
 				}
-				addNewBene.click();
 				Log.info("'Add New Beneficiary' selected");
-				wait.until(ExpectedConditions.elementToBeClickable(beneName));
-				beneName.click();
+				waitUntilElementIsClickableAndClickTheElement(beneName);
 				beneName.sendKeys(getBeneNameFromIni(usrData.get("BENENAME")));
 				Log.info("Bene name '" + usrData.get("BENENAME") + "' entered");
-				wait.until(ExpectedConditions.elementToBeClickable(beneMobNum));
-				beneMobNum.click();
+				waitUntilElementIsClickableAndClickTheElement(beneMobNum);
 				beneMobNum.sendKeys(getBeneNumberFromIni(usrData.get("BENENUMBER")));
 				Log.info("Bene mobile number '" + getBeneNumberFromIni("GetNum") + "' entered");
-				wait.until(ExpectedConditions.elementToBeClickable(beneACNum));
-				beneACNum.click();
+				waitUntilElementIsClickableAndClickTheElement(beneACNum);
 				beneACNum.sendKeys(getAccountNumberFromIni(usrData.get("BENEACNUM")));
 				Log.info("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 				if (usrData.get("BENEIFSCTYPE").equalsIgnoreCase("Manual")) {
-					wait.until(ExpectedConditions.elementToBeClickable(ifscCode));
-					ifscCode.click();
+					waitUntilElementIsClickableAndClickTheElement(ifscCode);
 					ifscCode.sendKeys(usrData.get("BENEIFSC"));
 					Log.info("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 				} else if (usrData.get("BENEIFSCTYPE").equalsIgnoreCase("Search Screen")) {
-					wait.until(ExpectedConditions.elementToBeClickable(ifscSearchIcon));
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
 					ifscSearchIcon.click();
 					Log.info("IFSC search icon clicked");
-					wait.until(ExpectedConditions.visibilityOf(ifscSearchScreen));
-					wait.until(ExpectedConditions.visibilityOf(ifscSearchBankList));
+					waitUntilElementIsVisible(ifscSearchScreen);
+					waitUntilElementIsVisible(ifscSearchBankList);
 					ifscSearchBankList.click();
 					Log.info("IFSC bank drop down clicked");
 					String ifscBank = "//li[contains(text(),'"
@@ -483,27 +452,24 @@ public class RBLMoneyTransferPage extends BasePage {
 					ifscSearchButton.click();
 					Log.info("Search button clicked");
 					commonUtils.waitForSpinner();
-					wait.until(ExpectedConditions.visibilityOf(ifscSearchBack));
+					waitUntilElementIsVisible(ifscSearchBack);
 					String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
 							+ usrData.get("BENEIFSC") + "')]/parent::li";
 					WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-					wait.until(ExpectedConditions.elementToBeClickable(ifscSearchCode));
-					ifscSearchCode.click();
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
 					Log.info("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 					ifscSearchOK.click();
 					Log.info("OK button clicked");
 				} else if (usrData.get("BENEIFSCTYPE").equalsIgnoreCase("Drop Down")) {
-					wait.until(ExpectedConditions.elementToBeClickable(ifscCode));
-					ifscCode.click();
+					waitUntilElementIsClickableAndClickTheElement(ifscCode);
 					String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
 							+ usrData.get("BENEIFSC") + "')]/parent::li";
 					WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-					wait.until(ExpectedConditions.elementToBeClickable(ifscSearchCode));
-					ifscSearchCode.click();
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
 					Log.info("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 				}
 				getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("BENEIFSC"), "bank"));
-				wait.until(ExpectedConditions.visibilityOf(validateIFSC)); // wait for Branch name to be displayed
+				waitUntilElementIsVisible(validateIFSC); // wait for Branch name to be displayed
 				Log.info(validateIFSC.getText());
 
 				// Validate beneficiary before registration
@@ -514,8 +480,7 @@ public class RBLMoneyTransferPage extends BasePage {
 
 			else if (usrData.get("BENE").equalsIgnoreCase("Existing")) { // when beneficiary is existing
 				Thread.sleep(2000);
-				wait.until(ExpectedConditions.elementToBeClickable(beneList));
-				clickElement(beneList);
+				waitUntilElementIsClickableAndClickTheElement(beneList);
 				Log.info("Clicked on bene list drop down");
 				beneList.sendKeys(usrData.get("BENENAME"));
 				Thread.sleep(1000);
@@ -525,54 +490,50 @@ public class RBLMoneyTransferPage extends BasePage {
 				String beneXpath = "//span[contains(text(),'" + beneName
 						+ "')]/following-sibling::span[contains(text(),'" + beneACNum + "') and contains(text(),'"
 						+ dbUtils.getBank(beneIFSC) + "')]/parent::li";
-				try {
-					wait.until(ExpectedConditions.elementToBeClickable(wdriver.findElement(By.xpath(beneXpath))));
-				} catch (Exception e) {
-					customerDetails(usrData);
-					Thread.sleep(2000);
-					wait.until(ExpectedConditions.elementToBeClickable(beneList));
-					clickElement(beneList);
-					Log.info("Clicked on bene list drop down");
-					beneList.sendKeys(usrData.get("BENENAME"));
-					Thread.sleep(1000);
-					String beneName1 = usrData.get("BENENAME");
-					String beneIFSC1 = usrData.get("BENEIFSC");
-					String beneACNum1 = getAccountNumberFromIni("GetNum");
-					String beneXpath1 = "//span[contains(text(),'" + beneName1
-							+ "')]/following-sibling::span[contains(text(),'" + beneACNum1 + "') and contains(text(),'"
-							+ dbUtils.getBank(beneIFSC1) + "')]/parent::li";
-					wait.until(ExpectedConditions.elementToBeClickable(wdriver.findElement(By.xpath(beneXpath1))));
-				}
+//				try {
+//					wait.until(ExpectedConditions.elementToBeClickable(wdriver.findElement(By.xpath(beneXpath))));
+//				} catch (Exception e) {
+//					customerDetails(usrData);
+//					Thread.sleep(2000);
+//					waitUntilElementIsClickableAndClickTheElement(beneList);
+//					Log.info("Clicked on bene list drop down");
+//					beneList.sendKeys(usrData.get("BENENAME"));
+//					Thread.sleep(1000);
+//					String beneName1 = usrData.get("BENENAME");
+//					String beneIFSC1 = usrData.get("BENEIFSC");
+//					String beneACNum1 = getAccountNumberFromIni("GetNum");
+//					String beneXpath1 = "//span[contains(text(),'" + beneName1
+//							+ "')]/following-sibling::span[contains(text(),'" + beneACNum1 + "') and contains(text(),'"
+//							+ dbUtils.getBank(beneIFSC1) + "')]/parent::li";
+//					wait.until(ExpectedConditions.elementToBeClickable(wdriver.findElement(By.xpath(beneXpath1))));
+//				}
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Validate Icon")) {
 					String beneValIconXpath = "//span[contains(text(),'" + beneName
 							+ "')]/following-sibling::span[contains(text(),'" + beneACNum + "') and contains(text(),'"
 							+ dbUtils.getBank(beneIFSC) + "')]/parent::li//i";
 					WebElement beneValIcon = wdriver.findElement(By.xpath(beneValIconXpath));
-					wait.until(ExpectedConditions.elementToBeClickable(beneValIcon));
+					waitUntilElementIsVisible(beneValIcon);
 					Log.info("Validate icon visible");
 				}
-				wdriver.findElement(By.xpath(beneXpath)).click();
+				waitUntilElementIsClickableAndClickTheElement(wdriver.findElement(By.xpath(beneXpath)));
 				Log.info(beneName + " beneficiary selected");
 			}
 
 			// Click on Add Bene button and provide necessary details
 			if (usrData.get("ADDBENE").equalsIgnoreCase("Indirectly")) {
-				wait.until(ExpectedConditions.elementToBeClickable(addBeneButton));
-				clickElement(addBeneButton);
+				waitUntilElementIsClickableAndClickTheElement(addBeneButton);
 				Log.info("Add Bene button clicked");
 				if (!usrData.get("ASSERTION").equalsIgnoreCase("Bene Limit")) {
 					commonUtils.waitForSpinner();
-					wait.until(ExpectedConditions.visibilityOf(OTPScreen));
+					waitUntilElementIsVisible(OTPScreen);
 					Log.info("OTP screen displayed");
-					wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
-					enterOTP.click();
+					waitUntilElementIsClickableAndClickTheElement(enterOTP);
 					if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 						enterOTP.sendKeys("111111");
 					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-						wait.until(ExpectedConditions.elementToBeClickable(resendOTP));
-						resendOTP.click();
+						waitUntilElementIsClickableAndClickTheElement(resendOTP);
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					}
 					Log.info("OTP entered");
@@ -581,42 +542,38 @@ public class RBLMoneyTransferPage extends BasePage {
 							+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'"
 							+ buttonName + "')]";
 					WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
-					wait.until(ExpectedConditions.elementToBeClickable(otpScreenButton));
-					otpScreenButton.click();
+					waitUntilElementIsClickableAndClickTheElement(otpScreenButton);
 					Log.info(buttonName + " button clicked");
 					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
 						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-							// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
+							// waitUntilElementIsVisible(toasterMsg));
 							// Log.info(toasterMsg.getText());
 						} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
-							wait.until(ExpectedConditions.visibilityOf(addBeneFailedScreen));
+							waitUntilElementIsVisible(addBeneFailedScreen);
 							Log.info(addBeneFailedMessage.getText());
 							String otpFailedScreenButtonName = usrData.get("OTPFAILEDSCREENBUTTON");
 							String otpFailedScreenButtonXpath = "//div[contains(@class,'add-bene-retry-modal')]//button[contains(text(),'"
 									+ otpFailedScreenButtonName + "')]";
 							WebElement otpFailedScreenButton = wdriver
 									.findElement(By.xpath(otpFailedScreenButtonXpath));
-							wait.until(ExpectedConditions.elementToBeClickable(otpFailedScreenButton));
-							otpFailedScreenButton.click();
+							waitUntilElementIsClickableAndClickTheElement(otpFailedScreenButton);
 							Log.info(otpFailedScreenButtonName + " button clicked");
 							if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Retry")) {
 								commonUtils.waitForSpinner();
-								wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
-								enterOTP.click();
+								waitUntilElementIsClickableAndClickTheElement(enterOTP);
 								enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 								Log.info("OTP entered");
-								wait.until(ExpectedConditions.elementToBeClickable(confirmOTP));
-								confirmOTP.click();
+								waitUntilElementIsClickableAndClickTheElement(confirmOTP);
 								Log.info("Confirm button clicked");
 								commonUtils.waitForSpinner();
-								// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
+								// waitUntilElementIsVisible(toasterMsg));
 								// Log.info(toasterMsg.getText());
 							}
 						}
 					}
 				} else {
-					wait.until(ExpectedConditions.visibilityOf(toasterMsg));
+					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "You have reached the maximum beneficiary count for 10. "
 							+ "Please delete any existing beneficiary to add a new one");
 					Log.info(toasterMsg.getText());
@@ -651,38 +608,34 @@ public class RBLMoneyTransferPage extends BasePage {
 					Log.info("NEFT mode auto-selected");
 				}
 
-				wait.until(ExpectedConditions.elementToBeClickable(amount));
-				clickElement(amount);
+				waitUntilElementIsClickableAndClickTheElement(amount);
 				Thread.sleep(1000);
 				amount.sendKeys(usrData.get("AMOUNT"));
 				Log.info("amount entered");
 
-				wait.until(ExpectedConditions.elementToBeClickable(moneyTransferSubmitButton));
 				Thread.sleep(2000);
-				moneyTransferSubmitButton.click();
+				waitUntilElementIsClickableAndClickTheElement(moneyTransferSubmitButton);
 				Log.info("Submit button clicked");
 
 				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
 					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 				} else {
-					chooseWalletScreen(usrData);
+					commonUtils.chooseWalletScreen(usrData);
 				}
 				confirmScreen(usrData);
 
 				// Provide OTP if beneficiary is to be added during money transfer
 				if (usrData.get("ADDBENE").equalsIgnoreCase("Directly")) {
 					commonUtils.waitForSpinner();
-					wait.until(ExpectedConditions.visibilityOf(OTPScreen));
+					waitUntilElementIsVisible(OTPScreen);
 					Log.info("OTP screen displayed");
-					wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
-					enterOTP.click();
+					waitUntilElementIsClickableAndClickTheElement(enterOTP);
 					if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 						enterOTP.sendKeys("111111");
 					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-						wait.until(ExpectedConditions.elementToBeClickable(resendOTP));
-						resendOTP.click();
+						waitUntilElementIsClickableAndClickTheElement(resendOTP);
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					}
 					Log.info("OTP entered");
@@ -691,26 +644,23 @@ public class RBLMoneyTransferPage extends BasePage {
 							+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'"
 							+ buttonName + "')]";
 					WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
-					wait.until(ExpectedConditions.elementToBeClickable(otpScreenButton));
-					otpScreenButton.click();
+					waitUntilElementIsClickableAndClickTheElement(otpScreenButton);
 					Log.info(buttonName + " button clicked");
 					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
-						moneyTransfer(usrData, initialMainBalance);
+						moneyTransfer(usrData, initialWalletBalance);
 //						moneyTransfer(usrData, initialCashoutBalance);
 					}
 				} else if (usrData.get("ADDBENE").equalsIgnoreCase("Indirectly")
 						|| usrData.get("ADDBENE").equalsIgnoreCase("No")) {
-					moneyTransfer(usrData, initialMainBalance);
+					moneyTransfer(usrData, initialWalletBalance);
 //					moneyTransfer(usrData, initialCashoutBalance);
 				}
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
-				wait.until(ExpectedConditions.elementToBeClickable(moneyTransferClearButton));
-				moneyTransferClearButton.click();
+				waitUntilElementIsClickableAndClickTheElement(moneyTransferClearButton);
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("No")) {
 				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
-					wait.until(ExpectedConditions.elementToBeClickable(amount));
-					clickElement(amount);
+					waitUntilElementIsClickableAndClickTheElement(amount);
 					Thread.sleep(1000);
 					amount.sendKeys(usrData.get("AMOUNT"));
 					Log.info("amount entered");
@@ -718,28 +668,27 @@ public class RBLMoneyTransferPage extends BasePage {
 
 				// Field level validation in Amount field
 //				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-//					wait.until(ExpectedConditions.visibilityOf(chooseWalletErrorMsg));
+//					waitUntilElementIsVisible(chooseWalletErrorMsg));
 //					Assert.assertEquals(chooseWalletErrorMsg.getText(), " Balance is low! ");
 //					Log.info(amountErrorMsg.getText());
 //					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 //				}
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Limit")
 						|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
-					wait.until(ExpectedConditions.visibilityOf(amountErrorMsg));
+					waitUntilElementIsVisible(amountErrorMsg);
 					Assert.assertEquals(amountErrorMsg.getText().substring(0, 43),
 							"Amount entered exceeds your available limit");
 					Log.info(amountErrorMsg.getText());
 				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
-					wait.until(ExpectedConditions.visibilityOf(amountErrorMsg));
+					waitUntilElementIsVisible(amountErrorMsg);
 					Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹10.00");
 					Log.info(amountErrorMsg.getText());
 				}
 
 				// Verify applicable charges
 				if (usrData.get("CHARGES").equalsIgnoreCase("YES")) {
-					wait.until(ExpectedConditions.elementToBeClickable(applicableChargesButton));
-					applicableChargesButton.click();
-					wait.until(ExpectedConditions.visibilityOf(applicableChargesScreen));
+					waitUntilElementIsClickableAndClickTheElement(applicableChargesButton);
+					waitUntilElementIsVisible(applicableChargesScreen);
 					assertionOnApplicableCharges(usrData);
 					applicableChargesOkButton.click();
 					Log.info("Charges verified");
@@ -757,8 +706,7 @@ public class RBLMoneyTransferPage extends BasePage {
 	public void customerDetails(Map<String, String> usrData)
 			throws InterruptedException, NumberFormatException, ClassNotFoundException {
 		// Click on customer Mobile Number field
-		wait.until(ExpectedConditions.elementToBeClickable(custMobNum));
-		clickElement(custMobNum);
+		waitUntilElementIsClickableAndClickTheElement(custMobNum);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
 		Log.info("Customer mobile number " + custMobNum.getText() + " entered");
@@ -769,15 +717,12 @@ public class RBLMoneyTransferPage extends BasePage {
 			commonUtils.waitForSpinner();
 			Thread.sleep(1000);
 			limitCheck(usrData); // check limit remaining
-			wait.until(ExpectedConditions.elementToBeClickable(custName));
-			clickElement(custName);
+			waitUntilElementIsClickableAndClickTheElement(custName);
 			Log.info("Customer name entered");
 			custName.sendKeys(getCustomerDetailsFromIni("NewName"));
-			wait.until(ExpectedConditions.elementToBeClickable(dob));
-			clickElement(dob);
-			Thread.sleep(1000);
-			Log.info("Date of birth entered");
+			custName.sendKeys(Keys.TAB);
 			dob.sendKeys(usrData.get("DOB"));
+			Log.info("Date of birth entered");
 			if (usrData.get("GENDER").equalsIgnoreCase("MALE")) {
 				clickElement(genderMale);
 			} else if (usrData.get("GENDER").equalsIgnoreCase("FEMALE")) {
@@ -795,16 +740,15 @@ public class RBLMoneyTransferPage extends BasePage {
 	// Method to validate beneficiary based on user data
 	public void validateBene(Map<String, String> usrData, double initialWalletBalance)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(validateBeneButton));
+		waitUntilElementIsClickableAndClickTheElement(validateBeneButton);
 		Log.info("validating beneficiary");
-		validateBeneButton.click();
 		if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
 			Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 		} else {
-			chooseWalletScreen(usrData);
+			commonUtils.chooseWalletScreen(usrData);
 		}
 		commonUtils.waitForSpinner();
-		wait.until(ExpectedConditions.visibilityOf(beneValidationScreen));
+		waitUntilElementIsVisible(beneValidationScreen);
 		Log.info(beneValidationMessage.getText());
 		assertionOnBeneValidationScreen(usrData, initialWalletBalance);
 		try {
@@ -817,14 +761,12 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	// Method to delete beneficiary based on user data
 	public void deleteBene(Map<String, String> usrData, String OTP) {
-		wait.until(ExpectedConditions.elementToBeClickable(deleteBeneButton));
-		clickElement(deleteBeneButton);
+		waitUntilElementIsClickableAndClickTheElement(deleteBeneButton);
 		Log.info("Del Bene button clicked");
-		wait.until(ExpectedConditions.visibilityOf(deleteBeneScreen));
+		waitUntilElementIsVisible(deleteBeneScreen);
 		Log.info("Delete Bene screen displayed");
 		if (usrData.get("DELETEBENETYPE").equalsIgnoreCase("HARD")) {
-			wait.until(ExpectedConditions.elementToBeClickable(deleteBeneCheckbox));
-			deleteBeneCheckbox.click();
+			waitUntilElementIsClickableAndClickTheElement(deleteBeneCheckbox);
 			Log.info("Hard Deleting Bene");
 		} else {
 			Log.info("Soft Deleting Bene");
@@ -832,17 +774,15 @@ public class RBLMoneyTransferPage extends BasePage {
 		deleteConfirmButton.click();
 		Log.info("Confirm button clicked");
 		commonUtils.waitForSpinner();
-		wait.until(ExpectedConditions.visibilityOf(deleteBeneOTPScreen));
+		waitUntilElementIsVisible(deleteBeneOTPScreen);
 		Log.info("OTP screen displayed");
-		wait.until(ExpectedConditions.elementToBeClickable(deleteBeneEnterOTP));
-		deleteBeneEnterOTP.click();
+		waitUntilElementIsClickableAndClickTheElement(deleteBeneEnterOTP);
 		if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 			deleteBeneEnterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 		} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 			deleteBeneEnterOTP.sendKeys("111111");
 		} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-			wait.until(ExpectedConditions.elementToBeClickable(deleteBeneResendOTP));
-			deleteBeneResendOTP.click();
+			waitUntilElementIsClickableAndClickTheElement(deleteBeneResendOTP);
 			deleteBeneEnterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 		}
 		Log.info("OTP entered");
@@ -850,67 +790,43 @@ public class RBLMoneyTransferPage extends BasePage {
 		String otpScreenButtonXpath = "//h5[contains(text(),'Enter Bene. Deletion OTP')]/parent::div/"
 				+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'" + buttonName + "')]";
 		WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
-		wait.until(ExpectedConditions.elementToBeClickable(otpScreenButton));
-		otpScreenButton.click();
+		waitUntilElementIsClickableAndClickTheElement(otpScreenButton);
 		Log.info(buttonName + " button clicked");
 		commonUtils.waitForSpinner();
 		if (buttonName.equalsIgnoreCase("Confirm")) {
 			if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-				// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
+				// waitUntilElementIsVisible(toasterMsg));
 				// Log.info(toasterMsg.getText());
 			} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
-				wait.until(ExpectedConditions.visibilityOf(deleteBeneFailedScreen));
+				waitUntilElementIsVisible(deleteBeneFailedScreen);
 				Log.info(deleteBeneFailedMessage.getText());
 				String otpFailedScreenButtonName = usrData.get("OTPFAILEDSCREENBUTTON");
 				String otpFailedScreenButtonXpath = "//div[contains(@class,'delete-bene-retry-modal')]//button[contains(text(),'"
 						+ otpFailedScreenButtonName + "')]";
 				WebElement otpFailedScreenButton = wdriver.findElement(By.xpath(otpFailedScreenButtonXpath));
-				wait.until(ExpectedConditions.elementToBeClickable(otpFailedScreenButton));
-				otpFailedScreenButton.click();
+				waitUntilElementIsClickableAndClickTheElement(otpFailedScreenButton);
 				Log.info(otpFailedScreenButtonName + " button clicked");
 				if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Retry")) {
 					commonUtils.waitForSpinner();
-					wait.until(ExpectedConditions.elementToBeClickable(deleteBeneEnterOTP));
-					deleteBeneEnterOTP.click();
+					waitUntilElementIsClickableAndClickTheElement(deleteBeneEnterOTP);
 					deleteBeneEnterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					Log.info("OTP entered");
-					wait.until(ExpectedConditions.elementToBeClickable(deleteBeneConfirmOTP));
-					deleteBeneConfirmOTP.click();
+					waitUntilElementIsClickableAndClickTheElement(deleteBeneConfirmOTP);
 					Log.info("Confirm button clicked");
 					commonUtils.waitForSpinner();
-					// wait.until(ExpectedConditions.visibilityOf(toasterMsg));
+					// waitUntilElementIsVisible(toasterMsg));
 					// Log.info(toasterMsg.getText());
 				}
 			}
 		}
 	}
 
-	// Choose Wallet screen
-	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOf(chooseWalletScreen));
-		Log.info("Choose a Wallet screen displayed");
-//		Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
-//				getWalletBalanceFromIni("GetRetailer", ""));
-		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
-		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
-				getWalletBalanceFromIni("GetCashout", ""));
-		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
-		mainWalletRadioButton.click();
-		Log.info("Main wallet radio button clicked");
-//		cashoutWalletRadioButton.click();
-//		Log.info("Cashout wallet radio button clicked");
-		wait.until(ExpectedConditions.visibilityOf(chooseWalletProceedButton));
-		chooseWalletProceedButton.click();
-//		Thread.sleep(2000);
-		Log.info("Proceed button clicked");
-	}
-
 	// Confirm screen
 	public void confirmScreen(Map<String, String> usrData) throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOf(confirmScreen));
+		waitUntilElementIsVisible(confirmScreen);
 		Log.info("Confirm the details screen displayed");
 		Assert.assertEquals(replaceSymbols(confirmScreenAmount.getText()), usrData.get("AMOUNT") + ".00");
-		wait.until(ExpectedConditions.visibilityOf(confirmScreenSubmit));
+		waitUntilElementIsVisible(confirmScreenSubmit);
 		confirmScreenSubmit.click();
 		Thread.sleep(2000);
 		Log.info("Submit button clicked");
@@ -919,10 +835,9 @@ public class RBLMoneyTransferPage extends BasePage {
 	// Provide MPIN during money transfer and do assertion on txn screen
 	public void moneyTransfer(Map<String, String> usrData, double initialWalletBalance)
 			throws ClassNotFoundException, InterruptedException, ParseException {
-		wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+		waitUntilElementIsVisible(MPINScreen);
 		Log.info("MPIN screen displayed");
-		wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
-		enterMPIN.click();
+		waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 		if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 			enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 		} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
@@ -945,17 +860,15 @@ public class RBLMoneyTransferPage extends BasePage {
 		String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
 				+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName + "')]";
 		WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-		wait.until(ExpectedConditions.elementToBeClickable(mpinScreenButton));
-		mpinScreenButton.click();
+		waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
 		Log.info(mpinButtonName + " button clicked");
 		if (mpinButtonName.equalsIgnoreCase("Cancel")) {
 			commonUtils.waitForSpinner();
 		} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
-				wait.until(ExpectedConditions.visibilityOf(processingScreen));
+				waitUntilElementIsVisible(processingScreen);
 				Log.info("Processing screen displayed");
-				wait.until(ExpectedConditions.elementToBeClickable(processInBackgroundButton));
-				clickElement(processInBackgroundButton);
+				waitUntilElementIsClickableAndClickTheElement(processInBackgroundButton);
 				Log.info("Process in Background button clicked");
 			} else {
 				if (usrData.get("BLACKOUTCHECK").equalsIgnoreCase("Yes")
@@ -964,14 +877,14 @@ public class RBLMoneyTransferPage extends BasePage {
 										|| usrData.get("MPIN").equalsIgnoreCase("Invalid")))) {
 					Log.info("Processing screen NOT displayed");
 				} else {
-					wait.until(ExpectedConditions.visibilityOf(processingScreen));
+					waitUntilElementIsVisible(processingScreen);
 					Log.info("Processing screen displayed");
 				}
 				if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 						&& usrData.get("ADDBENE").equalsIgnoreCase("Directly")) {
-					wait.until(ExpectedConditions.visibilityOf(addBeneFailedScreen));
+					waitUntilElementIsVisible(addBeneFailedScreen);
 				} else {
-					wait.until(ExpectedConditions.visibilityOf(remittanceTxnScreen));
+					waitUntilElementIsVisible(remittanceTxnScreen);
 				}
 				Log.info("Txn screen displayed");
 
@@ -997,16 +910,13 @@ public class RBLMoneyTransferPage extends BasePage {
 						limitCheck(usrData); // check limit remaining
 					}
 					if (usrData.get("TXNSCREENBUTTON").equals("Save")) {
-						wait.until(ExpectedConditions.elementToBeClickable(remittanceTxnScreenSaveButton));
-						remittanceTxnScreenSaveButton.click();
+						waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenSaveButton);
 						Log.info("Save button clicked");
 					} else if (usrData.get("TXNSCREENBUTTON").equals("Print")) {
-						wait.until(ExpectedConditions.elementToBeClickable(remittanceTxnScreenPrintButton));
-						remittanceTxnScreenPrintButton.click();
+						waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenPrintButton);
 						Log.info("Print button clicked");
 					}
-					wait.until(ExpectedConditions.elementToBeClickable(remittanceTxnScreenDoneButton));
-					remittanceTxnScreenDoneButton.click();
+					waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenDoneButton);
 					Log.info("Done button clicked");
 					if (!usrData.get("ASSERTION").equalsIgnoreCase("Processing")) {
 						commonUtils.refreshBalance();
@@ -1019,25 +929,23 @@ public class RBLMoneyTransferPage extends BasePage {
 							limitCheck(usrData); // check limit remaining
 						}
 						if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-							wait.until(ExpectedConditions.elementToBeClickable(remittanceTxnScreenExitButton));
+							waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
 						} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 							remittanceTxnScreenRetryButton.click();
-							wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+							waitUntilElementIsVisible(MPINScreen);
 							Log.info("MPIN screen displayed");
-							wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
-							enterMPIN.click();
+							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 							Log.info("MPIN entered");
-							wait.until(ExpectedConditions.elementToBeClickable(submitMPIN));
-							submitMPIN.click();
+							waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 							Log.info("Submit button clicked");
-							wait.until(ExpectedConditions.visibilityOf(processingScreen));
+							waitUntilElementIsVisible(processingScreen);
 							Log.info("Processing screen displayed");
-							wait.until(ExpectedConditions.visibilityOf(remittanceTxnScreen));
+							waitUntilElementIsVisible(remittanceTxnScreen);
 							Log.info("Txn screen displayed");
 							assertionOnFailedScreen(usrData);
+							waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
 						}
-						remittanceTxnScreenExitButton.click();
 						Log.info("Exit button clicked");
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "999998");
@@ -1047,7 +955,7 @@ public class RBLMoneyTransferPage extends BasePage {
 						}
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 							|| usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-						wait.until(ExpectedConditions.elementToBeClickable(remittanceTxnScreenMessage));
+						waitUntilElementIsVisible(remittanceTxnScreenMessage);
 						Log.info(remittanceTxnScreenMessage.getText());
 						if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Exit")
 								|| usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
@@ -1058,28 +966,17 @@ public class RBLMoneyTransferPage extends BasePage {
 							remittanceTxnScreenRetryButton.click();
 							Log.info("Retry button clicked");
 							commonUtils.waitForSpinner();
-//							wait.until(ExpectedConditions.visibilityOf(OTPScreen));
-//							Log.info("OTP screen displayed");
-//							wait.until(ExpectedConditions.elementToBeClickable(enterOTP));
-//							enterOTP.click();
-//							enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
-//							Log.info("OTP entered");
-//							wait.until(ExpectedConditions.elementToBeClickable(confirmOTP));
-//							confirmOTP.click();
-//							Log.info("Confirm button clicked");
-							wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+							waitUntilElementIsVisible(MPINScreen);
 							Log.info("MPIN screen displayed");
-							wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
 							Thread.sleep(1000);
-							enterMPIN.click();
+							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 							Log.info("MPIN entered");
-							wait.until(ExpectedConditions.elementToBeClickable(submitMPIN));
-							submitMPIN.click();
+							waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 							Log.info("Submit button clicked");
-							wait.until(ExpectedConditions.visibilityOf(processingScreen));
+							waitUntilElementIsVisible(processingScreen);
 							Log.info("Processing screen displayed");
-							wait.until(ExpectedConditions.visibilityOf(remittanceTxnScreen));
+							waitUntilElementIsVisible(remittanceTxnScreen);
 							Log.info("Txn screen displayed");
 							assertionOnSuccessScreen(usrData);
 							remittanceTxnScreenDoneButton.click();
@@ -1089,10 +986,9 @@ public class RBLMoneyTransferPage extends BasePage {
 						}
 					}
 				} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Info!")) {
-					wait.until(ExpectedConditions.visibilityOf(blackout));
+					waitUntilElementIsVisible(blackout);
 					Log.info(blackout.getText());
-					wait.until(ExpectedConditions.elementToBeClickable(remittanceTxnScreenExitButton));
-					remittanceTxnScreenExitButton.click();
+					waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
 					Log.info("Exit button clicked");
 					dbUtils.updateBlackoutDuration("1");
 				}
@@ -1331,7 +1227,7 @@ public class RBLMoneyTransferPage extends BasePage {
 	// Check limit remaining
 	public void limitCheck(Map<String, String> usrData) throws NumberFormatException, ClassNotFoundException {
 		if (usrData.get("LIMITCHECK").equalsIgnoreCase("YES")) {
-			wait.until(ExpectedConditions.visibilityOf(limitRem));
+			waitUntilElementIsVisible(limitRem);
 			Assert.assertEquals(limitRemaining("", "actual"),
 					limitRemaining(getCustomerDetailsFromIni("ExistingNum"), "expected"));
 			Log.info(limitRem.getText());

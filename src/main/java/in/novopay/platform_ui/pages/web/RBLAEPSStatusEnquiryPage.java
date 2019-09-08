@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 import in.novopay.platform_ui.utils.ServerUtils;
@@ -21,24 +22,13 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 public class RBLAEPSStatusEnquiryPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 	ServerUtils srvUtils = new ServerUtils();
-
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
-	WebDriverWait waitWelcome = new WebDriverWait(wdriver, 3);
-
 	DecimalFormat df = new DecimalFormat("#.00");
-
-	@FindBy(xpath = "//h4[contains(text(),'Welcome')]")
-	WebElement welcomeMessage;
-
-	@FindBy(xpath = "//h4[contains(text(),'Welcome')]/parent::div/following-sibling::div[2]/button")
-	WebElement welcomeOKButton;
 
 	@FindBy(xpath = "//h1[contains(text(),'Status Enquiry')]")
 	WebElement pageTitle;
@@ -229,13 +219,11 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 				txnID = dbUtils.aepsRefNum();
 			}
 
-			// store wallet balance as double
-			double initialRetailerWalletBalance = getInitialBalance("retailer");
+			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
+			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
-			// call status enquiry report
-			if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222") || usrData.get("ASSERTION").contains("FCM")) {
-				welcomePopup();
-			}
+			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
+			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store cashout wallet balance
 
 			if (usrData.get("ASSERTION").contains("FCM")) {
 				assertionOnStatusEnquiryFCM(usrData);
@@ -244,22 +232,22 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 					statusEnquirySection(usrData);
 					Thread.sleep(1000);
 				}
-				wait.until(ExpectedConditions.elementToBeClickable(aepsStatusEnquiryPage));
-				menu.click();
-				menu.click();
+				waitUntilElementIsVisible(aepsStatusEnquiryPage);
+				System.out.println(pageTitle.getText() + " page displayed");
+				clickElement(menu);
+				clickElement(menu);
 				Log.info("Status enquiry of " + usrData.get("STATUS") + " Transaction");
 				Thread.sleep(1000);
 
-				wait.until(ExpectedConditions.visibilityOf(firstTxnInList));
+				waitUntilElementIsVisible(firstTxnInList);
 				if (usrData.get("ASSERTION").equalsIgnoreCase("11112222")) {
 					pageTxnId.click();
-					pageTxnId.clear();
 					pageTxnId.sendKeys("11112222");
 					Log.info("Txn ID entered");
 					pageSubmitButton.click();
 					Log.info("Submit button clicked");
-					waitForSpinner();
-					wait.until(ExpectedConditions.visibilityOf(firstTxnInList));
+					commonUtils.waitForSpinner();
+					waitUntilElementIsVisible(firstTxnInList);
 					Assert.assertEquals(noTxnAvailable.getText(),
 							"Transaction with RRN number 11112222 does not exist");
 					Log.info(noTxnAvailable.getText());
@@ -272,7 +260,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 				}
 				if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
 					initiateRefundBtn.click();
-					wait.until(ExpectedConditions.visibilityOf(initiateRefundScreen));
+					waitUntilElementIsVisible(initiateRefundScreen);
 					if (usrData.get("AADHAAR").equalsIgnoreCase("Valid")) {
 						aadhaarNum.click();
 						aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
@@ -280,13 +268,13 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 						Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
 						fingerprintScan.click();
 						Log.info("Scan fingerprint button clicked");
-						wait.until(ExpectedConditions.elementToBeClickable(fingerprintGreen));
+						waitUntilElementIsVisible(fingerprintGreen);
 						Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
-						wait.until(ExpectedConditions.visibilityOf(proceedBtn));
+						waitUntilElementIsVisible(proceedBtn);
 						proceedBtn.click();
-						wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+						waitUntilElementIsVisible(MPINScreen);
 						Log.info("MPIN screen displayed");
-						wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
+						waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 						if (usrData.get("MPIN").equalsIgnoreCase("Cancel")) {
 							mpinCancelButton.click();
 						} else {
@@ -299,18 +287,17 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 							Log.info(usrData.get("MPIN") + " entered");
 							mpinSubmitButton.click();
 							Log.info("MPIN button clicked");
-							wait.until(ExpectedConditions.visibilityOf(refundTxnScreen));
+							waitUntilElementIsVisible(refundTxnScreen);
 							Log.info("Txn screen displayed");
 							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 								if (!usrData.get("KEY").equalsIgnoreCase("fail")) {
 									assertionOnRefundSuccessScreen(usrData);
 									Log.info("Refund successful");
 									assertionOnRefundSMS(usrData);
-									wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-									aepsTxnScreenDoneButton.click();
+									waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 									Log.info("Done button clicked");
-									refreshBalance();
-									verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialRetailerWalletBalance);
+									commonUtils.refreshBalance();
+									verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialWalletBalance);
 								} else {
 									assertionOnRefundFailedScreen(usrData);
 									Log.info("Refund failed");
@@ -324,36 +311,34 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 							} else if (usrData.get("MPIN").equalsIgnoreCase("Retry")) {
 								assertionOnRefundFailedScreen(usrData);
 								seRetryBtn.click();
-								wait.until(ExpectedConditions.visibilityOf(initiateRefundScreen));
+								waitUntilElementIsVisible(initiateRefundScreen);
 								aadhaarNum.click();
 								aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
 								Log.info("Aadhaar Number entered");
 								Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
 								fingerprintScan.click();
 								Log.info("Scan fingerprint button clicked");
-								wait.until(ExpectedConditions.elementToBeClickable(fingerprintGreen));
+								waitUntilElementIsVisible(fingerprintGreen);
 								Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
-								wait.until(ExpectedConditions.visibilityOf(proceedBtn));
+								waitUntilElementIsVisible(proceedBtn);
 								proceedBtn.click();
-								wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+								waitUntilElementIsVisible(MPINScreen);
 								Log.info("MPIN screen displayed");
-								wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
-								enterMPIN.click();
+								waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 								enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 								Log.info(usrData.get("MPIN") + " entered");
 								mpinSubmitButton.click();
 								Log.info("MPIN button clicked");
-								wait.until(ExpectedConditions.visibilityOf(processingScreen));
+								waitUntilElementIsVisible(processingScreen);
 								Log.info("Processing screen displayed");
-								wait.until(ExpectedConditions.visibilityOf(refundTxnScreen));
+								waitUntilElementIsVisible(refundTxnScreen);
 								Log.info("Txn screen displayed");
 								assertionOnRefundSuccessScreen(usrData);
 								Log.info("Refund successful");
-								wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-								aepsTxnScreenDoneButton.click();
+								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 								Log.info("Done button clicked");
-								refreshBalance();
-								verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialRetailerWalletBalance);
+								commonUtils.refreshBalance();
+								verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialWalletBalance);
 							}
 						}
 					} else if (usrData.get("AADHAAR").equalsIgnoreCase("Exit")) {
@@ -371,22 +356,16 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 		}
 	}
 
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
-	}
-
 	public void statusEnquirySection(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
-		wait.until(ExpectedConditions.visibilityOf(product));
+		waitUntilElementIsVisible(product);
 		product.click();
 		Log.info("Status Enquiry drop down clicked");
 
-		wait.until(ExpectedConditions.visibilityOf(bankingProduct));
+		waitUntilElementIsVisible(bankingProduct);
 		bankingProduct.click();
 		Log.info("Banking selected");
-		wait.until(ExpectedConditions.visibilityOf(txnId));
+		waitUntilElementIsVisible(txnId);
 
 		if (usrData.get("STATUS").equalsIgnoreCase("Refund")
 				|| usrData.get("STATUS").equalsIgnoreCase("Ready For Refund")) {
@@ -404,10 +383,10 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 			txnId.sendKeys(usrData.get("TXNDETAILS"));
 		}
 
-		wait.until(ExpectedConditions.visibilityOf(statusEnquirySubmitButton));
+		waitUntilElementIsVisible(statusEnquirySubmitButton);
 		statusEnquirySubmitButton.click();
 		Log.info("Submit button clicked");
-		waitForSpinner();
+		commonUtils.waitForSpinner();
 	}
 
 	// SMS assertion
@@ -424,7 +403,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 
 	// FCM assertion
 	public void assertionOnStatusEnquiryFCM(Map<String, String> usrData) throws ClassNotFoundException {
-		String balance = df.format(getInitialBalance("retailer"));
+		String balance = df.format(commonUtils.getInitialBalance("retailer"));
 
 		String successSEFCMHeading = "Transaction Status enquiry:SUCCESS";
 		String failSEFCMHeading = "Transaction Status enquiry:FAIL";
@@ -598,75 +577,8 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
 	}
 
-	// Get wallet(s) balance
-	@SuppressWarnings("null")
-	public double getInitialBalance(String wallet) throws ClassNotFoundException {
-		wait.until(ExpectedConditions.elementToBeClickable(retailerWalletBalance));
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-
-		// Converting balance from String to Double and returning the same
-		if (wallet.equalsIgnoreCase("retailer")) {
-			return Double.parseDouble(initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			return Double.parseDouble(initialCashoutBal);
-		}
-		return (Double) null;
-	}
-
-	// To refresh the wallet balance
-	public void refreshBalance() throws InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		clickInvisibleElement(refreshButton);
-		wait.until(ExpectedConditions.elementToBeClickable(syncButton));
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		Log.info("Balance refreshed successfully");
-	}
-
-	// Remove rupee symbol and comma from the string
-	public String replaceSymbols(String element) {
-		String editedElement = element.replaceAll("₹", "").replaceAll(",", "").trim();
-		return editedElement;
-	}
-
 	// Get Partner name
 	public String partner() {
 		return "RBL";
 	}
-
-	// Get mobile number from Ini file
-	public String mobileNumFromIni() {
-		return getLoginMobileFromIni("RetailerMobNum");
-	}
-
-	// Click OK on Welcome pop-up (whenever displayed)
-	public void welcomePopup() {
-		try {
-			waitWelcome.until(ExpectedConditions.visibilityOf(welcomeMessage));
-			Log.info("Welcome pop-up displayed");
-			waitWelcome.until(ExpectedConditions.elementToBeClickable(welcomeOKButton));
-			clickElement(welcomeOKButton);
-			Log.info("OK. Got it! button clicked");
-			waitWelcome.until(
-					ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h4[contains(text(),'Welcome')]")));
-			Log.info("Welcome pop-up disappeared");
-		} catch (Exception e) {
-			Log.info("No welcome pop-up displayed");
-		}
-	}
-
-	// click on WebElement forcefully
-	public void clickElement(WebElement element) {
-		try {
-			element.click();
-		} catch (Exception e) {
-			clickInvisibleElement(element);
-		}
-	}
-
-	// Get otp from Ini file
-	public String otpFromIni() {
-		return "123456";
-	}
-
 }

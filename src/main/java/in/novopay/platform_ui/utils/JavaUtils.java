@@ -163,7 +163,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "mongoDbUserNameCms", "akhanna");
 				ini.put("Common", "mongoDbPasswordCms", "akhanna123");
 				ini.put("Common", "mongoDbUserNameBillpay", "nodebillpay");
-				ini.put("Common", "mongoDbPasswordBillpay", "aZv~B7C_DA");
+				ini.put("Common", "mongoDbPasswordBillpay", "Zv~B7C_DA");
 				ini.put("Common", "server.host.name", "pre-prod.novopay.in");
 				ini.put("Common", "server.host.ip", "192.168.150.2");
 				ini.put("Common", "server.host.port", "1024");

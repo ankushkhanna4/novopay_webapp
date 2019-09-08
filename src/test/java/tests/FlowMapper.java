@@ -98,13 +98,9 @@ public class FlowMapper {
 								HashMap<String, String> data = javaUtils.readExcelData(workbook, sheetname,
 										usrData.get(flowTestID));
 
-								Field mobileDriver = obj.getClass().getDeclaredField("mdriver");
 								Field webDriver = obj.getClass().getDeclaredField("wdriver");
-								mobileDriver.set(obj, mdriver);
 								webDriver.set(obj, wdriver);
-
 								method[i].invoke(obj, data);
-
 								wdriver = (WebDriver) webDriver.get(obj);
 							}
 

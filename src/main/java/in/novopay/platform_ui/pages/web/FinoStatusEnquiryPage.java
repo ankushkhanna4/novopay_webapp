@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 
@@ -20,23 +21,12 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 public class FinoStatusEnquiryPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
-
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
-	WebDriverWait waitWelcome = new WebDriverWait(wdriver, 3);
-
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 	DecimalFormat df = new DecimalFormat("#.00");
-
-	@FindBy(xpath = "//h4[contains(text(),'Welcome')]")
-	WebElement welcomeMessage;
-
-	@FindBy(xpath = "//h4[contains(text(),'Welcome')]/parent::div/following-sibling::div[2]/button")
-	WebElement welcomeOKButton;
 
 	@FindBy(xpath = "//*[@id='sidebar']/div/div[1]/div[3]/div[1]/p[2]/span")
 	WebElement walletBalance;
@@ -74,7 +64,7 @@ public class FinoStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//span[contains(text(),'Money Transfer - Status Enquiry')]")
 	WebElement reportPage;
 
-	@FindBy(xpath = "//table//tr[@class='table-row'][1]")
+	@FindBy(xpath = "//table//tr[contains(@class,'table-row')][1]")
 	WebElement firstTxnInList;
 
 	@FindBy(xpath = "//h4[contains(text(),'!')]")
@@ -181,69 +171,54 @@ public class FinoStatusEnquiryPage extends BasePage {
 	public void finoStatusEnquiry(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
-			// call status enquiry report
-			if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222") || usrData.get("ASSERTION").contains("FCM")) {
-				welcomePopup();
-			}
-
 			if (usrData.get("ASSERTION").contains("FCM")) {
-				menu.click();
-				menu.click();
+				clickElement(menu);
+				clickElement(menu);
 				assertionOnRefundFCM(usrData);
 			} else {
-				if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
-					updateTxnStatus();
-				}
 				if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
 					statusEnquirySection(usrData);
-					menu.click();
-					menu.click();
+					clickElement(menu);
+					clickElement(menu);
 					Thread.sleep(2000);
 				} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
-					menu.click();
-					menu.click();
+					clickElement(menu);
+					clickElement(menu);
 					Thread.sleep(2000);
-					menu.click();
-					wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+					clickElement(menu);
 					scrollElementDown(scrollBar, reports);
 					Log.info("Reports option clicked");
-					wait.until(ExpectedConditions.elementToBeClickable(reportsPage));
-					menu.click();
+					waitUntilElementIsVisible(reportsPage);
+					clickElement(menu);
 
 					if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
-						wait.until(ExpectedConditions.elementToBeClickable(pageCustMobNum));
-						pageCustMobNum.click();
-						pageCustMobNum.clear();
+						waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
 						pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
 						Log.info("Customer mobile number entered");
 					} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
-						wait.until(ExpectedConditions.elementToBeClickable(pageTxnId));
-						pageTxnId.click();
-						pageTxnId.clear();
+						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
 						pageTxnId.sendKeys(txnID);
 						Log.info("Txn ID entered");
 					} else {
-						wait.until(ExpectedConditions.elementToBeClickable(pageTxnId));
-						pageTxnId.click();
-						pageTxnId.clear();
+						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
 						pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
 					}
 
-					wait.until(ExpectedConditions.visibilityOf(pageSubmitButton));
+					waitUntilElementIsVisible(pageSubmitButton);
 					pageSubmitButton.click();
 					Log.info("Submit button clicked");
 					Thread.sleep(3000);
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 				}
 				if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
-					wait.until(ExpectedConditions.visibilityOf(toasterMsg));
+					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals("No Transaction available", toasterMsg.getText());
 				} else {
 					reportsData(usrData);
 					selectTxn();
 					Log.info("Status enquiry of " + usrData.get("STATUS") + " Transaction");
 					Thread.sleep(1000);
-					wait.until(ExpectedConditions.visibilityOf(seTxnTitle));
+					waitUntilElementIsVisible(seTxnTitle);
 					assertionOnTxnScreen(usrData);
 					if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
 						seDoneBtn.click();
@@ -255,73 +230,64 @@ public class FinoStatusEnquiryPage extends BasePage {
 					} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
 						closeRefundBtn.click();
 					} else if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
-						wait.until(ExpectedConditions.elementToBeClickable(failSeInitiateRefundBtn));
 						Thread.sleep(1000);
-						failSeInitiateRefundBtn.click();
+						waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
 						Thread.sleep(1000);
-						wait.until(ExpectedConditions.elementToBeClickable(confirmRefund));
-						confirmRefundOkBtn.click();
+						waitUntilElementIsClickableAndClickTheElement(confirmRefund);
 						Thread.sleep(1000);
-						wait.until(ExpectedConditions.visibilityOf(custOTPScreen));
+						waitUntilElementIsVisible(custOTPScreen);
 						custOTP.click();
 						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
 							Log.info("Refund OTP entered");
-							wait.until(ExpectedConditions.elementToBeClickable(otpConfirmBtn));
-							otpConfirmBtn.click();
-							waitForSpinner();
-							wait.until(ExpectedConditions.visibilityOf(seTxnTitle));
+							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+							commonUtils.waitForSpinner();
+							waitUntilElementIsVisible(seTxnTitle);
 							seDoneBtn.click();
-							waitForSpinner();
-							wait.until(ExpectedConditions.elementToBeClickable(pageTxnId));
+							commonUtils.waitForSpinner();
+							waitUntilElementIsVisible(pageTxnId);
 							Log.info("Refund successful");
 						} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 								|| usrData.get("OTP").equalsIgnoreCase("Retry")) {
 							custOTP.sendKeys("111111");
 							Log.info("Refund OTP entered");
-							wait.until(ExpectedConditions.elementToBeClickable(otpConfirmBtn));
-							otpConfirmBtn.click();
-							waitForSpinner();
-							wait.until(ExpectedConditions.visibilityOf(seTxnTitle));
+							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+							commonUtils.waitForSpinner();
+							waitUntilElementIsVisible(seTxnTitle);
 							Assert.assertEquals("OTP does not match", failSeTxnMsg.getText());
 							Log.info(failSeTxnMsg.getText());
 							if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
 								seRetryBtn.click();
-								waitForSpinner();
-								wait.until(ExpectedConditions.visibilityOf(custOTPScreen));
-								custOTP.click();
-								custOTP.clear();
+								commonUtils.waitForSpinner();
+								waitUntilElementIsVisible(custOTPScreen);
+								waitUntilElementIsClickableAndClickTheElement(custOTP);
 								custOTP.sendKeys(getAuthfromIni(otpFromIni()));
 								Log.info("Refund OTP entered");
-								wait.until(ExpectedConditions.elementToBeClickable(otpConfirmBtn));
-								otpConfirmBtn.click();
-								waitForSpinner();
-								wait.until(ExpectedConditions.visibilityOf(seTxnTitle));
+								waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+								commonUtils.waitForSpinner();
+								waitUntilElementIsVisible(seTxnTitle);
 								assertionOnTxnScreen(usrData);
-								seDoneBtn.click();
-								waitForSpinner();
-								wait.until(ExpectedConditions.elementToBeClickable(pageTxnId));
+								waitUntilElementIsClickableAndClickTheElement(seDoneBtn);
+								commonUtils.waitForSpinner();
+								waitUntilElementIsVisible(pageTxnId);
 								Log.info("Refund successful");
 							} else {
-								seExitBtn.click();
+								waitUntilElementIsClickableAndClickTheElement(seExitBtn);
 							}
 						} else if (usrData.get("OTP").equalsIgnoreCase("Cancel")) {
 							otpCancelBtn.click();
 						} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-							wait.until(ExpectedConditions.elementToBeClickable(otpResendBtn));
-							otpResendBtn.click();
-							wait.until(ExpectedConditions.visibilityOf(custOTPScreen));
-							custOTP.click();
-							custOTP.clear();
+							waitUntilElementIsClickableAndClickTheElement(otpResendBtn);
+							waitUntilElementIsVisible(custOTPScreen);
+							waitUntilElementIsClickableAndClickTheElement(custOTP);
 							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
 							Log.info("Refund OTP entered");
-							wait.until(ExpectedConditions.elementToBeClickable(otpConfirmBtn));
-							otpConfirmBtn.click();
-							waitForSpinner();
-							wait.until(ExpectedConditions.visibilityOf(seTxnTitle));
+							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+							commonUtils.waitForSpinner();
+							waitUntilElementIsVisible(seTxnTitle);
 							seDoneBtn.click();
-							waitForSpinner();
-							wait.until(ExpectedConditions.elementToBeClickable(pageTxnId));
+							commonUtils.waitForSpinner();
+							waitUntilElementIsVisible(pageTxnId);
 							Log.info("Refund successful");
 						}
 					}
@@ -335,34 +301,23 @@ public class FinoStatusEnquiryPage extends BasePage {
 		}
 	}
 
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
-	}
-
-	public void updateTxnStatus() throws ClassNotFoundException {
-		dbUtils.updateAxisTransactionStatus(txnID);
-		Log.info("Updated Fino txn for refund");
-	}
-
 	public void selectTxn() throws ClassNotFoundException {
-		wait.until(ExpectedConditions.visibilityOf(firstTxnInList));
+		waitUntilElementIsVisible(firstTxnInList);
 		firstTxnInList.click();
 		Log.info("Transaction selected");
-		waitForSpinner();
+		commonUtils.waitForSpinner();
 	}
 
 	public void statusEnquirySection(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
-		wait.until(ExpectedConditions.visibilityOf(product));
+		waitUntilElementIsVisible(product);
 		product.click();
 		Log.info("Status Enquiry drop down clicked");
 
-		wait.until(ExpectedConditions.visibilityOf(moneyTransferProduct));
+		waitUntilElementIsVisible(moneyTransferProduct);
 		moneyTransferProduct.click();
 		Log.info("Money Transfer selected");
-		wait.until(ExpectedConditions.visibilityOf(seCustMobNum));
+		waitUntilElementIsVisible(seCustMobNum);
 
 		if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
 			seCustMobNum.click();
@@ -380,11 +335,11 @@ public class FinoStatusEnquiryPage extends BasePage {
 			enterSetxnId.sendKeys(usrData.get("TXNDETAILS"));
 		}
 
-		wait.until(ExpectedConditions.visibilityOf(statusEnquirySubmitButton));
+		waitUntilElementIsVisible(statusEnquirySubmitButton);
 		statusEnquirySubmitButton.click();
 		Log.info("Submit button clicked");
-		waitForSpinner();
-		wait.until(ExpectedConditions.visibilityOf(reportPage));
+		commonUtils.waitForSpinner();
+		waitUntilElementIsVisible(reportPage);
 		Log.info("Report page displayed");
 	}
 
@@ -393,7 +348,7 @@ public class FinoStatusEnquiryPage extends BasePage {
 		for (int i = 0; i < 1; i++) {
 			for (int j = 0; j < 9; j++) {
 				String dataXpath = "//tbody/tr[" + (i + 1) + "]/td[" + (j + 1) + "]";
-				wait.until(ExpectedConditions.visibilityOf(wdriver.findElement(By.xpath(dataXpath))));
+				waitUntilElementIsVisible(wdriver.findElement(By.xpath(dataXpath)));
 				WebElement data = wdriver.findElement(By.xpath(dataXpath));
 				if (j == 3) {
 					dataFromUI[i][j] = replaceSymbols(data.getText());
@@ -534,45 +489,9 @@ public class FinoStatusEnquiryPage extends BasePage {
 		Log.info(fcmContent.getText());
 	}
 
-	// Click OK on Welcome pop-up (whenever displayed)
-	public void welcomePopup() {
-		try {
-			waitWelcome.until(ExpectedConditions.visibilityOf(welcomeMessage));
-			Log.info("Welcome pop-up displayed");
-			waitWelcome.until(ExpectedConditions.elementToBeClickable(welcomeOKButton));
-			clickElement(welcomeOKButton);
-			Log.info("OK. Got it! button clicked");
-			waitWelcome.until(
-					ExpectedConditions.invisibilityOfElementLocated(By.xpath("//h4[contains(text(),'Welcome')]")));
-			Log.info("Welcome pop-up disappeared");
-		} catch (Exception e) {
-			Log.info("No welcome pop-up displayed");
-		}
-	}
-
-	// click on WebElement forcefully
-	public void clickElement(WebElement element) {
-		try {
-			element.click();
-		} catch (Exception e) {
-			clickInvisibleElement(element);
-		}
-	}
-
-	// Remove rupee symbol and comma from the string
-	public String replaceSymbols(String element) {
-		String editedElement = element.replaceAll("₹", "").replaceAll(",", "").trim();
-		return editedElement;
-	}
-
 	// Get Partner name
 	public String partner() {
 		return "FINO";
-	}
-
-	// Get mobile number from Ini file
-	public String mobileNumFromIni() {
-		return getLoginMobileFromIni("RetailerMobNum");
 	}
 
 	// Get otp from Ini file

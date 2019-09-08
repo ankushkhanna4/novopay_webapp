@@ -71,14 +71,6 @@ public class BasePage extends JavaUtils {
 	}
 
 	/**
-	 * Wait until web element appears
-	 */
-	public void waitUntilElementVisible(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 45);
-		wait.until(ExpectedConditions.visibilityOf(element));
-	}
-
-	/**
 	 * Close the web browser
 	 */
 	public void closeBrowser() {
@@ -292,26 +284,93 @@ public class BasePage extends JavaUtils {
 	}
 
 	/**
-	 * Wait till the element load on web
+	 * Wait until web element is visible
 	 */
-	public void waitingForTheElementToVisible(WebElement element) {
+	public void waitUntilElementIsVisible(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		wait.until(ExpectedConditions.visibilityOf(element));
+	}
+
+	/**
+	 * Wait until web element is visible for Fino
+	 */
+	public void waitUntilElementIsVisibleForFino(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 90);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
+	
 	/**
-	 * Click on in visible web element for web
+	 * Wait until web element is invisible
+	 */
+	public void waitUntilElementIsInvisible(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		wait.until(ExpectedConditions.invisibilityOf(element));
+	}
+
+	/**
+	 * Wait until web element is visible
+	 */
+	public void waitUntilElementIsClickableAndClickTheElement(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		clickElement(element);
+	}
+
+	/**
+	 * Wait until web element is visible for Fino
+	 */
+	public void waitUntilElementIsClickableForFinoAndClickTheElement(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 90);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		clickElement(element);
+	}
+	
+	/**
+	 * Click on invisible web element for web
 	 */
 	public void clickInvisibleElement(WebElement webElement) {
 		JavascriptExecutor executor = (JavascriptExecutor) wdriver;
 		executor.executeScript("arguments[0].click();", webElement);
 	}
 
+	// click on invisible WebElement (or forcefully)
+	public void clickElement(WebElement element) {
+		try {
+			element.click();
+			Log.info("clicking element");
+		} catch (Exception e) {
+			clickInvisibleElement(element);
+		}
+	}
+
 	/**
-	 * Scroll till web element visible only for Web
+	 * Scroll to web element visible
 	 */
 	public void scrollToElement(WebElement webElement) {
 		JavascriptExecutor executor = (JavascriptExecutor) wdriver;
 		executor.executeScript("arguments[0].scrollIntoView(true);", webElement);
+	}
+
+	public void scrollElementDown(WebElement scrollbar, WebElement elementToClick) throws InterruptedException {
+//		Actions dragger = new Actions(wdriver);
+		int numberOfPixelsToDragTheScrollbarDown = 50;
+		while (true) {
+			try {
+				// this causes a gradual drag of the scroll bar downwards, 10 units at a time
+//				dragger.moveToElement(scrollbar).clickAndHold().moveByOffset(0, numberOfPixelsToDragTheScrollbarDown)
+//						.release().perform();
+				waitUntilElementIsClickableAndClickTheElement(elementToClick);
+				break;
+			} catch (Exception e1) {
+				numberOfPixelsToDragTheScrollbarDown = numberOfPixelsToDragTheScrollbarDown + 10;
+			}
+		}
+	}
+
+	// Scroll down the page
+	public void pageScrollDown() {
+		JavascriptExecutor jse = (JavascriptExecutor) wdriver;
+		jse.executeScript("scroll(0, 250);");
 	}
 
 	/**
@@ -331,36 +390,5 @@ public class BasePage extends JavaUtils {
 				System.out.println("Exception while taking screenshot " + e.getMessage());
 			}
 		}
-	}
-
-	public void scrollElementDown(WebElement scrollbar, WebElement elementToClick) throws InterruptedException {
-//		Actions dragger = new Actions(wdriver);
-		int numberOfPixelsToDragTheScrollbarDown = 50;
-		while (true) {
-			try {
-				// this causes a gradual drag of the scroll bar downwards, 10 units at a time
-//				dragger.moveToElement(scrollbar).clickAndHold().moveByOffset(0, numberOfPixelsToDragTheScrollbarDown)
-//						.release().perform();
-				elementToClick.click();
-				break;
-			} catch (Exception e1) {
-				numberOfPixelsToDragTheScrollbarDown = numberOfPixelsToDragTheScrollbarDown + 10;
-			}
-		}
-	}
-
-	// click on invisible WebElement (or forcefully)
-	public void clickElement(WebElement element) {
-		try {
-			element.click();
-		} catch (Exception e) {
-			clickInvisibleElement(element);
-		}
-	}
-
-	// Scroll down the page
-	public void pageScrollDown() {
-		JavascriptExecutor jse = (JavascriptExecutor) wdriver;
-		jse.executeScript("scroll(0, 250);");
 	}
 }

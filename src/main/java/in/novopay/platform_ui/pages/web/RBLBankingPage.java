@@ -12,30 +12,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 import in.novopay.platform_ui.utils.ServerUtils;
 
 public class RBLBankingPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 	ServerUtils srvUtils = new ServerUtils();
 	DecimalFormat df = new DecimalFormat("#.00");
 
-	WebDriverWait wait = new WebDriverWait(wdriver, 10);
-	WebDriverWait waitWelcome = new WebDriverWait(wdriver, 3);
-
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
-
-	@FindBy(xpath = "//i[contains(@class,'np np-refresh')]")
-	WebElement refreshButton;
-
-	@FindBy(xpath = "//i[contains(@class,'np np-sync')]")
-	WebElement syncButton;
 
 	@FindBy(xpath = "//span[contains(text(),'wallet balance')]")
 	WebElement retailerWallet;
@@ -308,15 +299,13 @@ public class RBLBankingPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
-			menu.click();
-			refreshBalance();
-			menu.click();
-			menu.click();
-//			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+			clickElement(menu);
+			commonUtils.refreshBalance();
 			scrollElementDown(scrollBar, banking);
 			Log.info("Banking option clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
-			menu.click();
+			waitUntilElementIsVisible(pageTitle);
+			System.out.println(pageTitle.getText() + " page displayed");
+			clickElement(menu);
 
 			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
 			batchFileConfig = readSectionFromIni(batchConfigSection);
@@ -335,15 +324,14 @@ public class RBLBankingPage extends BasePage {
 
 			// Refresh wallet balances whenever required
 			if (usrData.get("REFRESH").equalsIgnoreCase("YES")) {
-				refreshBalance(); // refresh wallet balances
+				commonUtils.refreshBalance(); // refresh wallet balances
 			}
 
-			// display wallet balances in console
-			displayInitialBalance(usrData, "cashout");
+			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
+			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
-			// store wallet balance as double
-			double initialRetailerWalletBalance = getInitialBalance("retailer");
-			double initialCashoutWalletBalance = getInitialBalance("cashout");
+			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
+			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store cashout wallet balance
 
 			if (usrData.get("ASSERTION").contains("FCM")) {
 				if (usrData.get("TXNTYPE").equalsIgnoreCase("Deposit")) {
@@ -355,11 +343,11 @@ public class RBLBankingPage extends BasePage {
 				}
 			} else {
 				if (usrData.get("TXNTYPE").equalsIgnoreCase("Deposit")) {
-					depositTxns(usrData, initialRetailerWalletBalance);
+					depositTxns(usrData, initialWalletBalance);
 				} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Withdrawal")) {
-					withdrawalTxns(usrData, initialCashoutWalletBalance);
+					withdrawalTxns(usrData, initialCashoutBalance);
 				} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Balance Enquiry")) {
-					balanceEnquiryTxns(usrData, initialCashoutWalletBalance);
+					balanceEnquiryTxns(usrData, initialCashoutBalance);
 				}
 			}
 
@@ -374,30 +362,28 @@ public class RBLBankingPage extends BasePage {
 	// Deposit transaction
 	public void depositTxns(Map<String, String> usrData, double walletBalance)
 			throws ClassNotFoundException, InterruptedException, ParseException {
-		wait.until(ExpectedConditions.elementToBeClickable(depositTab));
-		depositTab.click();
+		waitUntilElementIsClickableAndClickTheElement(depositTab);
 		Log.info("Deposit tab clicked");
-		wait.until(ExpectedConditions.elementToBeClickable(depositDropdown));
-		depositDropdown.click();
+		waitUntilElementIsClickableAndClickTheElement(depositDropdown);
 		Log.info("Dropdown clicked");
-		wait.until(ExpectedConditions.elementToBeClickable(dropdownSearch));
+		waitUntilElementIsClickableAndClickTheElement(dropdownSearch);
 		dropdownSearch.sendKeys(usrData.get("BANKNAME"));
 		Log.info(usrData.get("BANKNAME") + " entered");
 		dropdownSelect(usrData);
 		Log.info(usrData.get("BANKNAME") + " selected");
-		wait.until(ExpectedConditions.elementToBeClickable(depositMobNum));
+		waitUntilElementIsClickableAndClickTheElement(depositMobNum);
 		depositMobNum.sendKeys(getAEPSMobNum(usrData.get("MOBNUM")));
 		Log.info("Mobile number " + usrData.get("MOBNUM") + " entered");
 		depositAadhaarNum.click();
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank MN")) {
-			wait.until(ExpectedConditions.visibilityOf(depositMobNumError));
+			waitUntilElementIsVisible(depositMobNumError);
 			Assert.assertEquals(depositMobNumError.getText(), "Required Field");
 			Log.info(depositMobNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("MN < 10 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid MN")) {
-			wait.until(ExpectedConditions.visibilityOf(depositMobNumError));
+			waitUntilElementIsVisible(depositMobNumError);
 			Assert.assertEquals(depositMobNumError.getText(), "Invalid mobile number");
 			Log.info(depositMobNumError.getText());
 		}
@@ -408,15 +394,15 @@ public class RBLBankingPage extends BasePage {
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank Aadhaar")) {
-			wait.until(ExpectedConditions.visibilityOf(depositAadhaarNumError));
+			waitUntilElementIsVisible(depositAadhaarNumError);
 			Assert.assertEquals(depositAadhaarNumError.getText(), "Required Field");
 			Log.info(depositAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
-			wait.until(ExpectedConditions.visibilityOf(depositAadhaarNumError));
+			waitUntilElementIsVisible(depositAadhaarNumError);
 			Assert.assertEquals(depositAadhaarNumError.getText(), "Length should be 12 digits");
 			Log.info(depositAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
-			wait.until(ExpectedConditions.visibilityOf(depositAadhaarNumError));
+			waitUntilElementIsVisible(depositAadhaarNumError);
 			Assert.assertEquals(depositAadhaarNumError.getText(), "Enter Valid Aadhaar Number");
 			Log.info(depositAadhaarNumError.getText());
 		}
@@ -427,19 +413,19 @@ public class RBLBankingPage extends BasePage {
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
 			depositAadhaarNum.click();
-			wait.until(ExpectedConditions.visibilityOf(depositAmountError));
+			waitUntilElementIsVisible(depositAmountError);
 			Assert.assertEquals(depositAmountError.getText(), "Insufficient wallet balance");
 			Log.info(depositAmountError.getText());
 			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
 			depositAadhaarNum.click();
-			wait.until(ExpectedConditions.visibilityOf(depositAmountError));
+			waitUntilElementIsVisible(depositAmountError);
 			Assert.assertEquals(depositAmountError.getText(),
 					"Amount entered exceeds your transaction limit ₹ 10,000.00");
 			Log.info(depositAmountError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
 			depositAadhaarNum.click();
-			wait.until(ExpectedConditions.visibilityOf(depositAmountError));
+			waitUntilElementIsVisible(depositAmountError);
 			Assert.assertEquals(depositAmountError.getText(), "Minimum amount should be ₹ 10.00");
 			Log.info(depositAmountError.getText());
 		}
@@ -448,21 +434,20 @@ public class RBLBankingPage extends BasePage {
 			Assert.assertEquals("Click to scan fingerprint", depositFingerprintUnscanned.getText());
 			depositScanFingerprint.click();
 			Log.info("Scan fingerprint button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(depositScanSuccessScreen));
+			waitUntilElementIsVisible(depositScanSuccessScreen);
 			Assert.assertEquals("Fingerprints scanned successfully", depositFingerprintSuccess.getText());
 			Log.info(depositFingerprintSuccess.getText());
 			depositFingerprintScreenOkButton.click();
 			Log.info("Ok button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(depositFingerprintGreen));
+			waitUntilElementIsVisible(depositFingerprintGreen);
 			Assert.assertEquals("Fingerprint scanned successfully!", depositFingerprintGreen.getText());
 		}
 
 		if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
 			Thread.sleep(1000);
-			wait.until(ExpectedConditions.elementToBeClickable(depositSubmit));
-			depositSubmit.click();
+			waitUntilElementIsClickableAndClickTheElement(depositSubmit);
 			Log.info("Submit button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(mpinScreen));
+			waitUntilElementIsClickableAndClickTheElement(mpinScreen);
 			if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 				enterMpin.sendKeys(getAuthfromIni("MPIN"));
 			} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
@@ -475,20 +460,20 @@ public class RBLBankingPage extends BasePage {
 
 			if (usrData.get("MPIN").equalsIgnoreCase("Cancel")) {
 				cancelMpin.click();
-				wait.until(ExpectedConditions.elementToBeClickable(depositFingerprintGreen));
+				waitUntilElementIsVisible(depositFingerprintGreen);
 				Log.info("Cancel button clicked");
 			} else {
 				submitMpin.click();
 				Log.info("MPIN submitted");
-//				wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//				waitUntilElementIsVisible(processingScreen));
 //				Log.info("Processing screen displayed");
 
 				if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
-					wait.until(ExpectedConditions.visibilityOf(processInBackgroundButton));
+					waitUntilElementIsVisible(processInBackgroundButton);
 					processInBackgroundButton.click();
 					Log.info("Process in Background button clicked");
 				} else {
-					wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
+					waitUntilElementIsVisible(aepsTxnScreen);
 					Log.info("Txn screen displayed");
 
 					if (aepsTxnScreen.getText().equalsIgnoreCase("Success!")) {
@@ -498,45 +483,39 @@ public class RBLBankingPage extends BasePage {
 								assertionOnDepositSMS(usrData);
 							}
 							if (usrData.get("TXNSCREENBUTTON").equals("Save")) {
-								wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenSaveButton));
-								aepsTxnScreenSaveButton.click();
+								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenSaveButton);
 								Log.info("Save button clicked");
 							} else if (usrData.get("TXNSCREENBUTTON").equals("Print")) {
-								wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenPrintButton));
-								aepsTxnScreenPrintButton.click();
+								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenPrintButton);
 								Log.info("Print button clicked");
 							}
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-							aepsTxnScreenDoneButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 							Log.info("Done button clicked");
-							refreshBalance();
+							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterDepositSuccessTxn(usrData, walletBalance);
 						}
 					} else if (aepsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 						assertionOnDepositFailedScreen(usrData);
 						if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenExitButton));
-							aepsTxnScreenExitButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 							Log.info("Exit button clicked");
 						} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-							aepsTxnScreenDoneButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 							Log.info("Done button clicked");
 						} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenRetryButton));
-							aepsTxnScreenRetryButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenRetryButton);
 							Log.info("Retry button clicked");
-							wait.until(ExpectedConditions.elementToBeClickable(depositScanSuccessScreen));
+							waitUntilElementIsVisible(depositScanSuccessScreen);
 							Assert.assertEquals("Fingerprints scanned successfully",
 									depositFingerprintSuccess.getText());
 							Log.info(depositFingerprintSuccess.getText());
 							depositFingerprintScreenOkButton.click();
 							Log.info("Ok button clicked");
-							wait.until(ExpectedConditions.elementToBeClickable(depositFingerprintGreen));
+							waitUntilElementIsVisible(depositFingerprintGreen);
 							Assert.assertEquals("Fingerprint scanned successfully!", depositFingerprintGreen.getText());
 							depositSubmit.click();
 							Log.info("Submit button clicked");
-							wait.until(ExpectedConditions.elementToBeClickable(mpinScreen));
+							waitUntilElementIsClickableAndClickTheElement(mpinScreen);
 							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 								enterMpin.sendKeys(getAuthfromIni("MPIN"));
 							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
@@ -545,25 +524,23 @@ public class RBLBankingPage extends BasePage {
 							Log.info("MPIN entered");
 							submitMpin.click();
 							Log.info("MPIN submitted");
-//							wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//							waitUntilElementIsVisible(processingScreen));
 //							Log.info("Processing screen displayed");
-							wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
+							waitUntilElementIsVisible(aepsTxnScreen);
 							Log.info("Txn screen displayed");
 							assertionOnDepositFailedScreen(usrData);
 							if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-								wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-								aepsTxnScreenDoneButton.click();
+								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 								Log.info("Done button clicked");
 							} else {
-								wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenExitButton));
-								aepsTxnScreenExitButton.click();
+								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 								Log.info("Exit button clicked");
 							}
 						}
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 						} else {
-							refreshBalance();
+							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterDepositFailTxn(usrData, walletBalance);
 						}
 					}
@@ -572,7 +549,7 @@ public class RBLBankingPage extends BasePage {
 		} else {
 			depositClear.click();
 			Log.info("Clear button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(depositDropdown));
+			waitUntilElementIsVisible(depositDropdown);
 			Log.info("Data cleared");
 		}
 	}
@@ -580,31 +557,29 @@ public class RBLBankingPage extends BasePage {
 	// withdrawal transaction
 	public void withdrawalTxns(Map<String, String> usrData, double walletBalance)
 			throws ClassNotFoundException, InterruptedException, ParseException {
-		waitForSpinner();
-		wait.until(ExpectedConditions.elementToBeClickable(withdrawalTab));
-		withdrawalTab.click();
+		commonUtils.waitForSpinner();
+		waitUntilElementIsClickableAndClickTheElement(withdrawalTab);
 		Log.info("Withdrawal tab clicked");
-		wait.until(ExpectedConditions.elementToBeClickable(withdrawalDropdown));
-		withdrawalDropdown.click();
+		waitUntilElementIsClickableAndClickTheElement(withdrawalDropdown);
 		Log.info("Dropdown clicked");
-		wait.until(ExpectedConditions.elementToBeClickable(dropdownSearch));
+		waitUntilElementIsClickableAndClickTheElement(dropdownSearch);
 		dropdownSearch.sendKeys(usrData.get("BANKNAME"));
 		Log.info(usrData.get("BANKNAME") + " entered");
 		dropdownSelect(usrData);
 		Log.info(usrData.get("BANKNAME") + " selected");
-		wait.until(ExpectedConditions.elementToBeClickable(withdrawalMobNum));
+		waitUntilElementIsClickableAndClickTheElement(withdrawalMobNum);
 		withdrawalMobNum.sendKeys(usrData.get("MOBNUM"));
 		Log.info("Mobile number " + usrData.get("MOBNUM") + " entered");
 		withdrawalAadhaarNum.click();
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank MN")) {
-			wait.until(ExpectedConditions.visibilityOf(withdrawalMobNumError));
+			waitUntilElementIsVisible(withdrawalMobNumError);
 			Assert.assertEquals(withdrawalMobNumError.getText(), "Required Field");
 			Log.info(withdrawalMobNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("MN < 10 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid MN")) {
-			wait.until(ExpectedConditions.visibilityOf(withdrawalMobNumError));
+			waitUntilElementIsVisible(withdrawalMobNumError);
 			Assert.assertEquals(withdrawalMobNumError.getText(), "Invalid mobile number");
 			Log.info(withdrawalMobNumError.getText());
 		}
@@ -615,15 +590,15 @@ public class RBLBankingPage extends BasePage {
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank Aadhaar")) {
-			wait.until(ExpectedConditions.visibilityOf(withdrawalAadhaarNumError));
+			waitUntilElementIsVisible(withdrawalAadhaarNumError);
 			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Required Field");
 			Log.info(withdrawalAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
-			wait.until(ExpectedConditions.visibilityOf(withdrawalAadhaarNumError));
+			waitUntilElementIsVisible(withdrawalAadhaarNumError);
 			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Length should be 12 digits");
 			Log.info(withdrawalAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
-			wait.until(ExpectedConditions.visibilityOf(withdrawalAadhaarNumError));
+			waitUntilElementIsVisible(withdrawalAadhaarNumError);
 			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Enter Valid Aadhaar Number");
 			Log.info(withdrawalAadhaarNumError.getText());
 		}
@@ -634,19 +609,19 @@ public class RBLBankingPage extends BasePage {
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
 			withdrawalAadhaarNum.click();
-			wait.until(ExpectedConditions.visibilityOf(withdrawalAmountError));
+			waitUntilElementIsVisible(withdrawalAmountError);
 			Assert.assertEquals(withdrawalAmountError.getText(), "Insufficient wallet balance");
 			Log.info(withdrawalAmountError.getText());
 			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
 			withdrawalAadhaarNum.click();
-			wait.until(ExpectedConditions.visibilityOf(withdrawalAmountError));
+			waitUntilElementIsVisible(withdrawalAmountError);
 			Assert.assertEquals(withdrawalAmountError.getText(),
 					"Amount entered exceeds your transaction limit ₹10,000.00");
 			Log.info(withdrawalAmountError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
 			withdrawalAadhaarNum.click();
-			wait.until(ExpectedConditions.visibilityOf(withdrawalAmountError));
+			waitUntilElementIsVisible(withdrawalAmountError);
 			Assert.assertEquals(withdrawalAmountError.getText(), "Minimum amount should be ₹10.00");
 			Log.info(withdrawalAmountError.getText());
 		}
@@ -655,32 +630,30 @@ public class RBLBankingPage extends BasePage {
 			Assert.assertEquals("Click to scan fingerprint", withdrawalFingerprintUnscanned.getText());
 			withdrawalScanFingerprint.click();
 			Log.info("Scan fingerprint button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(withdrawalScanSuccessScreen));
+			waitUntilElementIsVisible(withdrawalScanSuccessScreen);
 			Assert.assertEquals("Fingerprints scanned successfully", withdrawalFingerprintSuccess.getText());
 			Log.info(withdrawalFingerprintSuccess.getText());
 			withdrawalFingerprintScreenOkButton.click();
 			Log.info("Ok button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(withdrawalFingerprintGreen));
+			waitUntilElementIsVisible(withdrawalFingerprintGreen);
 			Assert.assertEquals("Fingerprint scanned successfully!", withdrawalFingerprintGreen.getText());
 		}
 
 		if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
 			Thread.sleep(1000);
-			wait.until(ExpectedConditions.elementToBeClickable(withdrawalSubmit));
-			withdrawalSubmit.click();
+			waitUntilElementIsClickableAndClickTheElement(withdrawalSubmit);
 			Log.info("Submit button clicked");
 
 			confirmScreen(usrData);
 
-//			wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//			waitUntilElementIsVisible(processingScreen));
 //			Log.info("Processing screen displayed");
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
-				wait.until(ExpectedConditions.elementToBeClickable(processInBackgroundButton));
-				processInBackgroundButton.click();
+				waitUntilElementIsClickableAndClickTheElement(processInBackgroundButton);
 				Log.info("Process in Background button clicked");
 			} else {
-				wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
+				waitUntilElementIsVisible(aepsTxnScreen);
 				Log.info("Txn screen displayed");
 
 				if (aepsTxnScreen.getText().equalsIgnoreCase("Success!")) {
@@ -690,59 +663,50 @@ public class RBLBankingPage extends BasePage {
 							assertionOnWithdrawalSMS(usrData);
 						}
 						if (usrData.get("TXNSCREENBUTTON").equals("Save")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenSaveButton));
-							aepsTxnScreenSaveButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenSaveButton);
 							Log.info("Save button clicked");
 						} else if (usrData.get("TXNSCREENBUTTON").equals("Print")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenPrintButton));
-							aepsTxnScreenPrintButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenPrintButton);
 							Log.info("Print button clicked");
 						}
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-						aepsTxnScreenDoneButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 						Log.info("Done button clicked");
-						refreshBalance();
+						commonUtils.refreshBalance();
 						verifyUpdatedBalanceAfterWithdrawalSuccessTxn(usrData, walletBalance);
 					}
 				} else if (aepsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 					assertionOnWithdrawalFailedScreen(usrData);
 					if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenExitButton));
-						aepsTxnScreenExitButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 						Log.info("Exit button clicked");
 					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-						aepsTxnScreenDoneButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 						Log.info("Done button clicked");
 					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenRetryButton));
-						aepsTxnScreenRetryButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenRetryButton);
 						Log.info("Retry button clicked");
-						wait.until(ExpectedConditions.elementToBeClickable(withdrawalScanSuccessScreen));
+						waitUntilElementIsVisible(withdrawalScanSuccessScreen);
 						Assert.assertEquals("Fingerprints scanned successfully",
 								withdrawalFingerprintSuccess.getText());
 						Log.info(withdrawalFingerprintSuccess.getText());
 						withdrawalFingerprintScreenOkButton.click();
 						Log.info("Ok button clicked");
-						wait.until(ExpectedConditions.invisibilityOf(withdrawalFingerprintScreenOkButton));
-						wait.until(ExpectedConditions.elementToBeClickable(withdrawalFingerprintGreen));
+						waitUntilElementIsInvisible(withdrawalFingerprintScreenOkButton);
+						waitUntilElementIsVisible(withdrawalFingerprintGreen);
 						Assert.assertEquals("Fingerprint scanned successfully!", withdrawalFingerprintGreen.getText());
-						wait.until(ExpectedConditions.elementToBeClickable(withdrawalSubmit));
-						withdrawalSubmit.click();
+						waitUntilElementIsClickableAndClickTheElement(withdrawalSubmit);
 						Log.info("Submit button clicked");
-//						wait.until(ExpectedConditions.visibilityOf(processingScreen));
-//						Log.info("Processing screen displayed");
 						confirmScreen(usrData);
-						wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
+						waitUntilElementIsVisible(processingScreen);
+						Log.info("Processing screen displayed");
+						waitUntilElementIsVisible(aepsTxnScreen);
 						Log.info("Txn screen displayed");
 						assertionOnWithdrawalFailedScreen(usrData);
 						if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-							aepsTxnScreenDoneButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 							Log.info("Done button clicked");
 						} else {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenExitButton));
-							aepsTxnScreenExitButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 							Log.info("Exit button clicked");
 						}
 					}
@@ -753,13 +717,13 @@ public class RBLBankingPage extends BasePage {
 							dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
 						}
 					} else {
-						refreshBalance();
+						commonUtils.refreshBalance();
 //						verifyUpdatedBalanceAfterWithdrawalFailTxn(usrData, walletBalance);
 					}
 				} else {
 					withdrawalClear.click();
 					Log.info("Clear button clicked");
-					wait.until(ExpectedConditions.elementToBeClickable(withdrawalDropdown));
+					waitUntilElementIsVisible(withdrawalDropdown);
 					Log.info("Data cleared");
 				}
 			}
@@ -769,27 +733,25 @@ public class RBLBankingPage extends BasePage {
 	// Balance Enquiry transaction
 	public void balanceEnquiryTxns(Map<String, String> usrData, double walletBalance)
 			throws ClassNotFoundException, InterruptedException, ParseException {
-		wait.until(ExpectedConditions.elementToBeClickable(balanceEnquiryDropdown));
-		balanceEnquiryDropdown.click();
+		waitUntilElementIsClickableAndClickTheElement(balanceEnquiryDropdown);
 		Log.info("Dropdown clicked");
-		wait.until(ExpectedConditions.elementToBeClickable(dropdownSearch));
-		dropdownSearch.sendKeys(usrData.get("BANKNAME"));
+		waitUntilElementIsClickableAndClickTheElement(dropdownSearch);
 		Log.info(usrData.get("BANKNAME") + " entered");
 		dropdownSelect(usrData);
 		Log.info(usrData.get("BANKNAME") + " selected");
-		wait.until(ExpectedConditions.elementToBeClickable(balanceEnquiryMobNum));
+		waitUntilElementIsClickableAndClickTheElement(balanceEnquiryMobNum);
 		balanceEnquiryMobNum.sendKeys(usrData.get("MOBNUM"));
 		Log.info("Mobile number " + usrData.get("MOBNUM") + " entered");
 		balanceEnquiryAadhaarNum.click();
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank MN")) {
-			wait.until(ExpectedConditions.visibilityOf(balanceEnquiryMobNumError));
+			waitUntilElementIsVisible(balanceEnquiryMobNumError);
 			Assert.assertEquals(balanceEnquiryMobNumError.getText(), "Required Field");
 			Log.info(balanceEnquiryMobNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("MN < 10 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid MN")) {
-			wait.until(ExpectedConditions.visibilityOf(balanceEnquiryMobNumError));
+			waitUntilElementIsVisible(balanceEnquiryMobNumError);
 			Assert.assertEquals(balanceEnquiryMobNumError.getText(), "Invalid mobile number");
 			Log.info(balanceEnquiryMobNumError.getText());
 		}
@@ -800,15 +762,15 @@ public class RBLBankingPage extends BasePage {
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank Aadhaar")) {
-			wait.until(ExpectedConditions.visibilityOf(balanceEnquiryAadhaarNumError));
+			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError);
 			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Required Field");
 			Log.info(balanceEnquiryAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
-			wait.until(ExpectedConditions.visibilityOf(balanceEnquiryAadhaarNumError));
+			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError);
 			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Length should be 12 digits");
 			Log.info(balanceEnquiryAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
-			wait.until(ExpectedConditions.visibilityOf(balanceEnquiryAadhaarNumError));
+			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError);
 			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Enter Valid Aadhaar Number");
 			Log.info(balanceEnquiryAadhaarNumError.getText());
 		}
@@ -817,29 +779,29 @@ public class RBLBankingPage extends BasePage {
 			Assert.assertEquals("Click to scan fingerprint", balanceEnquiryFingerprintUnscanned.getText());
 			balanceEnquiryScanFingerprint.click();
 			Log.info("Scan fingerprint button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(balanceEnquiryScanSuccessScreen));
+			waitUntilElementIsVisible(balanceEnquiryScanSuccessScreen);
 			Assert.assertEquals("Fingerprints scanned successfully", balanceEnquiryFingerprintSuccess.getText());
 			Log.info(balanceEnquiryFingerprintSuccess.getText());
 			balanceEnquiryFingerprintScreenOkButton.click();
 			Log.info("Ok button clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(balanceEnquiryFingerprintGreen));
+			waitUntilElementIsVisible(balanceEnquiryFingerprintGreen);
 			Assert.assertEquals("Fingerprint scanned successfully!", balanceEnquiryFingerprintGreen.getText());
 		}
 
 		if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
 			Thread.sleep(1000);
-			wait.until(ExpectedConditions.visibilityOf(balanceEnquirySubmit));
+			waitUntilElementIsVisible(balanceEnquirySubmit);
 			balanceEnquirySubmit.click();
 			Log.info("Submit button clicked");
-//			wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//			waitUntilElementIsVisible(processingScreen));
 //			Log.info("Processing screen displayed");
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
-				wait.until(ExpectedConditions.visibilityOf(processInBackgroundButton));
+				waitUntilElementIsVisible(processInBackgroundButton);
 				processInBackgroundButton.click();
 				Log.info("Process in Background button clicked");
 			} else {
-				wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
+				waitUntilElementIsVisible(aepsTxnScreen);
 				Log.info("Txn screen displayed");
 
 				if (aepsTxnScreen.getText().equalsIgnoreCase("Success!")) {
@@ -849,67 +811,59 @@ public class RBLBankingPage extends BasePage {
 							assertionOnBalanceEnquirySMS(usrData);
 						}
 						if (usrData.get("TXNSCREENBUTTON").equals("Save")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenSaveButton));
-							aepsTxnScreenSaveButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenSaveButton);
 							Log.info("Save button clicked");
 						} else if (usrData.get("TXNSCREENBUTTON").equals("Print")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenPrintButton));
-							aepsTxnScreenPrintButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenPrintButton);
 							Log.info("Print button clicked");
 						}
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-						aepsTxnScreenDoneButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 						Log.info("Done button clicked");
-						refreshBalance();
-//						verifyUpdatedBalanceAfterBalanceEnquirySuccessTxn(usrData, walletBalance);
+						commonUtils.refreshBalance();
+						verifyUpdatedBalanceAfterBalanceEnquirySuccessTxn(usrData, walletBalance);
 					}
 				} else if (aepsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 					assertionOnBalanceEnquiryFailedScreen(usrData);
 					if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenExitButton));
-						aepsTxnScreenExitButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 						Log.info("Exit button clicked");
 					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-						aepsTxnScreenDoneButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 						Log.info("Done button clicked");
 					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-						wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenRetryButton));
-						aepsTxnScreenRetryButton.click();
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenRetryButton);
 						Log.info("Retry button clicked");
-						wait.until(ExpectedConditions.elementToBeClickable(balanceEnquiryScanSuccessScreen));
+						waitUntilElementIsVisible(balanceEnquiryScanSuccessScreen);
 						Assert.assertEquals("Fingerprints scanned successfully",
 								balanceEnquiryFingerprintSuccess.getText());
 						Log.info(balanceEnquiryFingerprintSuccess.getText());
 						balanceEnquiryFingerprintScreenOkButton.click();
 						Log.info("Ok button clicked");
-						wait.until(ExpectedConditions.elementToBeClickable(balanceEnquiryFingerprintGreen));
+						waitUntilElementIsVisible(balanceEnquiryFingerprintGreen);
 						Assert.assertEquals("Fingerprint scanned successfully!",
 								balanceEnquiryFingerprintGreen.getText());
 						Thread.sleep(1000);
 						balanceEnquirySubmit.click();
 						Log.info("Submit button clicked");
-//						wait.until(ExpectedConditions.visibilityOf(processingScreen));
+//						waitUntilElementIsVisible(processingScreen));
 //						Log.info("Processing screen displayed");
-						wait.until(ExpectedConditions.visibilityOf(aepsTxnScreen));
+						waitUntilElementIsVisible(aepsTxnScreen);
 						Log.info("Txn screen displayed");
 						assertionOnBalanceEnquiryFailedScreen(usrData);
 						if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenDoneButton));
-							aepsTxnScreenDoneButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 							Log.info("Done button clicked");
 						} else {
-							wait.until(ExpectedConditions.elementToBeClickable(aepsTxnScreenExitButton));
-							aepsTxnScreenExitButton.click();
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 							Log.info("Exit button clicked");
 						}
 					}
-					refreshBalance();
+					commonUtils.refreshBalance();
 					verifyUpdatedBalanceAfterBalanceEnquiryFailTxn(usrData, walletBalance);
 				} else {
 					balanceEnquiryClear.click();
 					Log.info("Clear button clicked");
-					wait.until(ExpectedConditions.elementToBeClickable(balanceEnquiryDropdown));
+					waitUntilElementIsVisible(balanceEnquiryDropdown);
 					Log.info("Data cleared");
 				}
 			}
@@ -1027,7 +981,7 @@ public class RBLBankingPage extends BasePage {
 		String successFCMHeading = "Cash Deposit: SUCCESS";
 		String failFCMHeading = "Cash Deposit: FAIL";
 
-		String balance = df.format(getInitialBalance("retailer"));
+		String balance = df.format(commonUtils.getInitialBalance("retailer"));
 		String successFCMContent = "Request of cash deposit: INR " + usrData.get("AMOUNT") + ".00 deposited in "
 				+ usrData.get("BANKNAME") + " a/c linked with Aadhaar XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + "; Charges: INR 0.00; Date " + dbUtils.aepsTxnDate()
@@ -1127,7 +1081,7 @@ public class RBLBankingPage extends BasePage {
 		String successFCMHeading = "Cash Withdrawal: SUCCESS";
 		String failFCMHeading = "Cash Withdrawal: FAIL";
 
-		String balance = df.format(getInitialBalance("cashout"));
+		String balance = df.format(commonUtils.getInitialBalance("cashout"));
 		String successFCMContent = "Request for cash withdrawal: INR " + usrData.get("AMOUNT")
 				+ ".00 withdrawn from your " + usrData.get("BANKNAME") + " a/c linked with Aadhaar XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + "; Charges INR 0.00; Date " + dbUtils.aepsTxnDate()
@@ -1218,81 +1172,12 @@ public class RBLBankingPage extends BasePage {
 		Log.info(fcmContent.getText());
 	}
 
-	// Wait for screen to complete loading
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
-	}
-
-	// Remove rupee symbol and comma from the string
-	public String replaceSymbols(String element) {
-		String editedElement = element.replaceAll("₹", "").replaceAll(",", "").trim();
-		return editedElement;
-	}
-
-	// Show balances in console
-	public void displayInitialBalance(Map<String, String> usrData, String wallet) throws ClassNotFoundException {
-		String walletBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "retailer");
-		String walletBal = walletBalance.substring(0, walletBalance.length() - 4);
-		String cashoutBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "cashout");
-		String cashoutBal = cashoutBalance.substring(0, cashoutBalance.length() - 4);
-		String merchantBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "merchant");
-		String merchantBal = merchantBalance.substring(0, merchantBalance.length() - 4);
-
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Compare wallet balance shown in WebApp to DB
-		if (usrData.get("ASSERTION").equals("Initial Balance")) {
-			Assert.assertEquals(walletBal, initialWalletBal);
-			Assert.assertEquals(cashoutBal, initialCashoutBal);
-			Assert.assertEquals(merchantBal, initialMerchantBal);
-		}
-
-		if (wallet.equalsIgnoreCase("retailer")) {
-			Log.info("Retailer Balance: " + initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			Log.info("Cashout Balance: " + initialCashoutBal);
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			Log.info("Merchant Balance: " + initialMerchantBal);
-		}
-	}
-
-	// Get wallet(s) balance
-	@SuppressWarnings("null")
-	public double getInitialBalance(String wallet) throws ClassNotFoundException {
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Converting balance from String to Double and returning the same
-		if (wallet.equalsIgnoreCase("retailer")) {
-			return Double.parseDouble(initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			return Double.parseDouble(initialCashoutBal);
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			return Double.parseDouble(initialMerchantBal);
-		}
-		return (Double) null;
-	}
-
-	// To refresh the wallet balance
-	public void refreshBalance() throws InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		clickInvisibleElement(refreshButton);
-		wait.until(ExpectedConditions.elementToBeClickable(syncButton));
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		Log.info("Balance refreshed successfully");
-	}
-
 	// Confirm screen
 	public void confirmScreen(Map<String, String> usrData) throws InterruptedException {
-		wait.until(ExpectedConditions.visibilityOf(confirmScreen));
+		waitUntilElementIsVisible(confirmScreen);
 		Log.info("Confirm the details screen displayed");
 		Assert.assertEquals(replaceSymbols(confirmScreenAmount.getText()), usrData.get("AMOUNT") + ".00");
-		wait.until(ExpectedConditions.visibilityOf(confirmScreenSubmit));
+		waitUntilElementIsVisible(confirmScreenSubmit);
 		confirmScreenSubmit.click();
 		Thread.sleep(2000);
 		Log.info("Submit button clicked");

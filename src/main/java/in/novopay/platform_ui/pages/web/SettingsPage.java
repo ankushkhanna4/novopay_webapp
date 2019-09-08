@@ -7,25 +7,20 @@ import java.text.ParseException;
 import java.util.Map;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 
 public class SettingsPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 	DecimalFormat df = new DecimalFormat("#.00");
-
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
-	WebDriverWait waitSave = new WebDriverWait(wdriver, 3);
 
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
@@ -221,24 +216,24 @@ public class SettingsPage extends BasePage {
 							mobileNumFromIni());
 				}
 
-				menu.click();
-//				wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+				clickElement(menu);
 				scrollElementDown(scrollBar, settings);
 				Log.info("Settings option clicked");
-				wait.until(ExpectedConditions.elementToBeClickable(pageTitle));
-				menu.click();
-				waitForSpinner();
+				waitUntilElementIsVisible(pageTitle);
+				System.out.println(pageTitle.getText() + " page displayed");
+				clickElement(menu);
+				commonUtils.waitForSpinner();
 
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
-					wait.until(ExpectedConditions.elementToBeClickable(accountStatus));
+					waitUntilElementIsVisible(accountStatus);
 					Assert.assertEquals(accountStatus.getText(), "PENDING VERIFICATION");
 					Log.info("The status is " + accountStatus.getText());
 				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
-					wait.until(ExpectedConditions.elementToBeClickable(accountStatus));
+					waitUntilElementIsVisible(accountStatus);
 					Assert.assertEquals(accountStatus.getText(), "REJECTED");
 					Log.info("The status is " + accountStatus.getText());
 				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-					wait.until(ExpectedConditions.elementToBeClickable(blockedIcon));
+					waitUntilElementIsVisible(blockedIcon);
 					Log.info("The status is blocked");
 
 				}
@@ -250,55 +245,44 @@ public class SettingsPage extends BasePage {
 					// Changing mode
 					if (usrData.get("MODE").contains("Change")) {
 						if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
-							waitSave.until(ExpectedConditions.elementToBeClickable(bankAccountRadioButton));
 							Thread.sleep(1000);
-							clickElement(bankAccountRadioButton);
+							waitUntilElementIsClickableAndClickTheElement(bankAccountRadioButton);
 						} else if (usrData.get("MODE").equalsIgnoreCase("Change to Retailer Credit")) {
-							waitSave.until(ExpectedConditions.elementToBeClickable(retailerCreditRadioButton));
 							Thread.sleep(1000);
-							clickElement(retailerCreditRadioButton);
+							waitUntilElementIsClickableAndClickTheElement(retailerCreditRadioButton);
 						}
 						Log.info("Radio button clicked");
-						waitSave.until(ExpectedConditions.elementToBeClickable(saveChangesButton));
 						Thread.sleep(1000);
-						saveChangesButton.click();
+						waitUntilElementIsClickableAndClickTheElement(saveChangesButton);
 						Log.info("Save changes button clicked");
 					}
 
 					if (usrData.get("MODE").contains("Keep")) {
 						if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
-							wait.until(ExpectedConditions.elementToBeClickable(editButton));
-							clickElement(editButton);
-							wait.until(ExpectedConditions.visibilityOf(settingsTxnScreen));
+							waitUntilElementIsClickableAndClickTheElement(editButton);
+							waitUntilElementIsVisible(settingsTxnScreen);
 							Log.info("Txn screen displayed");
 							assertionOnInfoScreen(usrData);
-							wait.until(ExpectedConditions.elementToBeClickable(okButton));
-							okButton.click();
+							waitUntilElementIsClickableAndClickTheElement(okButton);
 							Log.info("Ok button clicked");
 						} else if (usrData.get("MODE").equalsIgnoreCase("Keep Retailer Credit")) {
-							wait.until(ExpectedConditions.elementToBeClickable(editButton));
-							clickElement(editButton);
+							waitUntilElementIsClickableAndClickTheElement(editButton);
 
 							if (!usrData.get("ACHOLDERNAME").equalsIgnoreCase("SKIP")) {
-								wait.until(ExpectedConditions.elementToBeClickable(accHolderName));
 								Thread.sleep(1000);
-								accHolderName.click();
+								waitUntilElementIsClickableAndClickTheElement(accHolderName);
 								accHolderName.clear();
 								accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
 								Log.info("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
-
+								waitUntilElementIsClickableAndClickTheElement(ifscCode);
+								ifscCode.clear();
 								if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
-									wait.until(ExpectedConditions.elementToBeClickable(ifscCode));
-									ifscCode.clear();
-									ifscCode.click();
 									ifscCode.sendKeys(usrData.get("IFSCCODE"));
 									Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
 								} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Search Screen")) {
-									wait.until(ExpectedConditions.elementToBeClickable(ifscSearchIcon));
-									ifscSearchIcon.click();
 									Log.info("IFSC search icon clicked");
-									wait.until(ExpectedConditions.visibilityOf(ifscSearchScreen));
-									wait.until(ExpectedConditions.visibilityOf(ifscSearchBankList));
+									waitUntilElementIsVisible(ifscSearchScreen);
+									waitUntilElementIsVisible(ifscSearchBankList);
 									ifscSearchBankList.click();
 									Log.info("IFSC bank drop down clicked");
 									String ifscBank = "//li[contains(text(),'"
@@ -323,35 +307,28 @@ public class SettingsPage extends BasePage {
 									Log.info("IFSC branch entered");
 									ifscSearchButton.click();
 									Log.info("Search button clicked");
-									waitForSpinner();
-									wait.until(ExpectedConditions.visibilityOf(ifscSearchBack));
+									commonUtils.waitForSpinner();
+									waitUntilElementIsVisible(ifscSearchBack);
 									String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
 											+ usrData.get("IFSCCODE") + "')]/parent::li";
 									WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-									wait.until(ExpectedConditions.elementToBeClickable(ifscSearchCode));
-									ifscSearchCode.click();
+									waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
 									Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
 									ifscSearchOK.click();
 									Log.info("OK button clicked");
 								} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Drop Down")) {
-									wait.until(ExpectedConditions.elementToBeClickable(ifscCode));
-									ifscCode.clear();
-									ifscCode.click();
 									String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
 											+ usrData.get("IFSCCODE") + "')]/parent::li";
 									WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-									wait.until(ExpectedConditions.elementToBeClickable(ifscSearchCode));
-									ifscSearchCode.click();
+									waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
 									Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
 								}
 								getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
-								wait.until(ExpectedConditions.visibilityOf(validateIFSC)); // wait for Branch name to be
-																							// displayed
+								waitUntilElementIsVisible(validateIFSC); // wait for Branch name
 								Log.info(validateIFSC.getText());
 
-								wait.until(ExpectedConditions.elementToBeClickable(accNumber));
+								waitUntilElementIsClickableAndClickTheElement(accNumber);
 								accNumber.clear();
-								accNumber.click();
 								accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
 								Log.info("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 							}
@@ -361,9 +338,8 @@ public class SettingsPage extends BasePage {
 							String buttonName = usrData.get("SETTINGSBUTTON");
 							String buttonXpath = "//button[contains(text(),'" + buttonName + "')]";
 							WebElement button = wdriver.findElement(By.xpath(buttonXpath));
-							wait.until(ExpectedConditions.elementToBeClickable(button));
 							Thread.sleep(3000);
-							clickElement(button);
+							waitUntilElementIsClickableAndClickTheElement(button);
 							if (buttonName.equalsIgnoreCase("Clear")) {
 								Thread.sleep(2000);
 								Log.info("Clear button clicked");
@@ -378,9 +354,9 @@ public class SettingsPage extends BasePage {
 						Log.info(toasterMsg.getText());
 					} else if (!usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")
 							&& !usrData.get("SETTINGSBUTTON").equalsIgnoreCase("Clear")) {
-						wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+						waitUntilElementIsVisible(MPINScreen);
 						Log.info("MPIN screen displayed");
-						wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
+						waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 						} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
@@ -393,21 +369,19 @@ public class SettingsPage extends BasePage {
 								+ "following-sibling::div/following-sibling::div/button[contains(text(),'"
 								+ mpinButtonName + "')]";
 						WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-						wait.until(ExpectedConditions.elementToBeClickable(mpinScreenButton));
-						mpinScreenButton.click();
+						waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
 						Log.info(mpinButtonName + " button clicked");
 						if (mpinButtonName.equalsIgnoreCase("Cancel")) {
 							Log.info("Cancel button clicked");
 						} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
-							waitForSpinner();
-							wait.until(ExpectedConditions.visibilityOf(settingsTxnScreen));
+							commonUtils.waitForSpinner();
+							waitUntilElementIsVisible(settingsTxnScreen);
 							Log.info("Txn screen displayed");
 
 							// Verify the details on transaction screen
 							if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
 								assertionOnSuccessScreen(usrData);
-								wait.until(ExpectedConditions.elementToBeClickable(doneButton));
-								doneButton.click();
+								waitUntilElementIsClickableAndClickTheElement(doneButton);
 								Log.info("Done button clicked");
 							} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
@@ -416,47 +390,41 @@ public class SettingsPage extends BasePage {
 										Log.info("Clicking exit button");
 									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 										retryButton.click();
-										wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+										waitUntilElementIsVisible(MPINScreen);
 										Log.info("MPIN screen displayed");
-										wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
-										enterMPIN.click();
+										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 										Log.info("MPIN entered");
-										wait.until(ExpectedConditions.elementToBeClickable(submitMPIN));
-										submitMPIN.click();
+										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 										Log.info("Submit button clicked");
-										waitForSpinner();
-										wait.until(ExpectedConditions.visibilityOf(settingsTxnScreen));
+										commonUtils.waitForSpinner();
+										waitUntilElementIsVisible(settingsTxnScreen);
 										Log.info("Txn screen displayed");
 										assertionOnFailedScreen(usrData);
 									}
-									wait.until(ExpectedConditions.elementToBeClickable(exitButton));
-									exitButton.click();
+									waitUntilElementIsClickableAndClickTheElement(exitButton);
 									Log.info("Exit button clicked");
 								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-									wait.until(ExpectedConditions.elementToBeClickable(settingsTxnScreenMessage));
+									waitUntilElementIsVisible(settingsTxnScreenMessage);
 									Log.info(settingsTxnScreenMessage.getText());
 									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
 										exitButton.click();
 										Log.info("Exit button clicked");
 									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 										retryButton.click();
-										wait.until(ExpectedConditions.visibilityOf(MPINScreen));
+										waitUntilElementIsVisible(MPINScreen);
 										Log.info("MPIN screen displayed");
-										wait.until(ExpectedConditions.elementToBeClickable(enterMPIN));
 										Thread.sleep(1000);
-										enterMPIN.click();
+										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 										Log.info("MPIN entered");
-										wait.until(ExpectedConditions.elementToBeClickable(submitMPIN));
-										submitMPIN.click();
+										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 										Log.info("Submit button clicked");
-										waitForSpinner();
-										wait.until(ExpectedConditions.visibilityOf(settingsTxnScreen));
+										commonUtils.waitForSpinner();
+										waitUntilElementIsVisible(settingsTxnScreen);
 										Log.info("Txn screen displayed");
 										assertionOnSuccessScreen(usrData);
-										wait.until(ExpectedConditions.elementToBeClickable(doneButton));
-										doneButton.click();
+										waitUntilElementIsClickableAndClickTheElement(doneButton);
 										Log.info("Done button clicked");
 									}
 								}
@@ -473,90 +441,6 @@ public class SettingsPage extends BasePage {
 			e.printStackTrace();
 			Log.info("Test Case Failed");
 			Assert.fail();
-		}
-	}
-
-	// Show balances in console
-	public void displayInitialBalance(Map<String, String> usrData, String wallet) throws ClassNotFoundException {
-		String walletBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "retailer");
-		String walletBal = walletBalance.substring(0, walletBalance.length() - 4);
-		String cashoutBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "cashout");
-		String cashoutBal = cashoutBalance.substring(0, cashoutBalance.length() - 4);
-		String merchantBalance = dbUtils.getWalletBalance(mobileNumFromIni(), "merchant");
-		String merchantBal = merchantBalance.substring(0, merchantBalance.length() - 4);
-
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Compare wallet balance shown in WebApp to DB
-		if (usrData.get("ASSERTION").equals("Initial Balance")) {
-			Assert.assertEquals(walletBal, initialWalletBal);
-			Assert.assertEquals(cashoutBal, initialCashoutBal);
-			Assert.assertEquals(merchantBal, initialMerchantBal);
-		}
-
-		if (wallet.equalsIgnoreCase("retailer")) {
-			Log.info("Retailer Balance: " + initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			Log.info("Cashout Balance: " + initialCashoutBal);
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			Log.info("Merchant Balance: " + initialMerchantBal);
-		}
-	}
-
-	// Get wallet(s) balance
-	@SuppressWarnings("null")
-	public double getInitialBalance(String wallet) throws ClassNotFoundException {
-		String initialWalletBal = replaceSymbols(retailerWalletBalance.getText());
-		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
-		String initialMerchantBal = replaceSymbols(merchantWalletBalance.getText());
-
-		// Converting balance from String to Double and returning the same
-		if (wallet.equalsIgnoreCase("retailer")) {
-			return Double.parseDouble(initialWalletBal);
-		} else if (wallet.equalsIgnoreCase("cashout")) {
-			return Double.parseDouble(initialCashoutBal);
-		} else if (wallet.equalsIgnoreCase("merchant")) {
-			return Double.parseDouble(initialMerchantBal);
-		}
-		return (Double) null;
-	}
-
-	// To refresh the wallet balance
-	public void refreshBalance() throws InterruptedException {
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		clickInvisibleElement(refreshButton);
-		wait.until(ExpectedConditions.elementToBeClickable(syncButton));
-		wait.until(ExpectedConditions.elementToBeClickable(refreshButton));
-		Log.info("Balance refreshed successfully");
-	}
-
-	// Scroll down the page
-	public void pageScrollDown() {
-		JavascriptExecutor jse = (JavascriptExecutor) wdriver;
-		jse.executeScript("scroll(0, 250);");
-	}
-
-	// Wait for screen to complete loading
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
-	}
-
-	// Remove rupee symbol and comma from the string
-	public String replaceSymbols(String element) {
-		String editedElement = element.replaceAll("₹", "").replaceAll(",", "").trim();
-		return editedElement;
-	}
-
-	// click on WebElement forcefully
-	public void clickElement(WebElement element) {
-		try {
-			element.click();
-		} catch (Exception e) {
-			clickInvisibleElement(element);
 		}
 	}
 
@@ -592,10 +476,9 @@ public class SettingsPage extends BasePage {
 	}
 
 	public void uploadFile(WebElement cancelledCheque) throws InterruptedException, IOException {
-		wait.until(ExpectedConditions.elementToBeClickable(cancelledCheque));
 		Log.info("selecting cancelled cheque image");
 		Thread.sleep(2000);
-		cancelledCheque.click();
+		waitUntilElementIsClickableAndClickTheElement(cancelledCheque);
 		Thread.sleep(500);
 		String uploadFile = "./test-data/UploadFile.exe";
 		Runtime.getRuntime().exec(uploadFile);
@@ -620,31 +503,5 @@ public class SettingsPage extends BasePage {
 	// Get Partner name
 	public String partner() {
 		return "RBL";
-	}
-
-	// Get mobile number from Ini file
-	public String mobileNumFromIni() {
-		return getLoginMobileFromIni("RetailerMobNum");
-	}
-	
-	public void scrollElementDown(WebElement draggablePartOfScrollbar, WebElement elementToClick)
-			throws InterruptedException {
-		while (true) {
-			Actions dragger = new Actions(wdriver);
-			// drag downwards
-			int numberOfPixelsToDragTheScrollbarDown = 50;
-			while (true) {
-				try {
-					// this causes a gradual drag of the scroll bar, 10 units at a time
-					dragger.moveToElement(draggablePartOfScrollbar).clickAndHold()
-							.moveByOffset(0, numberOfPixelsToDragTheScrollbarDown).release().perform();
-					elementToClick.click();
-					break;
-				} catch (Exception e1) {
-					numberOfPixelsToDragTheScrollbarDown = numberOfPixelsToDragTheScrollbarDown + 10;
-				}
-			}
-			break;
-		}
 	}
 }

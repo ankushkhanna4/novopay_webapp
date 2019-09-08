@@ -3,22 +3,20 @@ package in.novopay.platform_ui.pages.web;
 import java.util.List;
 import java.util.Map;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 
 public class LoginPage extends BasePage {
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
 	DBUtils dbUtils = new DBUtils();
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 
 	public LoginPage(WebDriver wdriver) {
 		super(wdriver);
@@ -87,12 +85,8 @@ public class LoginPage extends BasePage {
 
 	public void login(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 
-		// wdriver.manage().window().maximize();
 		Log.info("Retailer WebApp 2.0 Login page displayed");
 
-		// Start the test and set the browser's viewport size to 800x600.
-		// eyes.open(wdriver, "Hello World!", "My first Selenium Java test!",
-		// new RectangleSize(800, 600));
 		try {
 			String mobNumFromSheet = "";
 			if (usrData.get("MOBILENUMBER").equalsIgnoreCase("RetailerMobNum")) {
@@ -100,20 +94,17 @@ public class LoginPage extends BasePage {
 			} else {
 				mobNumFromSheet = usrData.get("MOBILENUMBER");
 			}
-			wait.until(ExpectedConditions.visibilityOf(mobNum));
-			mobNum.click();
+			waitUntilElementIsClickableAndClickTheElement(mobNum);
 			mobNum.clear();
 			Log.info("entering mobile number");
 			mobNum.sendKeys(mobNumFromSheet);
 			if (usrData.get("FORGOTPIN").equalsIgnoreCase("NO")) {
-				wait.until(ExpectedConditions.elementToBeClickable(mPin));
-				mPin.click();
+				waitUntilElementIsClickableAndClickTheElement(mPin);
 				mPin.clear();
 				Log.info("entering MPIN");
 				mPin.sendKeys(usrData.get("MPIN"));
 				Log.info("clicking on LOGIN button");
-				wait.until(ExpectedConditions.elementToBeClickable(login));
-				login.click();
+				waitUntilElementIsClickableAndClickTheElement(login);
 
 				if (mobNumFromSheet.startsWith("RBL") || mobNumFromSheet.startsWith("AXIS")
 						|| mobNumFromSheet.startsWith("FINO") || mobNumFromSheet.startsWith("YBL")) {
@@ -122,42 +113,39 @@ public class LoginPage extends BasePage {
 				if (mobNumValidation(mobNumFromSheet).equalsIgnoreCase("valid")
 						&& checkMobNumExistence(mobNumFromSheet).equalsIgnoreCase("exists")
 						&& (usrData.get("MPIN").equals("1111") || usrData.get("MPIN").equals("2222"))) {
-					waitForSpinner();
+					commonUtils.waitForSpinner();
 					String txnOtp = "";
 					Thread.sleep(2000);
-					wait.until(ExpectedConditions.elementToBeClickable(otp));
-					otp.click();
+					waitUntilElementIsClickableAndClickTheElement(otp);
 					otp.clear();
 					Log.info("entering OTP");
 					if (usrData.get("OTP").equalsIgnoreCase("Yes")) {
 						txnOtp = getAuthfromIni("LoginOTP");
 					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-						wait.until(ExpectedConditions.elementToBeClickable(resendOTP));
-						resendOTP.click();
+						waitUntilElementIsClickableAndClickTheElement(resendOTP);
 						txnOtp = getAuthfromIni("LoginOTP");
 					} else {
 						txnOtp = usrData.get("OTP");
 					}
 					otp.sendKeys(txnOtp);
 					Log.info("clicking on PROCEED button");
-					wait.until(ExpectedConditions.elementToBeClickable(proceedOTP));
-					proceedOTP.click();
+					waitUntilElementIsClickableAndClickTheElement(proceedOTP);
 					if (txnOtp.equals("342360")) {
-						waitForSpinner();
-						wait.until(ExpectedConditions.visibilityOf(hambergerMenu));
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(hambergerMenu);
 						Log.info("Page displayed");
 						/*
 						 * if (usrData.get("NEWPIN").equalsIgnoreCase("1111")) {
 						 * dbUtils.updateMPIN(getLoginMobileFromIni(mobNumFromSheet)); }
 						 */
 					} else if (txnOtp.equals("")) {
-						wait.until(ExpectedConditions.visibilityOf(otpErrorMsg));
+						waitUntilElementIsVisible(otpErrorMsg);
 						Assert.assertEquals(otpErrorMsg.getText(), "Required Field");
 						Log.info(otpErrorMsg.getText());
-						wait.until(ExpectedConditions.visibilityOf(goBackToLogin));
+						waitUntilElementIsVisible(goBackToLogin);
 						goBackToLogin.click();
 					} else if (otpValidation(txnOtp).equalsIgnoreCase("invalid")) {
-						wait.until(ExpectedConditions.visibilityOf(otpErrorMsg));
+						waitUntilElementIsVisible(otpErrorMsg);
 						if (txnOtp.length() < 4) {
 							Assert.assertEquals(otpErrorMsg.getText(), "Minimum length should be 4 digits");
 							Log.info(otpErrorMsg.getText());
@@ -165,30 +153,28 @@ public class LoginPage extends BasePage {
 							Assert.assertEquals(otpErrorMsg.getText(), "Invalid OTP");
 							Log.info(otpErrorMsg.getText());
 						}
-						wait.until(ExpectedConditions.visibilityOf(goBackToLogin));
-						goBackToLogin.click();
+						waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 					} else if (otpValidation(txnOtp).equalsIgnoreCase("valid")
 							&& !usrData.get("OTP").equals("342360")) {
-						wait.until(ExpectedConditions.elementToBeClickable(toasterMsg));
+						waitUntilElementIsVisible(toasterMsg);
 						Assert.assertEquals(toasterMsg.getText(), "OTP does not match");
 						Log.info(toasterMsg.getText());
-						waitForSpinner();
-						wait.until(ExpectedConditions.visibilityOf(goBackToLogin));
-						goBackToLogin.click();
+						commonUtils.waitForSpinner();
+						waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 					}
 				} else if (mobNumFromSheet.equals("") && usrData.get("MPIN").equals("")) {
-					wait.until(ExpectedConditions.visibilityOf(mobNumErrorMsg));
+					waitUntilElementIsVisible(mobNumErrorMsg);
 					Assert.assertEquals(mobNumErrorMsg.getText(), "Required Field");
 					Log.info(mobNumErrorMsg.getText());
-					wait.until(ExpectedConditions.visibilityOf(passwordErrorMsg));
+					waitUntilElementIsVisible(passwordErrorMsg);
 					Assert.assertEquals(passwordErrorMsg.getText(), "Required Field");
 					Log.info(passwordErrorMsg.getText());
 				} else if (mobNumValidation(mobNumFromSheet).equalsIgnoreCase("invalid")) {
-					wait.until(ExpectedConditions.visibilityOf(mobNumErrorMsg));
+					waitUntilElementIsVisible(mobNumErrorMsg);
 					Assert.assertEquals(mobNumErrorMsg.getText(), "Invalid mobile number");
 					Log.info(mobNumErrorMsg.getText());
 				} else if (mpinValidation(usrData.get("MPIN")).equals("invalid")) {
-					wait.until(ExpectedConditions.visibilityOf(passwordErrorMsg));
+					waitUntilElementIsVisible(passwordErrorMsg);
 					if (usrData.get("MPIN").length() < 4) {
 						Assert.assertEquals(passwordErrorMsg.getText(), "Length should be 4 digits");
 						Log.info(passwordErrorMsg.getText());
@@ -197,84 +183,72 @@ public class LoginPage extends BasePage {
 						Log.info(passwordErrorMsg.getText());
 					}
 				} else if (!usrData.get("MPIN").equals("1111")) {
-					waitForSpinner();
-					wait.until(ExpectedConditions.elementToBeClickable(toasterMsg));
+					commonUtils.waitForSpinner();
+					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Invalid credentials");
 					Log.info(toasterMsg.getText());
 				} else if (checkMobNumExistence(mobNumFromSheet).equalsIgnoreCase("does not exist")) {
-					waitForSpinner();
-					wait.until(ExpectedConditions.elementToBeClickable(toasterMsg));
+					commonUtils.waitForSpinner();
+					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Invalid credentials");
 					Log.info(toasterMsg.getText());
 				}
 			} else if (usrData.get("FORGOTPIN").equalsIgnoreCase("YES")) {
-				wait.until(ExpectedConditions.visibilityOf(forgotPin));
+				waitUntilElementIsVisible(forgotPin);
 				Log.info("clicking Forgot Pin");
 				clickInvisibleElement(forgotPin);
-				waitForSpinner();
-				wait.until(ExpectedConditions.visibilityOf(panNumber));
-				panNumber.click();
+				commonUtils.waitForSpinner();
+				waitUntilElementIsClickableAndClickTheElement(panNumber);
 				panNumber.clear();
 				Log.info("entering PAN number");
 				panNumber.sendKeys(usrData.get("PAN"));
 				Log.info("clicking on PROCEED button");
-				wait.until(ExpectedConditions.elementToBeClickable(proceedPan));
-				proceedPan.click();
+				waitUntilElementIsClickableAndClickTheElement(proceedPan);
 				if (panValidation(usrData.get("PAN")).equalsIgnoreCase("valid")) {
 					if (usrData.get("PAN")
 							.equalsIgnoreCase(dbUtils.getPanNumber(getLoginMobileFromIni(mobNumFromSheet)))) {
-						waitForSpinner();
-						wait.until(ExpectedConditions.elementToBeClickable(otp));
-						otp.click();
+						commonUtils.waitForSpinner();
+						waitUntilElementIsClickableAndClickTheElement(otp);
 						otp.clear();
 						Log.info("entering OTP");
 						otp.sendKeys(getAuthfromIni("LoginOTP"));
 						Log.info("clicking on PROCEED button");
-						wait.until(ExpectedConditions.elementToBeClickable(proceedOTP));
-						proceedOTP.click();
-						wait.until(ExpectedConditions.elementToBeClickable(newpin));
-						newpin.click();
-						newpin.clear();
+						waitUntilElementIsClickableAndClickTheElement(proceedOTP);
+						waitUntilElementIsClickableAndClickTheElement(newpin);
 						Log.info("entering New PIN");
 						newpin.sendKeys(usrData.get("NEWPIN"));
-						wait.until(ExpectedConditions.elementToBeClickable(reenterpin));
-						reenterpin.click();
-						reenterpin.clear();
+						waitUntilElementIsClickableAndClickTheElement(reenterpin);
 						Log.info("Re-entering PIN");
 						reenterpin.sendKeys(usrData.get("REENTERPIN"));
 						Log.info("clicking on FINISH button");
-						wait.until(ExpectedConditions.elementToBeClickable(finish));
-						finish.click();
-						wait.until(ExpectedConditions.elementToBeClickable(toasterMsg));
+						waitUntilElementIsClickableAndClickTheElement(finish);
+						waitUntilElementIsVisible(toasterMsg);
 						if (usrData.get("NEWPIN").equals(usrData.get("REENTERPIN"))) {
 							Log.info(toasterMsg.getText());
 							toastCloseButton.click();
-							wait.until(ExpectedConditions.visibilityOf(mobNum));
+							waitUntilElementIsVisible(mobNum);
 						} else {
 							Assert.assertEquals(toasterMsg.getText(), "New MPIN and Re-entered MPIN does not match.");
 							Log.info(toasterMsg.getText());
 							toastCloseButton.click();
-							wait.until(ExpectedConditions.visibilityOf(goBackToLogin));
-							clickInvisibleElement(goBackToLogin);
+							waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 						}
 					} else {
-						waitForSpinner();
-						wait.until(ExpectedConditions.elementToBeClickable(toasterMsg));
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(toasterMsg);
 						Assert.assertEquals(toasterMsg.getText(), "incorrect POI value entered.");
 						Log.info(toasterMsg.getText());
-						wait.until(ExpectedConditions.visibilityOf(goBackToLogin));
-						clickInvisibleElement(goBackToLogin);
+						waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 					}
 				} else if (panValidation(usrData.get("PAN")).equalsIgnoreCase("invalid")) {
-					wait.until(ExpectedConditions.visibilityOf(panErrorMsg));
+					waitUntilElementIsVisible(panErrorMsg);
 					if (usrData.get("PAN").equalsIgnoreCase("")) {
 						Assert.assertEquals(panErrorMsg.getText(), "Required Field");
 					} else {
 						Assert.assertEquals(panErrorMsg.getText(), "Invalid Pan");
 					}
 					Log.info(panErrorMsg.getText());
-					wait.until(ExpectedConditions.visibilityOf(goBackToLogin));
-					clickInvisibleElement(goBackToLogin);
+					waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 				}
 			}
 
@@ -284,12 +258,6 @@ public class LoginPage extends BasePage {
 			Log.info("Test Case Failed");
 			Assert.fail();
 		}
-	}
-
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
 	}
 
 	public String mobNumValidation(String mobNum) {

@@ -12,17 +12,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.Log;
 
 public class ReportsPage extends BasePage {
-
-	WebDriverWait wait = new WebDriverWait(wdriver, 30);
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 	DBUtils dbUtils = new DBUtils();
 
 	@FindBy(xpath = "//span[contains(text(),'Report')]")
@@ -83,15 +81,13 @@ public class ReportsPage extends BasePage {
 
 	public void reports(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 		try {
-			menu.click();
-//			menu.click();
-//			menu.click();
-//			wait.until(ExpectedConditions.elementToBeClickable(scrollBar));
+			clickElement(menu);
 			scrollElementDown(scrollBar, reports);
 			Log.info("Reports option clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(reportsPage));
-			wait.until(ExpectedConditions.elementToBeClickable(reportsDropdown));
-			menu.click();
+			waitUntilElementIsVisible(reportsPage);
+			System.out.println("Reports page displayed");
+			waitUntilElementIsVisible(reportsDropdown);
+			clickElement(menu);
 
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Queued Transactions")
 					&& !usrData.get("STATUS").equalsIgnoreCase("INQUEUE")) {
@@ -101,11 +97,9 @@ public class ReportsPage extends BasePage {
 					dbUtils.updateRBLTxnStatus(dbUtils.selectPaymentRefCode());
 				}
 			}
-//			waitForSpinner();
-//			wait.until(ExpectedConditions.elementToBeClickable(reportsDropdown));
-			reportsDropdown.click();
+			waitUntilElementIsClickableAndClickTheElement(reportsDropdown);
 			Log.info("Drop down clicked");
-			wait.until(ExpectedConditions.elementToBeClickable(dropDownSearch));
+			waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
 			dropDownSearch.sendKeys(usrData.get("REPORTTYPE"));
 			Log.info("Typing " + usrData.get("REPORTTYPE"));
 
@@ -116,19 +110,17 @@ public class ReportsPage extends BasePage {
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Timeout")
 					|| (usrData.get("REPORTTYPE").equalsIgnoreCase("Refund Report")
 							|| (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")))) {
-				wait.until(ExpectedConditions.visibilityOf(startDate));
+				waitUntilElementIsVisible(startDate);
 				startDate.sendKeys(currentDate());
 				endDate.sendKeys(todayDate());
 				submit.click();
 				Thread.sleep(3000);
 			}
-			waitForSpinner();
+			commonUtils.waitForSpinner();
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Banks in Queue")) {
-				wait.until(ExpectedConditions.elementToBeClickable(bankNameColumn));
-			} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")) {
-				wait.until(ExpectedConditions.elementToBeClickable(txndateColumn));
+				waitUntilElementIsVisible(bankNameColumn);
 			} else {
-				wait.until(ExpectedConditions.elementToBeClickable(txnDateColumn));
+				waitUntilElementIsVisible(txnDateColumn);
 			}
 			if (body.getText().equalsIgnoreCase("No Record Found")) {
 				Log.info(body.getText());
@@ -181,7 +173,7 @@ public class ReportsPage extends BasePage {
 			Assert.assertEquals(dataFromUI[0][columnCount - 1], usrData.get("STATUS").toUpperCase());
 		} else {
 			Assert.assertEquals(replaceSymbols(dataFromUI[0][columnCount - 1]),
-					dbUtils.closingBalance(mobileNumFromIni(usrData)));
+					dbUtils.closingBalance(mobileNumFromIni()));
 		}
 
 		List<String> listFromUI = new ArrayList<String>();
@@ -193,7 +185,7 @@ public class ReportsPage extends BasePage {
 		List<String[]> list = new ArrayList<String[]>();
 
 		if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Queued Transactions")) {
-			List<String[]> queuedTxnList = dbUtils.queuedTxnReport(mobileNumFromIni(usrData), 10);
+			List<String[]> queuedTxnList = dbUtils.queuedTxnReport(mobileNumFromIni(), 10);
 			list = queuedTxnList;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Banks in Queue")) {
 			List<String[]> queuedBankList = dbUtils.queuedBankReport();
@@ -201,34 +193,34 @@ public class ReportsPage extends BasePage {
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Timeout")) {
 			List<String[]> timeoutList = new ArrayList<String[]>();
 			if (usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
-				timeoutList = dbUtils.timeoutReport(mobileNumFromIni(usrData), "SUCCESS");
+				timeoutList = dbUtils.timeoutReport(mobileNumFromIni(), "SUCCESS");
 			} else {
-				timeoutList = dbUtils.timeoutReport(mobileNumFromIni(usrData), "UNKNOWN");
+				timeoutList = dbUtils.timeoutReport(mobileNumFromIni(), "UNKNOWN");
 			}
 			list = timeoutList;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Refund Report")) {
-			List<String[]> refundList = dbUtils.refundReport(mobileNumFromIni(usrData));
+			List<String[]> refundList = dbUtils.refundReport(mobileNumFromIni());
 			list = refundList;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
 				&& usrData.get("STATUS").equalsIgnoreCase("MT")) {
 			if (getPartner("GetPartner").equalsIgnoreCase("RBL")) {
-				List<String[]> accountStatementMT = dbUtils.accountStatementMT(mobileNumFromIni(usrData));
+				List<String[]> accountStatementMT = dbUtils.accountStatementMT(mobileNumFromIni());
 				list = accountStatementMT;
 			} else if (getPartner("GetPartner").equalsIgnoreCase("FINO")) {
-				List<String[]> accountStatementMT = dbUtils.accountStatementMTFt(mobileNumFromIni(usrData));
+				List<String[]> accountStatementMT = dbUtils.accountStatementMTFt(mobileNumFromIni());
 				list = accountStatementMT;
 			}
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
 				&& usrData.get("STATUS").equalsIgnoreCase("BEN_VAL")) {
-			List<String[]> accountStatementBV = dbUtils.accountStatementBV(mobileNumFromIni(usrData));
+			List<String[]> accountStatementBV = dbUtils.accountStatementBV(mobileNumFromIni());
 			list = accountStatementBV;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
 				&& usrData.get("STATUS").equalsIgnoreCase("AEPS")) {
-			List<String[]> accountStatementAEPS = dbUtils.accountStatementAEPS(mobileNumFromIni(usrData));
+			List<String[]> accountStatementAEPS = dbUtils.accountStatementAEPS(mobileNumFromIni());
 			list = accountStatementAEPS;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
 				&& usrData.get("STATUS").equalsIgnoreCase("CMS")) {
-			List<String[]> accountStatementCMS = dbUtils.accountStatementCMS(mobileNumFromIni(usrData),
+			List<String[]> accountStatementCMS = dbUtils.accountStatementCMS(mobileNumFromIni(),
 					usrData.get("STATUS"));
 			list = accountStatementCMS;
 		}
@@ -257,21 +249,5 @@ public class ReportsPage extends BasePage {
 			System.out.print(listFromUI.get(i) + " | ");
 		}
 		System.out.println();
-	}
-
-	public String mobileNumFromIni(Map<String, String> usrData) {
-		return getLoginMobileFromIni("RetailerMobNum");
-	}
-
-	public void waitForSpinner() {
-		wait.until(ExpectedConditions
-				.invisibilityOfElementLocated(By.xpath("//div[contains(@class,'spinner')]/parent::div")));
-		Log.info("Please wait...");
-	}
-
-	// Remove rupee symbol and comma from the string
-	public String replaceSymbols(String element) {
-		String editedElement = element.replaceAll("₹", "").replaceAll(",", "").trim();
-		return editedElement;
 	}
 }
