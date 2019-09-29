@@ -2,6 +2,7 @@ package in.novopay.platform_ui.utils;
 
 import java.util.Map;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -18,6 +19,15 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//h4[contains(text(),'Welcome')]/parent::div/following-sibling::div[2]/button")
 	WebElement welcomeOKButton;
+
+	@FindBy(xpath = "//button[contains(text(),'I Will Check Later')]")
+	WebElement banner;
+
+	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
+	WebElement menu;
+
+	@FindBy(xpath = "//*[@class='slimScrollBar']")
+	WebElement scrollBar;
 
 	@FindBy(xpath = "//i[contains(@class,'np np-refresh')]")
 	WebElement refreshButton;
@@ -42,10 +52,10 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//span[contains(text(),'merchant balance')]/parent::p/following-sibling::p/span")
 	WebElement merchantWalletBalance;
-	
+
 	@FindBy(xpath = "//div[contains(@class,'spinner')]/parent::div")
 	WebElement spinner;
-	
+
 	@FindBy(xpath = "//button[contains(text(),'OK. Got it!')]")
 	WebElement welcomeButton;
 
@@ -66,9 +76,15 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
 	WebElement chooseWalletProceedButton;
+	
+	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Cancel')]")
+	WebElement chooseWalletCancelButton;
 
 	@FindBy(xpath = "//*[@for='agent-wallet']//small")
-	WebElement chooseWalletErrorMsg;
+	WebElement chooseWalletMainErrorMsg;
+
+	@FindBy(xpath = "//*[@for='cashout-wallet']//small")
+	WebElement chooseWalletCashoutErrorMsg;
 
 	@FindBy(xpath = "//table//tr[contains(@class,'table-row')][1]")
 	WebElement firstTxnInList;
@@ -89,7 +105,7 @@ public class CommonUtils extends BasePage {
 				Log.info("Welcome pop-up displayed");
 				waitUntilElementIsClickableAndClickTheElement(welcomeOKButton);
 				Log.info("OK button clicked");
-				waitUntilElementIsInvisible(welcomeButton);
+				waitUntilElementIsInvisible("//button[contains(text(),'OK. Got it!')]");
 				Log.info("Pop-up disappeared");
 			} catch (Exception e) {
 				Log.info("No pop-up displayed");
@@ -97,9 +113,28 @@ public class CommonUtils extends BasePage {
 		}
 	}
 
+	public void selectFeatureFromMenu1(WebElement feature, WebElement pageTitle) throws InterruptedException {
+		clickElement(menu);
+		scrollElementDown(scrollBar, feature);
+		Log.info("Money Transfer option clicked");
+		waitUntilElementIsVisible(pageTitle);
+		Log.info(pageTitle.getText() + " page displayed");
+		clickElement(menu);
+	}
+
+	public void selectFeatureFromMenu2(WebElement feature, WebElement pageTitle) throws InterruptedException {
+		clickElement(menu);
+		refreshBalance();
+		scrollElementDown(scrollBar, feature);
+		Log.info("Money Transfer option clicked");
+		waitUntilElementIsVisible(pageTitle);
+		Log.info(pageTitle.getText() + " page displayed");
+		clickElement(menu);
+	}
+
 	// Wait for screen to complete loading
 	public void waitForSpinner() {
-		waitUntilElementIsInvisible(spinner);
+		waitUntilElementIsInvisible("//div[contains(@class,'spinner')]/parent::div");
 		Log.info("Please wait...");
 	}
 
@@ -138,10 +173,8 @@ public class CommonUtils extends BasePage {
 		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
 
 		// Compare wallet balance shown in WebApp to DB
-		if (usrData.get("ASSERTION").equals("Initial Balance")) {
-			Assert.assertEquals(walletBal, initialWalletBal);
-			Assert.assertEquals(cashoutBal, initialCashoutBal);
-		}
+		Assert.assertEquals(walletBal, initialWalletBal);
+		Assert.assertEquals(cashoutBal, initialCashoutBal);
 
 		if (wallet.equalsIgnoreCase("retailer")) {
 			Log.info("Retailer Balance: " + initialWalletBal);
@@ -185,22 +218,49 @@ public class CommonUtils extends BasePage {
 	}
 
 	// Choose Wallet screen
-	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException {
+	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException, ClassNotFoundException {
 		waitUntilElementIsVisible(chooseWalletScreen);
 		Log.info("Choose a Wallet screen displayed");
-//			Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
-//					getWalletBalanceFromIni("GetRetailer", ""));
+
+		// display wallet balances in console
+		displayInitialBalance("retailer"); // display main wallet balance
+		displayInitialBalance("cashout"); // display cashout wallet balance
+
+		Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
+				getWalletBalanceFromIni("GetRetailer", ""));
 		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Main < Amount")
+				|| usrData.get("ASSERTION").equalsIgnoreCase("Main=0 Cashout!=0")
+				|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
+			Assert.assertEquals(chooseWalletMainErrorMsg.getText(), "Balance is low!");
+			Log.info("Main wallet balance is low");
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
+		}
 		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
 				getWalletBalanceFromIni("GetCashout", ""));
 		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
-		mainWalletRadioButton.click();
-		Log.info("Main wallet radio button clicked");
-//			cashoutWalletRadioButton.click();
-//			Log.info("Cashout wallet radio button clicked");
-		waitUntilElementIsVisible(chooseWalletProceedButton);
-		chooseWalletProceedButton.click();
-		Log.info("Proceed button clicked");
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Cashout < Amount")
+				|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
+			Assert.assertEquals(chooseWalletCashoutErrorMsg.getText(), "Balance is low!");
+			Log.info("Cashout wallet balance is low");
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
+		}
+		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
+			mainWalletRadioButton.click();
+			Log.info("Main wallet radio button clicked");
+		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
+			cashoutWalletRadioButton.click();
+			Log.info("Cashout wallet radio button clicked");
+		}
+		if (!getWalletFromIni("GetWallet", "").equalsIgnoreCase("-")) {
+			waitUntilElementIsVisible(chooseWalletProceedButton);
+			chooseWalletProceedButton.click();
+			Log.info("Proceed button clicked");
+		} else {
+			waitUntilElementIsVisible(chooseWalletCancelButton);
+			chooseWalletCancelButton.click();
+			Log.info("Cancel button clicked");
+		}
 	}
 
 	public void selectTxn() throws ClassNotFoundException {

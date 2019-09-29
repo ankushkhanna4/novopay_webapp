@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
@@ -193,14 +194,14 @@ public class ServerUtils {
 		return null;
 	}
 
-	public void uploadFile(HashMap<String, String> batchConfig, String status) {
+	public void uploadFile(HashMap<String, String> batchConfig, String status) throws InterruptedException {
 		session = connectServer(JavaUtils.configProperties);
 		uploadFile(session, batchConfig.get("testdata.dir") + batchConfig.get("batch.file." + status.toLowerCase()),
 				batchConfig.get("batch.destination.file.name"), batchConfig.get("batch.destination.tmp.dir"),
 				batchConfig.get("batch.destination.config.dir"));
 	}
 
-	public boolean uploadFile(Session session, String source, String destFileName, String tmpDir, String configDir) {
+	public boolean uploadFile(Session session, String source, String destFileName, String tmpDir, String configDir) throws InterruptedException {
 		if ((null != jsch) && (null != session)) {
 			ChannelSftp m_channelSftp;
 			ChannelExec m_channelExec;
@@ -214,12 +215,24 @@ public class ServerUtils {
 				m_channelSftp.connect();
 				m_channelSftp.put(fin, tmpDir + destFileName, ChannelSftp.OVERWRITE);
 				m_channelSftp.exit();
-				m_channelExec = (ChannelExec) session.openChannel("exec");
+				
 				String cmd = "sudo -H -u tomcat bash -c 'cp -rf " + tmpDir + destFileName + " /apps/appconfig/'";
 				System.out.println(cmd);
+				
+				m_channelExec = (ChannelExec) session.openChannel("exec");
+				System.out.println("Open Channel");
 				m_channelExec.setCommand(cmd);
+				System.out.println("Setting command");
+				m_channelExec.setInputStream(null);
+				System.out.println("Setting InputStream");
+	            ((ChannelExec) m_channelExec).setErrStream(System.err);
+	            System.out.println("Setting ErrorStream");
+	            ((ChannelExec) m_channelExec).setPty(true);
+	            System.out.println("Setting Pseudo Terminal");
 				m_channelExec.connect();
+				System.out.println("Connecting...");
 				m_channelExec.disconnect();
+				System.out.println("Disconnecting...");
 				return true;
 			} catch (JSchException e) {
 				e.printStackTrace();

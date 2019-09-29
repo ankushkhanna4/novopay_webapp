@@ -753,7 +753,7 @@ public class YBLBankingPage extends BasePage {
 						Log.info(withdrawalFingerprintSuccess.getText());
 						withdrawalFingerprintScreenOkButton.click();
 						Log.info("Ok button clicked");
-						waitUntilElementIsInvisible(withdrawalFingerprintScreenOkButton);
+						waitUntilElementIsInvisible("//app-withdrawl//button[contains(text(),'Ok')]");
 						waitUntilElementIsVisible(withdrawalFingerprintGreen);
 						Assert.assertEquals("Fingerprint scanned successfully!", withdrawalFingerprintGreen.getText());
 						waitUntilElementIsClickableAndClickTheElement(withdrawalSubmit);

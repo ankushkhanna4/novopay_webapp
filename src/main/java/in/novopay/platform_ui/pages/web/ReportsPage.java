@@ -85,18 +85,20 @@ public class ReportsPage extends BasePage {
 			scrollElementDown(scrollBar, reports);
 			Log.info("Reports option clicked");
 			waitUntilElementIsVisible(reportsPage);
-			System.out.println("Reports page displayed");
+			Log.info("Reports page displayed");
 			waitUntilElementIsVisible(reportsDropdown);
 			clickElement(menu);
 
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Queued Transactions")
 					&& !usrData.get("STATUS").equalsIgnoreCase("INQUEUE")) {
-				Thread.sleep(90000);
-				if (usrData.get("STATUS").equalsIgnoreCase("UNKNOWN")
-						&& usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
-					dbUtils.updateRBLTxnStatus(dbUtils.selectPaymentRefCode());
-				}
+				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "SUCCESS");
 			}
+			Thread.sleep(4000);
+			if (usrData.get("STATUS").equalsIgnoreCase("UNKNOWN")
+					&& usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
+				dbUtils.updateRBLTxnStatus(dbUtils.selectPaymentRefCode());
+			}
+			
 			waitUntilElementIsClickableAndClickTheElement(reportsDropdown);
 			Log.info("Drop down clicked");
 			waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
@@ -119,6 +121,8 @@ public class ReportsPage extends BasePage {
 			commonUtils.waitForSpinner();
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Banks in Queue")) {
 				waitUntilElementIsVisible(bankNameColumn);
+			} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")) {
+				waitUntilElementIsVisible(txndateColumn);
 			} else {
 				waitUntilElementIsVisible(txnDateColumn);
 			}
@@ -220,8 +224,7 @@ public class ReportsPage extends BasePage {
 			list = accountStatementAEPS;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
 				&& usrData.get("STATUS").equalsIgnoreCase("CMS")) {
-			List<String[]> accountStatementCMS = dbUtils.accountStatementCMS(mobileNumFromIni(),
-					usrData.get("STATUS"));
+			List<String[]> accountStatementCMS = dbUtils.accountStatementCMS(mobileNumFromIni(), usrData.get("STATUS"));
 			list = accountStatementCMS;
 		}
 		List<String> listFromDB = new ArrayList<String>();

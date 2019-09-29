@@ -31,9 +31,6 @@ public class FinoStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//*[@id='sidebar']/div/div[1]/div[3]/div[1]/p[2]/span")
 	WebElement walletBalance;
 
-	@FindBy(xpath = "//h1[contains(text(),'Status Enquiry')]")
-	WebElement pageTitle;
-
 	@FindBy(xpath = "//select2[contains(@id,'status-enquiry-product')]/parent::div")
 	WebElement product;
 
@@ -142,6 +139,9 @@ public class FinoStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//*[@class='slimScrollBar']")
 	WebElement scrollBar;
 
+	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
+	WebElement pageTitle;
+
 	@FindBy(xpath = "//span[contains(text(),'Reports')]")
 	WebElement reports;
 
@@ -172,8 +172,16 @@ public class FinoStatusEnquiryPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
 			if (usrData.get("ASSERTION").contains("FCM")) {
+				String moneyTransferXpath = "//a[@href='/newportal/" + partner().toLowerCase()
+						+ "-transfer']/span[contains(text(),'Money Transfer')]";
 				clickElement(menu);
+				WebElement moneyTransfer = wdriver.findElement(By.xpath(moneyTransferXpath));
+				scrollElementDown(scrollBar, moneyTransfer);
+				Log.info("Money Transfer option clicked");
+				waitUntilElementIsVisible(pageTitle);
+				Log.info(pageTitle.getText() + " page displayed");
 				clickElement(menu);
+				
 				assertionOnRefundFCM(usrData);
 			} else {
 				if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
@@ -193,14 +201,17 @@ public class FinoStatusEnquiryPage extends BasePage {
 
 					if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
 						waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
+						pageCustMobNum.clear();
 						pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
 						Log.info("Customer mobile number entered");
 					} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
 						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+						pageTxnId.clear();
 						pageTxnId.sendKeys(txnID);
 						Log.info("Txn ID entered");
 					} else {
 						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+						pageTxnId.clear();
 						pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
 					}
 
@@ -233,7 +244,8 @@ public class FinoStatusEnquiryPage extends BasePage {
 						Thread.sleep(1000);
 						waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
 						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(confirmRefund);
+						waitUntilElementIsVisible(confirmRefund);
+						waitUntilElementIsClickableAndClickTheElement(confirmRefundOkBtn);
 						Thread.sleep(1000);
 						waitUntilElementIsVisible(custOTPScreen);
 						custOTP.click();

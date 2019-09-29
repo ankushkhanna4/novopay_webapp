@@ -478,6 +478,7 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("npOps"));
 			stmt = conn.createStatement();
 			stmt.execute(sql);
+			System.out.println("Updating status of " + batchName + " to " + status);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -505,6 +506,7 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("npRemittance"));
 			stmt = conn.createStatement();
 			stmt.execute(sql);
+			System.out.println("Updating status of txn with ref num " + paymentRefCode + " to UNKNOWN");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -1561,7 +1563,11 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public void modifyContract(String contract, String mobNum) throws ClassNotFoundException {
+	public void modifyContract(String contrct, String mobNum) throws ClassNotFoundException {
+		String contract = contrct;
+		if (contrct.equalsIgnoreCase("FINO | RBL")) {
+			contract = "FINO";
+		}
 		try {
 			conn = createConnection(configProperties.get("master"));
 			String deleteQuery = "DELETE FROM master.contract WHERE organization = (SELECT u.`organization` FROM `master`.`user` u "

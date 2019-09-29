@@ -57,7 +57,13 @@ public class SettingsPage extends BasePage {
 
 	@FindBy(xpath = "//h1[contains(text(),'Settings')]")
 	WebElement pageTitle;
-
+	
+	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
+	WebElement pageTitle2;
+	
+	@FindBy(xpath = "//a[@href='/newportal/rbl-transfer']/span[contains(text(),'Money Transfer')]")
+	WebElement moneyTransfer;
+	
 	@FindBy(xpath = "//span[contains(text(),'Capital First')]/parent::li")
 	WebElement capitalFirstIcon;
 
@@ -65,7 +71,7 @@ public class SettingsPage extends BasePage {
 	WebElement depositorMobNum;
 
 	@FindBy(xpath = "//label[@for='settlement-mode-retailer-credit']")
-	WebElement retailerCreditRadioButton;
+	WebElement doNotSettleRadioButton;
 
 	@FindBy(xpath = "//label[@for='settlement-mode-bank-account']")
 	WebElement bankAccountRadioButton;
@@ -193,246 +199,241 @@ public class SettingsPage extends BasePage {
 
 		try {
 
-			if (usrData.get("ASSERTION").contains("FCM")) {
-				assertionOnFCM(usrData);
+			// Updating org_stlmnt_info table as per test case
+			if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
+				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
+				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
+				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
+				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
+			}
+
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
+				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "1", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
+				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "3", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
+				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "4", "0", "Incorrect bank details", mobileNumFromIni());
+			}
+
+			commonUtils.selectFeatureFromMenu1(settings, pageTitle);
+			commonUtils.waitForSpinner();
+
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
+				waitUntilElementIsVisible(accountStatus);
+				Assert.assertEquals(accountStatus.getText(), "PENDING VERIFICATION");
+				Log.info("The status is " + accountStatus.getText());
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
+				waitUntilElementIsVisible(accountStatus);
+				Assert.assertEquals(accountStatus.getText(), "REJECTED");
+				Log.info("The status is " + accountStatus.getText());
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
+				waitUntilElementIsVisible(blockedIcon);
+				Log.info("The status is blocked");
+
+			}
+
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")
+					|| usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
+				Log.info("No edit is allowed on this page");
 			} else {
-				// Updating org_stlmnt_info table as per test case
-				if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
-					dbUtils.updateOrgSettlementInfo("TO_WALLET", "2", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("MODE").equalsIgnoreCase("Change to Retailer Credit")) {
-					dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
-					dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("MODE").equalsIgnoreCase("Keep Retailer Credit")) {
-					dbUtils.updateOrgSettlementInfo("TO_WALLET", "2", "1", "(NULL)", mobileNumFromIni());
-				}
-
-				if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
-					dbUtils.updateOrgSettlementInfo("TO_WALLET", "1", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
-					dbUtils.updateOrgSettlementInfo("TO_WALLET", "3", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-					dbUtils.updateOrgSettlementInfo("TO_WALLET", "4", "0", "Incorrect bank details",
-							mobileNumFromIni());
-				}
-
-				clickElement(menu);
-				scrollElementDown(scrollBar, settings);
-				Log.info("Settings option clicked");
-				waitUntilElementIsVisible(pageTitle);
-				System.out.println(pageTitle.getText() + " page displayed");
-				clickElement(menu);
-				commonUtils.waitForSpinner();
-
-				if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
-					waitUntilElementIsVisible(accountStatus);
-					Assert.assertEquals(accountStatus.getText(), "PENDING VERIFICATION");
-					Log.info("The status is " + accountStatus.getText());
-				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
-					waitUntilElementIsVisible(accountStatus);
-					Assert.assertEquals(accountStatus.getText(), "REJECTED");
-					Log.info("The status is " + accountStatus.getText());
-				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-					waitUntilElementIsVisible(blockedIcon);
-					Log.info("The status is blocked");
-
-				}
-
-				if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")
-						|| usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-					Log.info("No edit is allowed on this page");
-				} else {
-					// Changing mode
-					if (usrData.get("MODE").contains("Change")) {
-						if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
-							Thread.sleep(1000);
-							waitUntilElementIsClickableAndClickTheElement(bankAccountRadioButton);
-						} else if (usrData.get("MODE").equalsIgnoreCase("Change to Retailer Credit")) {
-							Thread.sleep(1000);
-							waitUntilElementIsClickableAndClickTheElement(retailerCreditRadioButton);
-						}
-						Log.info("Radio button clicked");
+				// Changing mode
+				if (usrData.get("MODE").contains("Change")) {
+					if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
 						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(saveChangesButton);
-						Log.info("Save changes button clicked");
+						waitUntilElementIsClickableAndClickTheElement(bankAccountRadioButton);
+					} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
+						Thread.sleep(1000);
+						waitUntilElementIsClickableAndClickTheElement(doNotSettleRadioButton);
 					}
+					Log.info("Radio button clicked");
+					Thread.sleep(1000);
+					waitUntilElementIsClickableAndClickTheElement(saveChangesButton);
+					Log.info("Save changes button clicked");
+				}
 
-					if (usrData.get("MODE").contains("Keep")) {
-						if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
-							waitUntilElementIsClickableAndClickTheElement(editButton);
-							waitUntilElementIsVisible(settingsTxnScreen);
-							Log.info("Txn screen displayed");
-							assertionOnInfoScreen(usrData);
-							waitUntilElementIsClickableAndClickTheElement(okButton);
-							Log.info("Ok button clicked");
-						} else if (usrData.get("MODE").equalsIgnoreCase("Keep Retailer Credit")) {
-							waitUntilElementIsClickableAndClickTheElement(editButton);
+				if (usrData.get("MODE").contains("Keep")) {
+					if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
+						waitUntilElementIsClickableAndClickTheElement(editButton);
+						waitUntilElementIsVisible(settingsTxnScreen);
+						Log.info("Txn screen displayed");
+						assertionOnInfoScreen(usrData);
+						waitUntilElementIsClickableAndClickTheElement(okButton);
+						Log.info("Ok button clicked");
+					} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
+						waitUntilElementIsClickableAndClickTheElement(editButton);
 
-							if (!usrData.get("ACHOLDERNAME").equalsIgnoreCase("SKIP")) {
-								Thread.sleep(1000);
-								waitUntilElementIsClickableAndClickTheElement(accHolderName);
-								accHolderName.clear();
-								accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
-								Log.info("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
+						if (!usrData.get("ACHOLDERNAME").equalsIgnoreCase("SKIP")) {
+							Thread.sleep(1000);
+							waitUntilElementIsClickableAndClickTheElement(accHolderName);
+							accHolderName.clear();
+							accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
+							Log.info("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
+							if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
 								waitUntilElementIsClickableAndClickTheElement(ifscCode);
 								ifscCode.clear();
-								if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
-									ifscCode.sendKeys(usrData.get("IFSCCODE"));
-									Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
-								} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Search Screen")) {
-									Log.info("IFSC search icon clicked");
-									waitUntilElementIsVisible(ifscSearchScreen);
-									waitUntilElementIsVisible(ifscSearchBankList);
-									ifscSearchBankList.click();
-									Log.info("IFSC bank drop down clicked");
-									String ifscBank = "//li[contains(text(),'"
-											+ dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank") + "')]";
-									WebElement ifscSearchBank = wdriver.findElement(By.xpath(ifscBank));
-									ifscSearchBank.click();
-									Log.info("IFSC bank selected");
-									ifscSearchStateList.click();
-									Log.info("IFSC state drop down clicked");
-									String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "state");
-									String stateFirstLetterCapitalized = stateFromDB.substring(0, 1).toUpperCase()
-											+ stateFromDB.substring(1).toLowerCase();
-									String ifscState = "//li[contains(text(),'" + stateFirstLetterCapitalized + "')]";
-									WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
-									ifscSearchState.click();
-									Log.info("IFSC state selected");
-									ifscSearchDistrict
-											.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "district"));
-									Log.info("IFSC district entered");
-									ifscSearchBranch
-											.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "branch"));
-									Log.info("IFSC branch entered");
-									ifscSearchButton.click();
-									Log.info("Search button clicked");
-									commonUtils.waitForSpinner();
-									waitUntilElementIsVisible(ifscSearchBack);
-									String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
-											+ usrData.get("IFSCCODE") + "')]/parent::li";
-									WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-									waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-									Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
-									ifscSearchOK.click();
-									Log.info("OK button clicked");
-								} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Drop Down")) {
-									String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
-											+ usrData.get("IFSCCODE") + "')]/parent::li";
-									WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-									waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-									Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
-								}
-								getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
-								waitUntilElementIsVisible(validateIFSC); // wait for Branch name
-								Log.info(validateIFSC.getText());
-
-								waitUntilElementIsClickableAndClickTheElement(accNumber);
-								accNumber.clear();
-								accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
-								Log.info("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
+								ifscCode.sendKeys(usrData.get("IFSCCODE"));
+								Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+							} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Search Screen")) {
+								waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
+								Log.info("IFSC search icon clicked");
+								waitUntilElementIsVisible(ifscSearchScreen);
+								waitUntilElementIsVisible(ifscSearchBankList);
+								ifscSearchBankList.click();
+								Log.info("IFSC bank drop down clicked");
+								String ifscBank = "//li[contains(text(),'"
+										+ dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank") + "')]";
+								WebElement ifscSearchBank = wdriver.findElement(By.xpath(ifscBank));
+								ifscSearchBank.click();
+								Log.info("IFSC bank selected");
+								ifscSearchStateList.click();
+								Log.info("IFSC state drop down clicked");
+								String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "state");
+								String stateCapitalized = stateFromDB.toUpperCase();
+								String ifscState = "//li[contains(text(),'" + stateCapitalized + "')]";
+								WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
+								ifscSearchState.click();
+								Log.info("IFSC state selected");
+								ifscSearchDistrict
+										.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "district"));
+								Log.info("IFSC district entered");
+								ifscSearchBranch.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "branch"));
+								Log.info("IFSC branch entered");
+								ifscSearchButton.click();
+								Log.info("Search button clicked");
+								commonUtils.waitForSpinner();
+								waitUntilElementIsVisible(ifscSearchBack);
+								String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
+										+ usrData.get("IFSCCODE") + "')]/parent::li";
+								WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
+								waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
+								Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+								ifscSearchOK.click();
+								Log.info("OK button clicked");
+							} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Drop Down")) {
+								waitUntilElementIsClickableAndClickTheElement(ifscCode);
+								ifscCode.clear();
+								String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
+										+ usrData.get("IFSCCODE") + "')]/parent::li";
+								WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
+								waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
+								Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
 							}
-							uploadFile(uploadFile);
-							Log.info("Image selected");
+							getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
+							waitUntilElementIsVisible(validateIFSC); // wait for Branch name
+							Log.info(validateIFSC.getText());
 
-							String buttonName = usrData.get("SETTINGSBUTTON");
-							String buttonXpath = "//button[contains(text(),'" + buttonName + "')]";
-							WebElement button = wdriver.findElement(By.xpath(buttonXpath));
-							Thread.sleep(3000);
-							waitUntilElementIsClickableAndClickTheElement(button);
-							if (buttonName.equalsIgnoreCase("Clear")) {
-								Thread.sleep(2000);
-								Log.info("Clear button clicked");
-							} else if (buttonName.equalsIgnoreCase("Submit")) {
-								Log.info("Submit button clicked");
-							}
+							waitUntilElementIsClickableAndClickTheElement(accNumber);
+							accNumber.clear();
+							accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
+							Log.info("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
+						}
+						uploadFile(uploadFile);
+						Log.info("Image selected");
+
+						String buttonName = usrData.get("SETTINGSBUTTON");
+						String buttonXpath = "//button[contains(text(),'" + buttonName + "')]";
+						WebElement button = wdriver.findElement(By.xpath(buttonXpath));
+						Thread.sleep(3000);
+						waitUntilElementIsClickableAndClickTheElement(button);
+						if (buttonName.equalsIgnoreCase("Clear")) {
+							Thread.sleep(2000);
+							Log.info("Clear button clicked");
+						} else if (buttonName.equalsIgnoreCase("Submit")) {
+							Log.info("Submit button clicked");
 						}
 					}
-					if (usrData.get("ASSERTION").equalsIgnoreCase("Same Data")) {
-						Assert.assertEquals(toasterMsg.getText(),
-								"The Bank detail provided already exists in our system, kindly check and update");
-						Log.info(toasterMsg.getText());
-					} else if (!usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")
-							&& !usrData.get("SETTINGSBUTTON").equalsIgnoreCase("Clear")) {
-						waitUntilElementIsVisible(MPINScreen);
-						Log.info("MPIN screen displayed");
-						waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-						} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							enterMPIN.sendKeys("9999");
-						}
-						Log.info("MPIN entered");
+				}
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Same Data")) {
+					Assert.assertEquals(toasterMsg.getText(),
+							"The Bank detail provided already exists in our system, kindly check and update");
+					Log.info(toasterMsg.getText());
+				} else if (!usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")
+						&& !usrData.get("SETTINGSBUTTON").equalsIgnoreCase("Clear")) {
+					waitUntilElementIsVisible(MPINScreen);
+					Log.info("MPIN screen displayed");
+					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+						enterMPIN.sendKeys("9999");
+					}
+					Log.info("MPIN entered");
 
-						String mpinButtonName = usrData.get("MPINSCREENBUTTON");
-						String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
-								+ "following-sibling::div/following-sibling::div/button[contains(text(),'"
-								+ mpinButtonName + "')]";
-						WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-						waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-						Log.info(mpinButtonName + " button clicked");
-						if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-							Log.info("Cancel button clicked");
-						} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
-							commonUtils.waitForSpinner();
-							waitUntilElementIsVisible(settingsTxnScreen);
-							Log.info("Txn screen displayed");
+					String mpinButtonName = usrData.get("MPINSCREENBUTTON");
+					String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
+							+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName
+							+ "')]";
+					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
+					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
+					Log.info(mpinButtonName + " button clicked");
+					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
+						Log.info("Cancel button clicked");
+					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(settingsTxnScreen);
+						Log.info("Txn screen displayed");
 
-							// Verify the details on transaction screen
-							if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
-								assertionOnSuccessScreen(usrData);
-								waitUntilElementIsClickableAndClickTheElement(doneButton);
-								Log.info("Done button clicked");
-							} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
-								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+						// Verify the details on transaction screen
+						if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
+							assertionOnSuccessScreen(usrData);
+							waitUntilElementIsClickableAndClickTheElement(doneButton);
+							Log.info("Done button clicked");
+							if (usrData.get("ASSERTION").contains("FCM")) {
+								commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
+								assertionOnFCM(usrData);
+							}
+						} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+								assertionOnFailedScreen(usrData);
+								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+									Log.info("Clicking exit button");
+								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+									retryButton.click();
+									waitUntilElementIsVisible(MPINScreen);
+									Log.info("MPIN screen displayed");
+									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+									Log.info("MPIN entered");
+									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+									Log.info("Submit button clicked");
+									commonUtils.waitForSpinner();
+									waitUntilElementIsVisible(settingsTxnScreen);
+									Log.info("Txn screen displayed");
 									assertionOnFailedScreen(usrData);
-									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-										Log.info("Clicking exit button");
-									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-										retryButton.click();
-										waitUntilElementIsVisible(MPINScreen);
-										Log.info("MPIN screen displayed");
-										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-										Log.info("MPIN entered");
-										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-										Log.info("Submit button clicked");
-										commonUtils.waitForSpinner();
-										waitUntilElementIsVisible(settingsTxnScreen);
-										Log.info("Txn screen displayed");
-										assertionOnFailedScreen(usrData);
-									}
-									waitUntilElementIsClickableAndClickTheElement(exitButton);
+								}
+								waitUntilElementIsClickableAndClickTheElement(exitButton);
+								Log.info("Exit button clicked");
+							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+								waitUntilElementIsVisible(settingsTxnScreenMessage);
+								Log.info(settingsTxnScreenMessage.getText());
+								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+									exitButton.click();
 									Log.info("Exit button clicked");
-								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-									waitUntilElementIsVisible(settingsTxnScreenMessage);
-									Log.info(settingsTxnScreenMessage.getText());
-									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-										exitButton.click();
-										Log.info("Exit button clicked");
-									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-										retryButton.click();
-										waitUntilElementIsVisible(MPINScreen);
-										Log.info("MPIN screen displayed");
-										Thread.sleep(1000);
-										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-										Log.info("MPIN entered");
-										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-										Log.info("Submit button clicked");
-										commonUtils.waitForSpinner();
-										waitUntilElementIsVisible(settingsTxnScreen);
-										Log.info("Txn screen displayed");
-										assertionOnSuccessScreen(usrData);
-										waitUntilElementIsClickableAndClickTheElement(doneButton);
-										Log.info("Done button clicked");
-									}
+								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+									retryButton.click();
+									waitUntilElementIsVisible(MPINScreen);
+									Log.info("MPIN screen displayed");
+									Thread.sleep(1000);
+									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+									Log.info("MPIN entered");
+									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+									Log.info("Submit button clicked");
+									commonUtils.waitForSpinner();
+									waitUntilElementIsVisible(settingsTxnScreen);
+									Log.info("Txn screen displayed");
+									assertionOnSuccessScreen(usrData);
+									waitUntilElementIsClickableAndClickTheElement(doneButton);
+									Log.info("Done button clicked");
 								}
 							}
-						} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
-							clearButton.click();
-							Log.info("Clear button clicked");
 						}
+					} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
+						clearButton.click();
+						Log.info("Clear button clicked");
 					}
 				}
 			}
@@ -447,13 +448,18 @@ public class SettingsPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		if (usrData.get("MODE").equalsIgnoreCase("Bank Account")) {
+		if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
-					"Your Cashout Balance and Merchant Balance will now be credited to your verified bank account on End of Day basis.");
+					"Your end of the day withdrawable amount will now be credited to your verified bank account.");
 			Log.info(settingsTxnScreenMessage.getText());
-		} else if (usrData.get("MODE").equalsIgnoreCase("Retailer Credit")) {
+		} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
-					"Your Cashout Balance and Merchant Balance will now be credited to your retailer wallet on End of Day basis.");
+					"You can now use your withdrawable amount for transaction purposes.");
+			Log.info(settingsTxnScreenMessage.getText());
+		} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
+			Assert.assertEquals(settingsTxnScreenMessage.getText(),
+					"The bank account details have been submitted for verification. "
+					+ "Amount shall not be settled to older account.");
 			Log.info(settingsTxnScreenMessage.getText());
 		}
 	}

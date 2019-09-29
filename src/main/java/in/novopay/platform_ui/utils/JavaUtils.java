@@ -182,20 +182,6 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.port", "1024");
 				configProperties.put("server.username", "akhanna");
 				configProperties.put("server.password", "akhanna123$");
-			} else if (env.equalsIgnoreCase("PS")) {
-				ini.put("Common", "webAppUrl", "https://retail-testing.psservices.org/");
-				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.7:3306/");
-				ini.put("Common", "env", "qa1");
-				configProperties.put("webAppUrl", "https://retail-testing.psservices.org");
-				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.7:3306/");
-			} else if (env.equalsIgnoreCase("UAT")) {
-				ini.put("Common", "webAppUrl", "https://uat-retailer.novopay.in/");
-				ini.put("Common", "dbUrl", "jdbc:mysql://localhost:8007/");
-				ini.put("Common", "mongoDbUrl", "localhost:37017/");
-				ini.put("Common", "env", "uat");
-				configProperties.put("webAppUrl", "https://uat-retailer.novopay.in/");
-				configProperties.put("dbUrl", "jdbc:mysql://localhost:8007/");
-				configProperties.put("mongoDbUrl", "localhost:37017/");
 			}
 			ini.store();
 			BasePage.wdriver = null;
@@ -434,15 +420,10 @@ public class JavaUtils extends LoadableComponent {
 			} else if (wallet.equalsIgnoreCase("cashout")) {
 				ini.put("RetailerData", "CashoutWalletBalance", balance);
 				ini.store();
-			} else if (wallet.equalsIgnoreCase("merchant")) {
-				ini.put("RetailerData", "MerchantWalletBalance", balance);
-				ini.store();
 			} else if (wallet.equalsIgnoreCase("GetRetailer")) {
 				return ini.get("RetailerData", "RetailerWalletBalance");
 			} else if (wallet.equalsIgnoreCase("GetCashout")) {
 				return ini.get("RetailerData", "CashoutWalletBalance");
-			} else if (wallet.equalsIgnoreCase("GetMerchant")) {
-				return ini.get("RetailerData", "MerchantWalletBalance");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -542,7 +523,23 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-
+	
+	public String getWalletFromIni(String type, String wallet) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (type.equalsIgnoreCase("StoreWallet")) {
+				ini.put("Wallet", "Wallet", wallet);
+				ini.store();
+			} else if (type.equalsIgnoreCase("GetWallet")) {
+				return ini.get("Wallet", "Wallet");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public String getValueFromIni(String key) {
 		Ini ini;
 		try {

@@ -31,14 +31,17 @@ public class RBLStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//*[@id='sidebar']/div/div[1]/div[3]/div[1]/p[2]/span")
 	WebElement walletBalance;
 
-	@FindBy(xpath = "//h1[contains(text(),'Status Enquiry')]")
-	WebElement pageTitle;
-
 	@FindBy(xpath = "//select2[contains(@id,'status-enquiry-product')]/parent::div")
 	WebElement product;
 
 	@FindBy(xpath = "//li[contains(text(),'Money Transfer')]")
 	WebElement moneyTransferProduct;
+	
+	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
+	WebElement pageTitle2;
+	
+	@FindBy(xpath = "//a[@href='/newportal/rbl-transfer']/span[contains(text(),'Money Transfer')]")
+	WebElement moneyTransfer;
 
 	@FindBy(id = "status-enquiry-txn-id")
 	WebElement txnId;
@@ -142,6 +145,9 @@ public class RBLStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//*[@class='slimScrollBar']")
 	WebElement scrollBar;
 
+	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
+	WebElement pageTitle;
+
 	@FindBy(xpath = "//span[contains(text(),'Reports')]")
 	WebElement reports;
 
@@ -179,113 +185,93 @@ public class RBLStatusEnquiryPage extends BasePage {
 			} else if (usrData.get("STATUS").equalsIgnoreCase("Queued")) {
 				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "STOPPED");
 			}
-			if (usrData.get("ASSERTION").contains("FCM")) {
+			if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
+				statusEnquirySection(usrData);
 				clickElement(menu);
 				clickElement(menu);
-				assertionOnRefundFCM(usrData);
-			} else {
-				if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
-					statusEnquirySection(usrData);
-					clickElement(menu);
-					clickElement(menu);
-					Thread.sleep(2000);
-				} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
-					clickElement(menu);
-					clickElement(menu);
-					Thread.sleep(2000);
-					clickElement(menu);
-					scrollElementDown(scrollBar, reports);
-					Log.info("Reports option clicked");
-					waitUntilElementIsVisible(reportsPage);
-					clickElement(menu);
+				Thread.sleep(2000);
+			} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
+				clickElement(menu);
+				clickElement(menu);
+				Thread.sleep(2000);
+				clickElement(menu);
+				scrollElementDown(scrollBar, reports);
+				Log.info("Reports option clicked");
+				waitUntilElementIsVisible(reportsPage);
+				clickElement(menu);
 
-					if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
-						waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
-						pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
-						Log.info("Customer mobile number entered");
-					} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
-						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
-						pageTxnId.sendKeys(txnID);
-						Log.info("Txn ID entered");
-					} else {
-						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
-						pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
-					}
-
-					waitUntilElementIsVisible(pageSubmitButton);
-					pageSubmitButton.click();
-					Log.info("Submit button clicked");
-					Thread.sleep(3000);
-					commonUtils.waitForSpinner();
-				}
-				if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
-					waitUntilElementIsVisible(toasterMsg);
-					Assert.assertEquals("No Transaction available", toasterMsg.getText());
+				if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
+					waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
+					pageCustMobNum.clear();
+					pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
+					Log.info("Customer mobile number entered");
+				} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
+					waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+					pageTxnId.clear();
+					pageTxnId.sendKeys(txnID);
+					Log.info("Txn ID entered");
 				} else {
-					reportsData(usrData);
-					selectTxn();
-					Log.info("Status enquiry of " + usrData.get("STATUS") + " Transaction");
+					waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+					pageTxnId.clear();
+					pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
+				}
+
+				waitUntilElementIsVisible(pageSubmitButton);
+				pageSubmitButton.click();
+				Log.info("Submit button clicked");
+				Thread.sleep(3000);
+				commonUtils.waitForSpinner();
+			}
+			if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
+				waitUntilElementIsVisible(toasterMsg);
+				Assert.assertEquals("No Transaction available", toasterMsg.getText());
+			} else {
+				reportsData(usrData);
+				selectTxn();
+				Log.info("Status enquiry of " + usrData.get("STATUS") + " Transaction");
+				Thread.sleep(1000);
+				waitUntilElementIsVisible(seTxnTitle);
+				assertionOnTxnScreen(usrData);
+				if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
+					seDoneBtn.click();
+				} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
+						|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
+					seDoneBtn.click();
+				} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
+					seDoneBtn.click();
+				} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
+					closeRefundBtn.click();
+				} else if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
 					Thread.sleep(1000);
-					waitUntilElementIsVisible(seTxnTitle);
-					assertionOnTxnScreen(usrData);
-					if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
+					waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
+					Thread.sleep(1000);
+					waitUntilElementIsVisible(confirmRefund);
+					waitUntilElementIsClickableAndClickTheElement(confirmRefundOkBtn);
+					Thread.sleep(1000);
+					waitUntilElementIsVisible(custOTPScreen);
+					custOTP.click();
+					if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
+						custOTP.sendKeys(getAuthfromIni(otpFromIni()));
+						Log.info("Refund OTP entered");
+						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(seTxnTitle);
 						seDoneBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
-							|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
-						seDoneBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
-						seDoneBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
-						closeRefundBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
-						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
-						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(confirmRefund);
-						Thread.sleep(1000);
-						waitUntilElementIsVisible(custOTPScreen);
-						custOTP.click();
-						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-							Log.info("Refund OTP entered");
-							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(pageTxnId);
+						Log.info("Refund successful");
+					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
+							|| usrData.get("OTP").equalsIgnoreCase("Retry")) {
+						custOTP.sendKeys("111111");
+						Log.info("Refund OTP entered");
+						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(seTxnTitle);
+						Assert.assertEquals("Invalid Verification Code", failSeTxnMsg.getText());
+						Log.info(failSeTxnMsg.getText());
+						if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
+							seRetryBtn.click();
 							commonUtils.waitForSpinner();
-							waitUntilElementIsVisible(seTxnTitle);
-							seDoneBtn.click();
-							commonUtils.waitForSpinner();
-							waitUntilElementIsVisible(pageTxnId);
-							Log.info("Refund successful");
-						} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
-								|| usrData.get("OTP").equalsIgnoreCase("Retry")) {
-							custOTP.sendKeys("111111");
-							Log.info("Refund OTP entered");
-							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
-							commonUtils.waitForSpinner();
-							waitUntilElementIsVisible(seTxnTitle);
-							Assert.assertEquals("Invalid Verification Code", failSeTxnMsg.getText());
-							Log.info(failSeTxnMsg.getText());
-							if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
-								seRetryBtn.click();
-								commonUtils.waitForSpinner();
-								waitUntilElementIsVisible(custOTPScreen);
-								waitUntilElementIsClickableAndClickTheElement(custOTP);
-								custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-								Log.info("Refund OTP entered");
-								waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
-								commonUtils.waitForSpinner();
-								waitUntilElementIsVisible(seTxnTitle);
-								assertionOnTxnScreen(usrData);
-								waitUntilElementIsClickableAndClickTheElement(seDoneBtn);
-								commonUtils.waitForSpinner();
-								waitUntilElementIsVisible(pageTxnId);
-								Log.info("Refund successful");
-							} else {
-								waitUntilElementIsClickableAndClickTheElement(seExitBtn);
-							}
-						} else if (usrData.get("OTP").equalsIgnoreCase("Cancel")) {
-							otpCancelBtn.click();
-						} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-							waitUntilElementIsClickableAndClickTheElement(otpResendBtn);
 							waitUntilElementIsVisible(custOTPScreen);
 							waitUntilElementIsClickableAndClickTheElement(custOTP);
 							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
@@ -293,11 +279,33 @@ public class RBLStatusEnquiryPage extends BasePage {
 							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(seTxnTitle);
-							seDoneBtn.click();
+							assertionOnTxnScreen(usrData);
+							waitUntilElementIsClickableAndClickTheElement(seDoneBtn);
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(pageTxnId);
 							Log.info("Refund successful");
+						} else {
+							waitUntilElementIsClickableAndClickTheElement(seExitBtn);
 						}
+					} else if (usrData.get("OTP").equalsIgnoreCase("Cancel")) {
+						otpCancelBtn.click();
+					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
+						waitUntilElementIsClickableAndClickTheElement(otpResendBtn);
+						waitUntilElementIsVisible(custOTPScreen);
+						waitUntilElementIsClickableAndClickTheElement(custOTP);
+						custOTP.sendKeys(getAuthfromIni(otpFromIni()));
+						Log.info("Refund OTP entered");
+						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(seTxnTitle);
+						seDoneBtn.click();
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(pageTxnId);
+						Log.info("Refund successful");
+					}
+					if (usrData.get("ASSERTION").contains("FCM")) {
+						commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
+						assertionOnRefundFCM(usrData);
 					}
 				}
 			}

@@ -115,9 +115,8 @@ public class LoginPage extends BasePage {
 						&& (usrData.get("MPIN").equals("1111") || usrData.get("MPIN").equals("2222"))) {
 					commonUtils.waitForSpinner();
 					String txnOtp = "";
-					Thread.sleep(2000);
+					Thread.sleep(1000);
 					waitUntilElementIsClickableAndClickTheElement(otp);
-					otp.clear();
 					Log.info("entering OTP");
 					if (usrData.get("OTP").equalsIgnoreCase("Yes")) {
 						txnOtp = getAuthfromIni("LoginOTP");

@@ -57,14 +57,14 @@ public class SettlementPage extends BasePage {
 
 	@FindBy(xpath = "//*[contains(@id,'select2')]/li[contains(text(),'Bank account')]")
 	WebElement bankAccountDropDownValue;
-//Bank account (12346565484, HDFC Bank )
+
 	@FindBy(xpath = "//*[contains(@id,'select2')]/li[contains(text(),'Wallet Balance')]")
 	WebElement retailerCreditDropDownValue;
-//Wallet Balance (₹ 9,94,910)
+
 	@FindBy(id = "money-transfer-amount-to-be-transferred")
 	WebElement amountField;
 
-	@FindBy(xpath = "//*[@id='money-transfer-amount-to-be-transferred']/following-sibling::ul/li")
+	@FindBy(xpath = "//*[@id='money-transfer-amount-to-be-transferred']/parent::div/following-sibling::div//li")
 	WebElement amountErrorMsg;
 
 	@FindBy(xpath = "//button[contains(@class,'input-group-addon btn-icon')]")
@@ -190,204 +190,188 @@ public class SettlementPage extends BasePage {
 			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
-			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
-			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store cashout wallet balance
+			// Updating org_stlmnt_info table as per test case
+			if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
+				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")) {
+				dbUtils.updateOrgSettlementInfo("TO_BANK", "1", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Rejected")) {
+				dbUtils.updateOrgSettlementInfo("TO_BANK", "3", "1", "(NULL)", mobileNumFromIni());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
+				dbUtils.updateOrgSettlementInfo("TO_BANK", "4", "0", "Incorrect bank details", mobileNumFromIni());
+			}
 
-			if (usrData.get("ASSERTION").contains("FCM")) {
-				assertionOnFCM(usrData);
-			} else {
-				// Updating org_stlmnt_info table as per test case
-				if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
-					dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("MODE").equalsIgnoreCase("Pending")) {
-					dbUtils.updateOrgSettlementInfo("TO_BANK", "1", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("MODE").equalsIgnoreCase("Rejected")) {
-					dbUtils.updateOrgSettlementInfo("TO_BANK", "3", "1", "(NULL)", mobileNumFromIni());
-				} else if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
-					dbUtils.updateOrgSettlementInfo("TO_BANK", "4", "0", "Incorrect bank details", mobileNumFromIni());
+			commonUtils.selectFeatureFromMenu1(manageWalletButton, pageTitle);
+
+//				Thread.sleep(2000);
+			waitUntilElementIsClickableAndClickTheElement(cashoutTab);
+			Log.info("Cashout tab clicked");
+
+//				Thread.sleep(2000);
+			commonUtils.waitForSpinner();
+
+			if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
+				waitUntilElementIsVisible(blockedMessage);
+				Assert.assertEquals(blockedMessage.getText(),
+						"Not allowed as settlement is blocked. Please contact customer support.");
+				Log.info(blockedMessage.getText());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")
+					|| usrData.get("MODE").equalsIgnoreCase("Rejected")) {
+				waitUntilElementIsVisible(blockedMessage);
+				Assert.assertEquals(blockedMessage.getText(),
+						"Settlement not allowed as your settlement details have either been rejected or "
+								+ "pending for verification. Please contact customer support for further assistance.");
+				Log.info(blockedMessage.getText());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
+				waitUntilElementIsVisible(cashoutBalanceField);
+				waitUntilElementIsClickableAndClickTheElement(toDropDown);
+				Log.info("Drop down clicked");
+
+				bankAccountDropDownValue.click();
+				Log.info(usrData.get("TODROPDOWN") + "selected");
+
+				waitUntilElementIsClickableAndClickTheElement(amountField);
+				amountField.sendKeys(usrData.get("AMOUNT"));
+				Log.info("Amount entered");
+
+				// Field level validation in Amount field
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
+					waitUntilElementIsVisible(amountErrorMsg);
+					Assert.assertEquals(amountErrorMsg.getText().substring(0, 49),
+							"Amount entered exceeds your cashout balance limit");
+					Log.info(amountErrorMsg.getText());
+					dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
+				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
+					waitUntilElementIsVisible(amountErrorMsg);
+					Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹10.00");
+					Log.info(amountErrorMsg.getText());
 				}
 
-				clickElement(menu);
-				waitUntilElementIsClickableAndClickTheElement(manageWalletButton);
-				Log.info("Manage Wallet button clicked");
-				waitUntilElementIsVisible(pageTitle);
-				System.out.println(pageTitle.getText() + " page displayed");
-				clickElement(menu);
-
-				Thread.sleep(2000);
-				waitUntilElementIsClickableAndClickTheElement(cashoutTab);
-				Log.info("Cashout tab clicked");
-
-				Thread.sleep(2000);
-				commonUtils.waitForSpinner();
-
-				if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
-					waitUntilElementIsVisible(blockedMessage);
-					Assert.assertEquals(blockedMessage.getText(),
-							"Not allowed as settlement is blocked. Please contact customer support.");
-					Log.info(blockedMessage.getText());
-				} else {
-					waitUntilElementIsVisible(cashoutBalanceField);
-					waitUntilElementIsClickableAndClickTheElement(toDropDown);
-					Log.info("Drop down clicked");
-
-					int valueCount = wdriver.findElements(By.xpath("//ul[contains(@class,'select2')]/li")).size();
-					if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
-						Assert.assertEquals(valueCount, 2);
-						Log.info("Both dropdown values displayed");
-					} else {
-						Assert.assertEquals(valueCount, 1);
-						Log.info("Only Retailer Credit dropdown value displayed");
+				if (!(usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("SKIP")
+						|| (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")))) {
+					String buttonName = usrData.get("SETTLEMENTBUTTON");
+					String buttonXpath = "//*[@id='cashout-balance-form']//button[contains(text(),'" + buttonName
+							+ "')]";
+					WebElement button = wdriver.findElement(By.xpath(buttonXpath));
+					Thread.sleep(1000);
+					waitUntilElementIsClickableAndClickTheElement(button);
+					if (buttonName.equalsIgnoreCase("Clear")) {
+						Thread.sleep(2000);
+						Log.info("Clear button clicked");
+					} else if (buttonName.equalsIgnoreCase("Submit")) {
+						Log.info("Submit button clicked");
 					}
-					if (usrData.get("TODROPDOWN").equalsIgnoreCase("Bank Account")) {
-						bankAccountDropDownValue.click();
-					} else if (usrData.get("TODROPDOWN").equalsIgnoreCase("Retailer Credit")) {
-						retailerCreditDropDownValue.click();
+				}
+
+				if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Submit")) {
+					waitUntilElementIsVisible(MPINScreen);
+					Log.info("MPIN screen displayed");
+					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+						enterMPIN.sendKeys("9999");
 					}
-					Log.info(usrData.get("TODROPDOWN") + "selected");
+					Log.info("MPIN entered");
 
-					waitUntilElementIsClickableAndClickTheElement(amountField);
-					amountField.sendKeys(usrData.get("AMOUNT"));
-					Log.info("Amount entered");
-
-					// Field level validation in Amount field
-					if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-						waitUntilElementIsVisible(amountErrorMsg);
-						Assert.assertEquals(amountErrorMsg.getText().substring(0, 49),
-								"Amount entered exceeds your cashout balance limit");
-						Log.info(amountErrorMsg.getText());
-						dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
-					} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
-						waitUntilElementIsVisible(amountErrorMsg);
-						Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹10.00");
-						Log.info(amountErrorMsg.getText());
+					if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
+						dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "0");
 					}
 
-					if (!(usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("SKIP")
-							|| (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")))) {
-						String buttonName = usrData.get("SETTLEMENTBUTTON");
-						String buttonXpath = "//*[@id='cashout-balance-form']//button[contains(text(),'" + buttonName
-								+ "')]";
-						WebElement button = wdriver.findElement(By.xpath(buttonXpath));
-						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(button);
-						if (buttonName.equalsIgnoreCase("Clear")) {
-							Thread.sleep(2000);
-							Log.info("Clear button clicked");
-						} else if (buttonName.equalsIgnoreCase("Submit")) {
-							Log.info("Submit button clicked");
-						}
-					}
+					String mpinButtonName = usrData.get("MPINSCREENBUTTON");
+					String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
+							+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName
+							+ "')]";
+					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
+					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
+					Log.info(mpinButtonName + " button clicked");
+					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
+						Log.info("Cancel button clicked");
+						commonUtils.waitForSpinner();
+					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
+						if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
+							waitUntilElementIsVisible(processingScreen);
+							Log.info("Processing screen displayed");
+							waitUntilElementIsVisible(processInBackgroundButton);
+							processInBackgroundButton.click();
+							Log.info("Process in Background button clicked");
+						} else {
+							waitUntilElementIsVisible(settlementTxnScreen);
+							Log.info("Txn screen displayed");
 
-					if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Submit")) {
-						waitUntilElementIsVisible(MPINScreen);
-						Log.info("MPIN screen displayed");
-						waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-						} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							enterMPIN.sendKeys("9999");
-						}
-						Log.info("MPIN entered");
-
-						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
-							dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "0");
-						}
-
-						String mpinButtonName = usrData.get("MPINSCREENBUTTON");
-						String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
-								+ "following-sibling::div/following-sibling::div/button[contains(text(),'"
-								+ mpinButtonName + "')]";
-						WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-						waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-						Log.info(mpinButtonName + " button clicked");
-						if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-							Log.info("Cancel button clicked");
-							commonUtils.waitForSpinner();
-						} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
-							if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
-								waitUntilElementIsVisible(processingScreen);
-								Log.info("Processing screen displayed");
-								waitUntilElementIsVisible(processInBackgroundButton);
-								processInBackgroundButton.click();
-								Log.info("Process in Background button clicked");
-							} else {
-								waitUntilElementIsVisible(settlementTxnScreen);
-								Log.info("Txn screen displayed");
-
-								// Verify the details on transaction screen
-								if (settlementTxnScreen.getText().equalsIgnoreCase("Success!")) {
-									assertionOnSuccessScreen(usrData);
-									waitUntilElementIsClickableAndClickTheElement(doneButton);
-									Log.info("Done button clicked");
-									commonUtils.waitForSpinner();
-									verifyUpdatedBalanceAfterSuccessTxn(usrData, initialCashoutBalance,
-											initialWalletBalance);
-									assertionOnSMS(usrData);
-								} else if (settlementTxnScreen.getText().equalsIgnoreCase("Failed!")) {
-									if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+							// Verify the details on transaction screen
+							if (settlementTxnScreen.getText().equalsIgnoreCase("Success!")) {
+								assertionOnSuccessScreen(usrData);
+								waitUntilElementIsClickableAndClickTheElement(doneButton);
+								Log.info("Done button clicked");
+								if (usrData.get("ASSERTION").contains("FCM")) {
+									assertionOnFCM(usrData);
+								}
+								commonUtils.waitForSpinner();
+								verifyUpdatedBalanceAfterSuccessTxn(usrData);
+								assertionOnSMS(usrData);
+							} else if (settlementTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+									assertionOnFailedScreen(usrData);
+									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+										Log.info("Clicking exit button");
+									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+										retryButton.click();
+										Thread.sleep(1000);
+										waitUntilElementIsVisible(MPINScreen);
+										Log.info("MPIN screen displayed");
+										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+										Log.info("MPIN entered");
+										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+										Log.info("Submit button clicked");
+										commonUtils.waitForSpinner();
+										waitUntilElementIsVisible(settlementTxnScreen);
+										Log.info("Txn screen displayed");
 										assertionOnFailedScreen(usrData);
-										if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-											Log.info("Clicking exit button");
-										} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-											retryButton.click();
-											Thread.sleep(1000);
-											waitUntilElementIsVisible(MPINScreen);
-											Log.info("MPIN screen displayed");
-											waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-											enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-											Log.info("MPIN entered");
-											waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-											Log.info("Submit button clicked");
-											commonUtils.waitForSpinner();
-											waitUntilElementIsVisible(settlementTxnScreen);
-											Log.info("Txn screen displayed");
-											assertionOnFailedScreen(usrData);
-										}
-										waitUntilElementIsClickableAndClickTheElement(exitButton);
+									}
+									waitUntilElementIsClickableAndClickTheElement(exitButton);
+									Log.info("Exit button clicked");
+								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+									waitUntilElementIsVisible(settlementTxnFailScreenMessage);
+									Log.info(settlementTxnFailScreenMessage.getText());
+									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+										exitButton.click();
 										Log.info("Exit button clicked");
-									} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-										waitUntilElementIsVisible(settlementTxnFailScreenMessage);
-										Log.info(settlementTxnFailScreenMessage.getText());
-										if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-											exitButton.click();
-											Log.info("Exit button clicked");
-										} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-											retryButton.click();
-											Thread.sleep(1000);
-											waitUntilElementIsVisible(MPINScreen);
-											Log.info("MPIN screen displayed");
-											waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-											enterMPIN.click();
-											enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-											Log.info("MPIN entered");
-											waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-											submitMPIN.click();
-											Log.info("Submit button clicked");
-											commonUtils.waitForSpinner();
-											waitUntilElementIsVisible(settlementTxnScreen);
-											Log.info("Txn screen displayed");
-											assertionOnSuccessScreen(usrData);
-											waitUntilElementIsClickableAndClickTheElement(doneButton);
-											Log.info("Done button clicked");
-											commonUtils.waitForSpinner();
-											verifyUpdatedBalanceAfterSuccessTxn(usrData, initialCashoutBalance,
-													initialWalletBalance);
-										}
+									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+										retryButton.click();
+										Thread.sleep(1000);
+										waitUntilElementIsVisible(MPINScreen);
+										Log.info("MPIN screen displayed");
+										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+										enterMPIN.click();
+										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+										Log.info("MPIN entered");
+										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+										Log.info("Submit button clicked");
+										commonUtils.waitForSpinner();
+										waitUntilElementIsVisible(settlementTxnScreen);
+										Log.info("Txn screen displayed");
+										assertionOnSuccessScreen(usrData);
+										waitUntilElementIsClickableAndClickTheElement(doneButton);
+										Log.info("Done button clicked");
+										commonUtils.waitForSpinner();
+										verifyUpdatedBalanceAfterSuccessTxn(usrData);
 									}
 								}
 							}
-						} else if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")) {
-							waitUntilElementIsClickableAndClickTheElement(applicableChargesButton);
-							waitUntilElementIsVisible(applicableChargesScreen);
-							assertionOnApplicableCharges(usrData);
-							applicableChargesOkButton.click();
 						}
-
 					}
+				} else if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")) {
+					waitUntilElementIsClickableAndClickTheElement(applicableChargesButton);
+					waitUntilElementIsVisible(applicableChargesScreen);
+					assertionOnApplicableCharges(usrData);
+					applicableChargesOkButton.click();
 				}
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
 			Log.info("Test Case Failed");
@@ -423,25 +407,15 @@ public class SettlementPage extends BasePage {
 	}
 
 	// Assertion after success screen is displayed
-	public void verifyUpdatedBalanceAfterSuccessTxn(Map<String, String> usrData, double initialCashoutWalletBalance,
-			double initialRetailerWalletBalance) throws ClassNotFoundException {
+	public void verifyUpdatedBalanceAfterSuccessTxn(Map<String, String> usrData) throws ClassNotFoundException {
+		double initialCashoutWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 		double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
-		double newRetailerWalletBal = 0.00;
 		double newCashoutWalletBal = initialCashoutWalletBalance - amount;
-		if (usrData.get("TODROPDOWN").equalsIgnoreCase("bank account")) {
-			newRetailerWalletBal = initialRetailerWalletBalance;
-		} else {
-			newRetailerWalletBal = initialRetailerWalletBalance + amount;
-		}
-		String newRetailerWalletBalance = df.format(newRetailerWalletBal);
 		String newCashoutWalletBalance = df.format(newCashoutWalletBal);
 		waitUntilElementIsVisible(toDropDown);
 		Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newCashoutWalletBalance);
 		Log.info("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
 		getWalletBalanceFromIni("cashout", newCashoutWalletBalance);
-		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newRetailerWalletBalance);
-		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
-		getWalletBalanceFromIni("retailer", newRetailerWalletBalance);
 	}
 
 	// Verify details on failed screen
@@ -498,21 +472,11 @@ public class SettlementPage extends BasePage {
 	public void assertionOnFCM(Map<String, String> usrData) throws ClassNotFoundException {
 		String bankFCMHeading = "Balance transfer: INR " + txnDetailsFromIni("GetTxfAmount", "")
 				+ " (Withdrawable balance->Bank account)";
-		String walletFCMHeading = "Balance transfer: INR " + txnDetailsFromIni("GetTxfAmount", "")
-				+ " (Withdrawable balance->Retailer credit)";
 		String bankFCMContent = "Ref#" + txnDetailsFromIni("GetTxnRefNo", "") + ", charges: INR "
 				+ txnDetailsFromIni("GetCharges", "") + ", available Withdrawable balance: INR "
 				+ getWalletBalanceFromIni("GetCashout", "");
-		String walletFCMContent = "Ref#" + txnDetailsFromIni("GetTxnRefNo", "") + ", charges: INR "
-				+ txnDetailsFromIni("GetCharges", "") + ", available Withdrawable balance: INR "
-				+ getWalletBalanceFromIni("GetCashout", "") + ", available Retailer credit: INR "
-				+ getWalletBalanceFromIni("GetRetailer", "");
 
-		if (usrData.get("ASSERTION").equalsIgnoreCase("FCM Bank")) {
-			fcmMethod(usrData, bankFCMHeading, bankFCMContent);
-		} else if (usrData.get("ASSERTION").equalsIgnoreCase("FCM Wallet")) {
-			fcmMethod(usrData, walletFCMHeading, walletFCMContent);
-		}
+		fcmMethod(usrData, bankFCMHeading, bankFCMContent);
 	}
 
 	public void fcmMethod(Map<String, String> usrData, String heading, String content) {

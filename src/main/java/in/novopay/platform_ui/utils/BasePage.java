@@ -20,6 +20,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -302,13 +303,13 @@ public class BasePage extends JavaUtils {
 	/**
 	 * Wait until web element is invisible
 	 */
-	public void waitUntilElementIsInvisible(WebElement element) {
+	public void waitUntilElementIsInvisible(String xpath) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 30);
-		wait.until(ExpectedConditions.invisibilityOf(element));
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(xpath)));
 	}
 
 	/**
-	 * Wait until web element is visible
+	 * Wait until web element is clickable and click the element
 	 */
 	public void waitUntilElementIsClickableAndClickTheElement(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 30);
@@ -317,12 +318,28 @@ public class BasePage extends JavaUtils {
 	}
 
 	/**
-	 * Wait until web element is visible for Fino
+	 * Wait until web element is clickable and click the element for Fino
 	 */
 	public void waitUntilElementIsClickableForFinoAndClickTheElement(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 90);
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 		clickElement(element);
+	}
+	
+	/**
+	 * Wait until web element is clickable
+	 */
+	public void waitUntilElementIsClickable(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+	}
+
+	/**
+	 * Wait until web element is clickable for Fino
+	 */
+	public void waitUntilElementIsClickableForFino(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 90);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
 	}
 	
 	/**
@@ -337,7 +354,6 @@ public class BasePage extends JavaUtils {
 	public void clickElement(WebElement element) {
 		try {
 			element.click();
-			Log.info("clicking element");
 		} catch (Exception e) {
 			clickInvisibleElement(element);
 		}

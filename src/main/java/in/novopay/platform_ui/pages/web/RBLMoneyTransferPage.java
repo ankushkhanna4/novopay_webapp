@@ -15,8 +15,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
@@ -27,15 +25,6 @@ public class RBLMoneyTransferPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
 	CommonUtils commonUtils = new CommonUtils(wdriver);
 	DecimalFormat df = new DecimalFormat("#.00");
-
-	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
-	WebElement menu;
-	
-	@FindBy(xpath = "//*[@class='slimScrollBar']")
-	WebElement scrollBar;
-
-	@FindBy(xpath = "//button[contains(text(),'I Will Check Later')]")
-	WebElement banner;
 
 	@FindBy(xpath = "//span[contains(text(),'wallet balance')]")
 	WebElement retailerWallet;
@@ -54,6 +43,9 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	@FindBy(xpath = "//span[contains(text(),'merchant balance')]/parent::p/following-sibling::p/span")
 	WebElement merchantWalletBalance;
+
+	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
+	WebElement menu;
 
 	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
 	WebElement pageTitle;
@@ -356,23 +348,17 @@ public class RBLMoneyTransferPage extends BasePage {
 		try {
 			getPartner(partner());
 
-			String moneyTransferXpath = "//a[@href='/newportal/"
-					+ partner().toLowerCase() + "-transfer']/span[contains(text(),'Money Transfer')]";
+			String moneyTransferXpath = "//a[@href='/newportal/" + partner().toLowerCase()
+					+ "-transfer']/span[contains(text(),'Money Transfer')]";
+			WebElement moneyTransfer = wdriver.findElement(By.xpath(moneyTransferXpath));
 
 			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
-				clickElement(menu);
-				WebElement moneyTransfer = wdriver.findElement(By.xpath(moneyTransferXpath));
-				scrollElementDown(scrollBar, moneyTransfer);
-				Log.info("Money Transfer option clicked");
-				waitUntilElementIsVisible(pageTitle);
-				System.out.println(pageTitle.getText() + " page displayed");
-				clickElement(menu);
+				commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle);
 			}
 
-			// Update retailer wallet balance to 0 for scenario where amount > wallet
-			if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-				dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "0");
-			}
+			// Update wallet balance as per the scenarios
+			updateWalletBalance(usrData);
+
 			// Refresh wallet balances whenever required
 			if (usrData.get("REFRESH").equalsIgnoreCase("YES")) {
 				clickElement(menu);
@@ -380,18 +366,18 @@ public class RBLMoneyTransferPage extends BasePage {
 				clickElement(menu);
 			}
 
-			// display wallet balances in console
-			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
-			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
-
-			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
-			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store cashout wallet balance
-
-			if (usrData.get("ASSERTION").contains("FCM")) {
-				assertionOnFCM(usrData);
-			} else {
-				customerDetails(usrData);
+			if (!usrData.get("ASSERTION").equalsIgnoreCase("Processing")) {
+				// display wallet balances in console
+				commonUtils.displayInitialBalance("retailer"); // display main wallet balance
+				commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 			}
+
+			if (usrData.get("ASSERTION").contains("EnableQueuing")) {
+				dbUtils.updateBatchStatus("EnableRemittanceQueuing", "SUCCESS");
+				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "STOPPED");
+			}
+
+			customerDetails(usrData);
 
 			// Provide beneficiary details based on user data
 			if (usrData.get("BENE").equalsIgnoreCase("New")) { // when beneficiary is new
@@ -425,11 +411,9 @@ public class RBLMoneyTransferPage extends BasePage {
 					Log.info("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 				} else if (usrData.get("BENEIFSCTYPE").equalsIgnoreCase("Search Screen")) {
 					waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
-					ifscSearchIcon.click();
 					Log.info("IFSC search icon clicked");
 					waitUntilElementIsVisible(ifscSearchScreen);
-					waitUntilElementIsVisible(ifscSearchBankList);
-					ifscSearchBankList.click();
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchBankList);
 					Log.info("IFSC bank drop down clicked");
 					String ifscBank = "//li[contains(text(),'"
 							+ dbUtils.ifscCodeDetails(usrData.get("BENEIFSC"), "bank") + "')]";
@@ -439,9 +423,8 @@ public class RBLMoneyTransferPage extends BasePage {
 					ifscSearchStateList.click();
 					Log.info("IFSC state drop down clicked");
 					String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("BENEIFSC"), "state");
-					String stateFirstLetterCapitalized = stateFromDB.substring(0, 1).toUpperCase()
-							+ stateFromDB.substring(1).toLowerCase();
-					String ifscState = "//li[contains(text(),'" + stateFirstLetterCapitalized + "')]";
+					String stateCapitalized = stateFromDB.toUpperCase();
+					String ifscState = "//li[contains(text(),'" + stateCapitalized + "')]";
 					WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
 					ifscSearchState.click();
 					Log.info("IFSC state selected");
@@ -490,23 +473,6 @@ public class RBLMoneyTransferPage extends BasePage {
 				String beneXpath = "//span[contains(text(),'" + beneName
 						+ "')]/following-sibling::span[contains(text(),'" + beneACNum + "') and contains(text(),'"
 						+ dbUtils.getBank(beneIFSC) + "')]/parent::li";
-//				try {
-//					wait.until(ExpectedConditions.elementToBeClickable(wdriver.findElement(By.xpath(beneXpath))));
-//				} catch (Exception e) {
-//					customerDetails(usrData);
-//					Thread.sleep(2000);
-//					waitUntilElementIsClickableAndClickTheElement(beneList);
-//					Log.info("Clicked on bene list drop down");
-//					beneList.sendKeys(usrData.get("BENENAME"));
-//					Thread.sleep(1000);
-//					String beneName1 = usrData.get("BENENAME");
-//					String beneIFSC1 = usrData.get("BENEIFSC");
-//					String beneACNum1 = getAccountNumberFromIni("GetNum");
-//					String beneXpath1 = "//span[contains(text(),'" + beneName1
-//							+ "')]/following-sibling::span[contains(text(),'" + beneACNum1 + "') and contains(text(),'"
-//							+ dbUtils.getBank(beneIFSC1) + "')]/parent::li";
-//					wait.until(ExpectedConditions.elementToBeClickable(wdriver.findElement(By.xpath(beneXpath1))));
-//				}
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Validate Icon")) {
 					String beneValIconXpath = "//span[contains(text(),'" + beneName
 							+ "')]/following-sibling::span[contains(text(),'" + beneACNum + "') and contains(text(),'"
@@ -617,7 +583,7 @@ public class RBLMoneyTransferPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(moneyTransferSubmitButton);
 				Log.info("Submit button clicked");
 
-				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Main!=0 Cashout=0")) {
 					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 				} else {
 					commonUtils.chooseWalletScreen(usrData);
@@ -648,13 +614,11 @@ public class RBLMoneyTransferPage extends BasePage {
 					Log.info(buttonName + " button clicked");
 					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
-						moneyTransfer(usrData, initialWalletBalance);
-//						moneyTransfer(usrData, initialCashoutBalance);
+						moneyTransfer(usrData);
 					}
 				} else if (usrData.get("ADDBENE").equalsIgnoreCase("Indirectly")
 						|| usrData.get("ADDBENE").equalsIgnoreCase("No")) {
-					moneyTransfer(usrData, initialWalletBalance);
-//					moneyTransfer(usrData, initialCashoutBalance);
+					moneyTransfer(usrData);
 				}
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
 				waitUntilElementIsClickableAndClickTheElement(moneyTransferClearButton);
@@ -667,12 +631,13 @@ public class RBLMoneyTransferPage extends BasePage {
 				}
 
 				// Field level validation in Amount field
-//				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-//					waitUntilElementIsVisible(chooseWalletErrorMsg));
-//					Assert.assertEquals(chooseWalletErrorMsg.getText(), " Balance is low! ");
-//					Log.info(amountErrorMsg.getText());
-//					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
-//				}
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
+					waitUntilElementIsVisible(amountErrorMsg);
+					Assert.assertEquals(amountErrorMsg.getText(), "Insufficient wallet balance");
+					Log.info(amountErrorMsg.getText());
+					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
+					dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
+				}
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Limit")
 						|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
 					waitUntilElementIsVisible(amountErrorMsg);
@@ -717,9 +682,9 @@ public class RBLMoneyTransferPage extends BasePage {
 			commonUtils.waitForSpinner();
 			Thread.sleep(1000);
 			limitCheck(usrData); // check limit remaining
-			waitUntilElementIsClickableAndClickTheElement(custName);
-			Log.info("Customer name entered");
+			custMobNum.sendKeys(Keys.TAB);
 			custName.sendKeys(getCustomerDetailsFromIni("NewName"));
+			Log.info("Customer name " + custName.getText() + " entered");
 			custName.sendKeys(Keys.TAB);
 			dob.sendKeys(usrData.get("DOB"));
 			Log.info("Date of birth entered");
@@ -742,7 +707,7 @@ public class RBLMoneyTransferPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		waitUntilElementIsClickableAndClickTheElement(validateBeneButton);
 		Log.info("validating beneficiary");
-		if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Main!=0 Cashout=0")) {
 			Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 		} else {
 			commonUtils.chooseWalletScreen(usrData);
@@ -757,6 +722,9 @@ public class RBLMoneyTransferPage extends BasePage {
 			beneFailOkButton.click();
 		}
 		Log.info("OK button clicked");
+		if (usrData.get("ASSERTION").contains("FCM")) {
+			assertionOnFCM(usrData);
+		}
 	}
 
 	// Method to delete beneficiary based on user data
@@ -822,7 +790,7 @@ public class RBLMoneyTransferPage extends BasePage {
 	}
 
 	// Confirm screen
-	public void confirmScreen(Map<String, String> usrData) throws InterruptedException {
+	public void confirmScreen(Map<String, String> usrData) throws InterruptedException, ClassNotFoundException {
 		waitUntilElementIsVisible(confirmScreen);
 		Log.info("Confirm the details screen displayed");
 		Assert.assertEquals(replaceSymbols(confirmScreenAmount.getText()), usrData.get("AMOUNT") + ".00");
@@ -830,11 +798,20 @@ public class RBLMoneyTransferPage extends BasePage {
 		confirmScreenSubmit.click();
 		Thread.sleep(2000);
 		Log.info("Submit button clicked");
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Main!=0 Cashout=0")) {
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
+		}
 	}
 
 	// Provide MPIN during money transfer and do assertion on txn screen
-	public void moneyTransfer(Map<String, String> usrData, double initialWalletBalance)
+	public void moneyTransfer(Map<String, String> usrData)
 			throws ClassNotFoundException, InterruptedException, ParseException {
+		double initialWalletBalance = 1000000.00;
+		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
+			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetRetailer", ""));
+		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
+			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
+		}
 		waitUntilElementIsVisible(MPINScreen);
 		Log.info("MPIN screen displayed");
 		waitUntilElementIsClickableAndClickTheElement(enterMPIN);
@@ -877,8 +854,7 @@ public class RBLMoneyTransferPage extends BasePage {
 										|| usrData.get("MPIN").equalsIgnoreCase("Invalid")))) {
 					Log.info("Processing screen NOT displayed");
 				} else {
-					waitUntilElementIsVisible(processingScreen);
-					Log.info("Processing screen displayed");
+					commonUtils.processingScreen();
 				}
 				if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 						&& usrData.get("ADDBENE").equalsIgnoreCase("Directly")) {
@@ -918,6 +894,9 @@ public class RBLMoneyTransferPage extends BasePage {
 					}
 					waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenDoneButton);
 					Log.info("Done button clicked");
+					if (usrData.get("ASSERTION").contains("FCM")) {
+						assertionOnFCM(usrData);
+					}
 					if (!usrData.get("ASSERTION").equalsIgnoreCase("Processing")) {
 						commonUtils.refreshBalance();
 						verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
@@ -932,21 +911,25 @@ public class RBLMoneyTransferPage extends BasePage {
 							waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
 						} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 							remittanceTxnScreenRetryButton.click();
+							Log.info("Retry button clickeda");
 							waitUntilElementIsVisible(MPINScreen);
 							Log.info("MPIN screen displayed");
 							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 							Log.info("MPIN entered");
+							Thread.sleep(1000);
 							waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 							Log.info("Submit button clicked");
-							waitUntilElementIsVisible(processingScreen);
-							Log.info("Processing screen displayed");
+							commonUtils.processingScreen();
 							waitUntilElementIsVisible(remittanceTxnScreen);
 							Log.info("Txn screen displayed");
 							assertionOnFailedScreen(usrData);
 							waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
 						}
 						Log.info("Exit button clicked");
+						if (usrData.get("ASSERTION").contains("FCM")) {
+							assertionOnFCM(usrData);
+						}
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "999998");
 						} else {
@@ -974,13 +957,15 @@ public class RBLMoneyTransferPage extends BasePage {
 							Log.info("MPIN entered");
 							waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 							Log.info("Submit button clicked");
-							waitUntilElementIsVisible(processingScreen);
-							Log.info("Processing screen displayed");
+							commonUtils.processingScreen();
 							waitUntilElementIsVisible(remittanceTxnScreen);
 							Log.info("Txn screen displayed");
 							assertionOnSuccessScreen(usrData);
 							remittanceTxnScreenDoneButton.click();
 							Log.info("Done button clicked");
+							if (usrData.get("ASSERTION").contains("FCM")) {
+								assertionOnFCM(usrData);
+							}
 							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
 						}
@@ -1021,6 +1006,9 @@ public class RBLMoneyTransferPage extends BasePage {
 		String cashToBeCollected = df.format(totalAmount);
 		Assert.assertEquals(replaceSymbols(remittanceTxnScreenTotalAmount.getText()), cashToBeCollected);
 		Log.info("Cash to be Collected: " + replaceSymbols(remittanceTxnScreenTotalAmount.getText()));
+		if (usrData.get("ASSERTION").contains("EnableQueuing")) {
+			dbUtils.updateBatchStatus("EnableRemittanceQueuing", "STOPPED");
+		}
 	}
 
 	// Assertion after success or orange screen is displayed
@@ -1032,19 +1020,16 @@ public class RBLMoneyTransferPage extends BasePage {
 		double commission = commonUtils.commissionAndTDS("comm", 20.0, 4.0, 40.0);
 		double tds = commonUtils.commissionAndTDS("tds", 20.0, 4.0, 40.0);
 		double newWalletBal = 0.00;
-		if (usrData.get("VALIDATEBENECASE").equalsIgnoreCase("1")
-				|| usrData.get("VALIDATEBENECASE").equalsIgnoreCase("2")
-				|| usrData.get("VALIDATEBENECASE").equalsIgnoreCase("3")
-				|| usrData.get("VALIDATEBENECASE").equalsIgnoreCase("4")) {
-			double beneAmt = Double.parseDouble(dbUtils.getBeneAmount(partner()));
-			newWalletBal = initialWalletBalance - totalAmount + commission - tds - beneAmt;
-		} else {
-			newWalletBal = initialWalletBalance - totalAmount + commission - tds;
-		}
+		newWalletBal = initialWalletBalance - totalAmount + commission - tds;
 		txnDetailsFromIni("StoreComm", String.valueOf(commission));
 		String newWalletBalance = df.format(newWalletBal);
-		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
-		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
+			Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
+			Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+		} else {
+			Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
+			Log.info("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+		}
 	}
 
 	// Verify details on failed screen
@@ -1063,8 +1048,13 @@ public class RBLMoneyTransferPage extends BasePage {
 	public void verifyUpdatedBalanceAfterFailTxn(Map<String, String> usrData, double initialWalletBalance)
 			throws ClassNotFoundException {
 		String newWalletBalance = df.format(initialWalletBalance);
-		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
-		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
+			Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
+			Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+		} else {
+			Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
+			Log.info("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+		}
 	}
 
 	// Verify details on warn screen
@@ -1153,8 +1143,13 @@ public class RBLMoneyTransferPage extends BasePage {
 		}
 		newWalletBalance = df.format(newWalletBal);
 		commonUtils.refreshBalance();
-		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
-		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
+			Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
+			Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+		} else {
+			Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
+			Log.info("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+		}
 	}
 
 	// Verify table details on transaction screen
@@ -1318,9 +1313,9 @@ public class RBLMoneyTransferPage extends BasePage {
 		double beneAmount = Double.parseDouble(dbUtils.getBeneAmount(partner().toUpperCase()));
 		String beneAmt = df.format(beneAmount);
 		String successSummaryFCMContent = "Cash to account request has been processed. Rs " + usrData.get("AMOUNT")
-				+ ".00 transferred successfully. Click here for details";
+				+ ".00 transferred successfully.";
 		String failSummaryFCMContent = "Cash to account request has been processed. However, Rs "
-				+ usrData.get("AMOUNT") + ".00 transfer failed. Click here for details";
+				+ usrData.get("AMOUNT") + ".00 transfer failed.";
 		String successFCMContent = "Customer: " + getCustomerDetailsFromIni("ExistingNum") + " Money Transfer of ₹"
 				+ usrData.get("AMOUNT") + ".00" + " has been accepted for IFSC:" + usrData.get("BENEIFSC") + ", A/C:"
 				+ getAccountNumberFromIni("GetNum") + ", charges ₹" + txnDetailsFromIni("GetCharges", "")
@@ -1364,9 +1359,11 @@ public class RBLMoneyTransferPage extends BasePage {
 			break;
 		case "Queued FCM":
 			try {
-				fcmMethod1(successFCMHeading, queuedTxnFCMContent);
+				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
+				fcmMethod2(successFCMHeading, queuedTxnFCMContent);
 			} catch (Exception e) {
 				fcmMethod2(successFCMHeading, queuedTxnFCMContent);
+				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
 			}
 			break;
 		case "BeneSuccess FCM":
@@ -1427,4 +1424,18 @@ public class RBLMoneyTransferPage extends BasePage {
 		return partner().toUpperCase() + "OTP";
 	}
 
+	public void updateWalletBalance(Map<String, String> usrData) throws ClassNotFoundException {
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Main < Amount")) {
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Cashout < Amount")) {
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1");
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Main=0 Cashout!=0")) {
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "0");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Main!=0 Cashout=0")) {
+			dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "0");
+		}
+	}
 }

@@ -54,7 +54,7 @@ public class MongoDBUtils extends JavaUtils {
 
 	public void getDocument() {
 
-		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("collectionOfficerEmployeeId", "111"));
@@ -70,7 +70,7 @@ public class MongoDBUtils extends JavaUtils {
 
 	public String getOfficerMobNum() {
 
-		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("collectionOfficerEmployeeId", "111"));
@@ -86,7 +86,7 @@ public class MongoDBUtils extends JavaUtils {
 	
 	public String getAddMobNum() {
 
-		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("collectionOfficerEmployeeId", "111"));
@@ -102,7 +102,7 @@ public class MongoDBUtils extends JavaUtils {
 	
 	public String billpayInputParams(String billerName) {
 
-		connectMongo("mongoDbUsernameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
+		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
 
 		// Performing a read operation on the collection.
 		FindIterable<Document> fi = coll.find(new BasicDBObject("name", billerName));
@@ -119,7 +119,7 @@ public class MongoDBUtils extends JavaUtils {
 	public void updateValues(String empId, String date, int totalDueAmount, int totalPaidAmount, String status,
 			String officerMobNum, String addMobNum) {
 
-		connectMongo("mongoDbUsernameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
+		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
 
 		BasicDBObject employeeId = new BasicDBObject("collectionOfficerEmployeeId", empId);
 		BasicDBObject dueDate = new BasicDBObject("dueDate", date);
@@ -142,7 +142,7 @@ public class MongoDBUtils extends JavaUtils {
 	
 	public void updateBillpayVendor(String biller, String vendor) {
 
-		connectMongo("mongoDbUsernameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
+		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
 
 		BasicDBObject billVendor = new BasicDBObject("vendor", vendor);
 		

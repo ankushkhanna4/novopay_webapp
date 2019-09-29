@@ -57,7 +57,8 @@ public class FlowMapper {
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
 			dbUtils.modifyContract(usrData.get("CONTRACT"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
-
+		javaUtils.getWalletFromIni("StoreWallet", usrData.get("WALLET"));
+		
 		for (String flowTestID : flows) {
 			if ((!usrData.get(flowTestID).equalsIgnoreCase("SKIP")) && (!usrData.get(flowTestID).isEmpty())) {
 				testCaseID = usrData.get(flowTestID);
