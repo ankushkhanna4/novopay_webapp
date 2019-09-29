@@ -144,6 +144,9 @@ public class YBLBankingPage extends BasePage {
 	@FindBy(xpath = "//app-withdrawl//input[@id='aeps-deposit-aadhar-number']/parent::div//li")
 	WebElement withdrawalAadhaarNumError;
 
+	@FindBy(xpath = "//app-withdrawl//input[@id='aeps-deposit-aadhar-number']/parent::div/following-sibling::ul/li")
+	WebElement withdrawalAadhaarNumError2;
+
 	@FindBy(xpath = "//app-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
 	WebElement withdrawalConsentCheckbox;
 
@@ -212,6 +215,9 @@ public class YBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//app-aepsbalanceenquiry//input[@id='aeps-deposit-aadhar-number']/parent::div//li")
 	WebElement balanceEnquiryAadhaarNumError;
+
+	@FindBy(xpath = "//app-aepsbalanceenquiry//input[@id='aeps-deposit-aadhar-number']/parent::div/following-sibling::ul/li")
+	WebElement balanceEnquiryAadhaarNumError2;
 
 	@FindBy(xpath = "//app-aepsbalanceenquiry//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
 	WebElement balanceEnquiryConsentCheckbox;
@@ -337,27 +343,11 @@ public class YBLBankingPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
-			clickElement(menu);
-			commonUtils.refreshBalance();
-			scrollElementDown(scrollBar, banking);
-			Log.info("Banking option clicked");
-			waitUntilElementIsVisible(pageTitle);
-			System.out.println(pageTitle.getText() + " page displayed");
-			clickElement(menu);
+			commonUtils.selectFeatureFromMenu2(banking, pageTitle);
 
 			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
-			batchFileConfig = readSectionFromIni(batchConfigSection);
 			if (!usrData.get("KEY").isEmpty()) {
 				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
-			}
-
-			// Update retailer wallet balance to 0 for scenario where amount > wallet
-			if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-				if (usrData.get("TXNTYPE").equalsIgnoreCase("Deposit")) {
-					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "0");
-				} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Withdrawal")) {
-					dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "0");
-				}
 			}
 
 			// Refresh wallet balances whenever required
@@ -368,25 +358,15 @@ public class YBLBankingPage extends BasePage {
 			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
-			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
-			double initialCashoutBalance = commonUtils.getInitialBalance("cashout"); // store cashout wallet balance
+			double initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetRetailer", ""));
+			double initialCashoutBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 
-			if (usrData.get("ASSERTION").contains("FCM")) {
-				if (usrData.get("TXNTYPE").equalsIgnoreCase("Deposit")) {
-					assertionOnDepositFCM(usrData);
-				} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Withdrawal")) {
-					assertionOnWithdrawalFCM(usrData);
-				} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Balance Enquiry")) {
-					assertionOnBalanceEnquiryFCM(usrData);
-				}
-			} else {
-				if (usrData.get("TXNTYPE").equalsIgnoreCase("Deposit")) {
-					depositTxns(usrData, initialWalletBalance);
-				} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Withdrawal")) {
-					withdrawalTxns(usrData, initialCashoutBalance);
-				} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Balance Enquiry")) {
-					balanceEnquiryTxns(usrData, initialCashoutBalance);
-				}
+			if (usrData.get("TXNTYPE").equalsIgnoreCase("Deposit")) {
+				depositTxns(usrData, initialWalletBalance);
+			} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Withdrawal")) {
+				withdrawalTxns(usrData, initialCashoutBalance);
+			} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Balance Enquiry")) {
+				balanceEnquiryTxns(usrData, initialCashoutBalance);
 			}
 
 		} catch (Exception e) {
@@ -437,11 +417,11 @@ public class YBLBankingPage extends BasePage {
 			Log.info(depositAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
 			waitUntilElementIsVisible(depositAadhaarNumError);
-			Assert.assertEquals(depositAadhaarNumError.getText(), "Length should be 12 digits");
+			Assert.assertEquals(depositAadhaarNumError.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
 			Log.info(depositAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
 			waitUntilElementIsVisible(depositAadhaarNumError);
-			Assert.assertEquals(depositAadhaarNumError.getText(), "Enter Valid Aadhaar Number");
+			Assert.assertEquals(depositAadhaarNumError.getText(), "Enter a valid Aadhaar number or VID");
 			Log.info(depositAadhaarNumError.getText());
 		}
 
@@ -515,8 +495,7 @@ public class YBLBankingPage extends BasePage {
 			} else {
 				submitMpin.click();
 				Log.info("MPIN submitted");
-//				waitUntilElementIsVisible(processingScreen));
-//				Log.info("Processing screen displayed");
+				commonUtils.processingScreen();
 
 				if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 					waitUntilElementIsVisible(processInBackgroundButton);
@@ -541,6 +520,9 @@ public class YBLBankingPage extends BasePage {
 							}
 							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 							Log.info("Done button clicked");
+							if (usrData.get("ASSERTION").contains("FCM")) {
+								assertionOnDepositFCM(usrData);
+							}
 							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterDepositSuccessTxn(usrData, walletBalance);
 						}
@@ -574,8 +556,7 @@ public class YBLBankingPage extends BasePage {
 							Log.info("MPIN entered");
 							submitMpin.click();
 							Log.info("MPIN submitted");
-//							waitUntilElementIsVisible(processingScreen));
-//							Log.info("Processing screen displayed");
+							commonUtils.processingScreen();
 							waitUntilElementIsVisible(aepsTxnScreen);
 							Log.info("Txn screen displayed");
 							assertionOnDepositFailedScreen(usrData);
@@ -586,6 +567,9 @@ public class YBLBankingPage extends BasePage {
 								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 								Log.info("Exit button clicked");
 							}
+						}
+						if (usrData.get("ASSERTION").contains("FCM")) {
+							assertionOnDepositFCM(usrData);
 						}
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
@@ -645,12 +629,12 @@ public class YBLBankingPage extends BasePage {
 			Log.info(withdrawalAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
 			waitUntilElementIsVisible(withdrawalAadhaarNumError);
-			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Length should be 12 digits");
+			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
 			Log.info(withdrawalAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
-			waitUntilElementIsVisible(withdrawalAadhaarNumError);
-			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Enter Valid Aadhaar Number");
-			Log.info(withdrawalAadhaarNumError.getText());
+			waitUntilElementIsVisible(withdrawalAadhaarNumError2);
+			Assert.assertEquals(withdrawalAadhaarNumError2.getText(), "Enter a valid Aadhaar number or VID");
+			Log.info(withdrawalAadhaarNumError2.getText());
 		}
 
 		withdrawalAmount.sendKeys(usrData.get("AMOUNT"));
@@ -708,8 +692,7 @@ public class YBLBankingPage extends BasePage {
 
 			confirmScreen(usrData);
 
-//			waitUntilElementIsVisible(processingScreen));
-//			Log.info("Processing screen displayed");
+			commonUtils.processingScreen();
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 				waitUntilElementIsClickableAndClickTheElement(processInBackgroundButton);
@@ -733,6 +716,9 @@ public class YBLBankingPage extends BasePage {
 						}
 						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 						Log.info("Done button clicked");
+						if (usrData.get("ASSERTION").contains("FCM")) {
+							assertionOnWithdrawalFCM(usrData);
+						}
 						commonUtils.refreshBalance();
 						verifyUpdatedBalanceAfterWithdrawalSuccessTxn(usrData, walletBalance);
 					}
@@ -759,8 +745,7 @@ public class YBLBankingPage extends BasePage {
 						waitUntilElementIsClickableAndClickTheElement(withdrawalSubmit);
 						Log.info("Submit button clicked");
 						confirmScreen(usrData);
-						waitUntilElementIsVisible(processingScreen);
-						Log.info("Processing screen displayed");
+						commonUtils.processingScreen();
 						waitUntilElementIsVisible(aepsTxnScreen);
 						Log.info("Txn screen displayed");
 						assertionOnWithdrawalFailedScreen(usrData);
@@ -772,6 +757,9 @@ public class YBLBankingPage extends BasePage {
 							Log.info("Exit button clicked");
 						}
 					}
+					if (usrData.get("ASSERTION").contains("FCM")) {
+						assertionOnWithdrawalFCM(usrData);
+					}
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 						if (usrData.get("TXNTYPE").equalsIgnoreCase("Deposit")) {
 							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
@@ -780,7 +768,7 @@ public class YBLBankingPage extends BasePage {
 						}
 					} else {
 						commonUtils.refreshBalance();
-//						verifyUpdatedBalanceAfterWithdrawalFailTxn(usrData, walletBalance);
+						verifyUpdatedBalanceAfterWithdrawalFailTxn(usrData, walletBalance);
 					}
 				} else {
 					withdrawalClear.click();
@@ -829,12 +817,12 @@ public class YBLBankingPage extends BasePage {
 			Log.info(balanceEnquiryAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
 			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError);
-			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Length should be 12 digits");
+			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
 			Log.info(balanceEnquiryAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
-			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError);
-			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Enter Valid Aadhaar Number");
-			Log.info(balanceEnquiryAadhaarNumError.getText());
+			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError2);
+			Assert.assertEquals(balanceEnquiryAadhaarNumError2.getText(), "Enter a valid Aadhaar number or VID");
+			Log.info(balanceEnquiryAadhaarNumError2.getText());
 		}
 
 		// Field level validation in checkbox field
@@ -867,8 +855,7 @@ public class YBLBankingPage extends BasePage {
 			waitUntilElementIsVisible(balanceEnquirySubmit);
 			balanceEnquirySubmit.click();
 			Log.info("Submit button clicked");
-//			waitUntilElementIsVisible(processingScreen));
-//			Log.info("Processing screen displayed");
+			commonUtils.processingScreen();
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 				waitUntilElementIsVisible(processInBackgroundButton);
@@ -893,6 +880,9 @@ public class YBLBankingPage extends BasePage {
 						}
 						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 						Log.info("Done button clicked");
+						if (usrData.get("ASSERTION").contains("FCM")) {
+							assertionOnBalanceEnquiryFCM(usrData);
+						}
 						commonUtils.refreshBalance();
 						verifyUpdatedBalanceAfterBalanceEnquirySuccessTxn(usrData, walletBalance);
 					}
@@ -919,8 +909,7 @@ public class YBLBankingPage extends BasePage {
 						Thread.sleep(1000);
 						balanceEnquirySubmit.click();
 						Log.info("Submit button clicked");
-//						waitUntilElementIsVisible(processingScreen));
-//						Log.info("Processing screen displayed");
+						commonUtils.processingScreen();
 						waitUntilElementIsVisible(aepsTxnScreen);
 						Log.info("Txn screen displayed");
 						assertionOnBalanceEnquiryFailedScreen(usrData);
@@ -931,6 +920,9 @@ public class YBLBankingPage extends BasePage {
 							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 							Log.info("Exit button clicked");
 						}
+					}
+					if (usrData.get("ASSERTION").contains("FCM")) {
+						assertionOnBalanceEnquiryFCM(usrData);
 					}
 					commonUtils.refreshBalance();
 					verifyUpdatedBalanceAfterBalanceEnquiryFailTxn(usrData, walletBalance);
@@ -1157,11 +1149,11 @@ public class YBLBankingPage extends BasePage {
 
 		String balance = df.format(commonUtils.getInitialBalance("cashout"));
 		String successFCMContent = "Request for cash withdrawal: INR " + usrData.get("AMOUNT")
-				+ ".00 withdrawn from your " + usrData.get("BANKNAME") + " a/c linked with Aadhaar XXXX XXXX "
+				+ ".00 withdrawn from your " + usrData.get("BANKNAME") + " a/c linked with Aadhaar/VID XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + "; Charges INR 0.00; Date " + dbUtils.aepsTxnDate()
 				+ " IST Response code: (00) SUCCESS Reference No: " + txnDetailsFromIni("GetTxnRefNo", "")
 				+ " Balance after txn: INR " + balance;
-		String failFCMContent = "Withdrawal for customer with aadhaar XXXX XXXX "
+		String failFCMContent = "Withdrawal for customer with Aadhaar/VID XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " has failed : Failed to perform transaction(M3)";
 
 		switch (usrData.get("ASSERTION")) {
@@ -1222,11 +1214,11 @@ public class YBLBankingPage extends BasePage {
 		String successFCMHeading = "Balance Enquiry: SUCCESS";
 		String failFCMHeading = "Balance Enquiry: FAIL";
 
-		String successFCMContent = "Balance in " + usrData.get("BANKNAME") + " a/c linked with Aadhaar XXXX XXXX "
+		String successFCMContent = "Balance in " + usrData.get("BANKNAME") + " a/c linked with Aadhaar/VID XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " as on " + dbUtils.aepsTxnDate()
 				+ " IST is Led Bal: 5944.85, Ava Bal: 5944.85 Response code: (00) SUCCESS Reference No: "
 				+ txnDetailsFromIni("GetTxnRefNo", "");
-		String failFCMContent = "Balance Enquiry for customer with Aadhaar XXXX XXXX "
+		String failFCMContent = "Balance Enquiry for customer with Aadhaar/VID XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " has failed : Failed to perform transaction(M3)";
 
 		switch (usrData.get("ASSERTION")) {
