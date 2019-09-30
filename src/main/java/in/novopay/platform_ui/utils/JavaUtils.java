@@ -375,6 +375,23 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
+	
+	public String getBeneNameFromBank(String key, String beneName) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (key.equalsIgnoreCase("StoreBeneName")) {
+				ini.put("BeneData", "BeneNameFromBank", beneName);
+				ini.store();
+				return ini.get("BeneData", "BeneNameFromBank");
+			} else if (key.equalsIgnoreCase("GetBeneName")) {
+				return ini.get("BeneData", "BeneNameFromBank");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public String getBankNameFromIni(String name) {
 		Ini ini;

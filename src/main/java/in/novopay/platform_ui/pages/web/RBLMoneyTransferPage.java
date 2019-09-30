@@ -271,7 +271,10 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	@FindBy(xpath = "//strong[contains(text(),'Suggestion')]")
 	WebElement beneValidationCase5;
-
+	
+	@FindBy(xpath = "//*[@name='useNameFromBank']")
+	WebElement beneCheckbox;
+	
 	@FindBy(xpath = "//h5[contains(text(),'Beneficiary Validation')]/parent::div/following-sibling::div[4]/button")
 	WebElement beneSuccessOkButton;
 
@@ -716,12 +719,23 @@ public class RBLMoneyTransferPage extends BasePage {
 		waitUntilElementIsVisible(beneValidationScreen);
 		Log.info(beneValidationMessage.getText());
 		assertionOnBeneValidationScreen(usrData, initialWalletBalance);
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Dont Update Bene")) {
+			waitUntilElementIsClickableAndClickTheElement(beneCheckbox);
+			Log.info("Checkbox deselected");
+		}
 		try {
 			beneSuccessOkButton.click();
 		} catch (Exception e) {
 			beneFailOkButton.click();
 		}
 		Log.info("OK button clicked");
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Dont Update Bene")) {
+			Assert.assertEquals(beneName.getAttribute("value"), usrData.get("BENENAME"));
+			Log.info("Bene name remains " + beneName.getAttribute("value"));
+		} else {
+			Assert.assertEquals(beneName.getAttribute("value"), getBeneNameFromBank("GetBeneName",""));
+			Log.info("Bene name got replaced by " + beneName.getAttribute("value"));
+		}
 		if (usrData.get("ASSERTION").contains("FCM")) {
 			assertionOnFCM(usrData);
 		}
@@ -931,7 +945,7 @@ public class RBLMoneyTransferPage extends BasePage {
 							assertionOnFCM(usrData);
 						}
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
-							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "999998");
+							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 						} else {
 							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterFailTxn(usrData, initialWalletBalance);
@@ -1120,6 +1134,7 @@ public class RBLMoneyTransferPage extends BasePage {
 						Log.info("Case 3 validated");
 					} else {
 						Log.info("Case 2 validated");
+						getBeneNameFromBank("StoreBeneName",beneNameCase2NameByBank.getText());
 					}
 				}
 			} catch (Exception f) {

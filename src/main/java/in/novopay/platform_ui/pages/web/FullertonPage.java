@@ -105,6 +105,12 @@ public class FullertonPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'toast-message')]")
 	WebElement toasterMsg;
 
+	@FindBy(xpath = "//li[1][contains(@class,'notifications')]//strong")
+	WebElement fcmHeading1;
+
+	@FindBy(xpath = "//li[1][contains(@class,'notifications')]/span[2]")
+	WebElement fcmContent1;
+
 	// Load all objects
 	public FullertonPage(WebDriver wdriver) {
 		super(wdriver);
@@ -244,6 +250,9 @@ public class FullertonPage extends BasePage {
 
 								waitUntilElementIsClickableAndClickTheElement(doneButton);
 								Log.info("Done button clicked");
+								if (usrData.get("ASSERTION").contains("FCM")) {
+									assertionOnFCM(usrData);
+								}
 								commonUtils.refreshBalance();
 								verifyUpdatedBalanceAfterSuccessTxn(usrData);
 							} else if (cmsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
@@ -269,6 +278,9 @@ public class FullertonPage extends BasePage {
 									}
 									waitUntilElementIsClickableAndClickTheElement(exitButton);
 									Log.info("Exit button clicked");
+									if (usrData.get("ASSERTION").contains("FCM")) {
+										assertionOnFCM(usrData);
+									}
 								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 									waitUntilElementIsVisible(cmsTxnScreenMessage);
 									Log.info(cmsTxnScreenMessage.getText());
@@ -356,6 +368,33 @@ public class FullertonPage extends BasePage {
 			Log.info(failSMS);
 			Log.info("SMS sent successfully to " + dbUtils.smsNum1());
 		}
+	}
+
+	// FCM assertion
+	public void assertionOnFCM(Map<String, String> usrData) throws ClassNotFoundException {
+		String successFCMHeading = "Fullerton: SUCCESS";
+		String failFCMHeading = "Fullerton: FAIL";
+
+		String successFCM = "Success! Deposit of Rs " + cmsDetailsFromIni("FtAmount", "") + " for EMP-ID "
+				+ usrData.get("EMPID") + " was successful.";
+		String failFCM = "Failure! Deposit of Rs " + cmsDetailsFromIni("FtAmount", "") + " for EMP-ID "
+				+ usrData.get("EMPID") + " failed.";
+
+		switch (usrData.get("ASSERTION")) {
+		case "Success FCM":
+			fcmMethod(successFCMHeading, successFCM);
+			break;
+		case "Fail FCM":
+			fcmMethod(failFCMHeading, failFCM);
+			break;
+		}
+	}
+
+	public void fcmMethod(String heading, String content) {
+		Assert.assertEquals(fcmHeading1.getText(), heading);
+		Assert.assertEquals(fcmContent1.getText(), content);
+		Log.info(fcmHeading1.getText());
+		Log.info(fcmContent1.getText());
 	}
 
 	// Assertion after success or orange screen is displayed

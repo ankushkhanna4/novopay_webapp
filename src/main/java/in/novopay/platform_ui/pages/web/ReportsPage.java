@@ -159,6 +159,8 @@ public class ReportsPage extends BasePage {
 				WebElement data = wdriver.findElement(By.xpath(dataXpath));
 				if (j == 5 || j == 6 || j == 7 || j == 8 || j == 9) {
 					dataFromUI[i][j] = replaceSymbols(data.getText());
+				} else if (j == 1) {
+					dataFromUI[i][j] = data.getText().substring(0, 5);
 				} else {
 					dataFromUI[i][j] = data.getText();
 				}
@@ -223,7 +225,7 @@ public class ReportsPage extends BasePage {
 			List<String[]> accountStatementAEPS = dbUtils.accountStatementAEPS(mobileNumFromIni());
 			list = accountStatementAEPS;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
-				&& usrData.get("STATUS").equalsIgnoreCase("CMS")) {
+				&& usrData.get("STATUS").contains("CMS")) {
 			List<String[]> accountStatementCMS = dbUtils.accountStatementCMS(mobileNumFromIni(), usrData.get("STATUS"));
 			list = accountStatementCMS;
 		}

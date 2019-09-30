@@ -48,7 +48,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			System.out.println("Unable to close the connection due to below error..!");
+			Log.info("Unable to close the connection due to below error..!");
 			e.printStackTrace();
 		}
 	}
@@ -67,7 +67,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -84,7 +84,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -99,7 +99,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -114,7 +114,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -129,7 +129,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -162,7 +162,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -186,7 +186,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -210,7 +210,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -239,7 +239,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -265,7 +265,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -292,7 +292,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -319,7 +319,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -345,7 +345,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -360,7 +360,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -381,7 +381,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -399,7 +399,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -419,7 +419,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -436,7 +436,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -452,7 +452,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -478,7 +478,7 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("npOps"));
 			stmt = conn.createStatement();
 			stmt.execute(sql);
-			System.out.println("Updating status of " + batchName + " to " + status);
+			Log.info("Updating status of " + batchName + " to " + status);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -506,7 +506,7 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("npRemittance"));
 			stmt = conn.createStatement();
 			stmt.execute(sql);
-			System.out.println("Updating status of txn with ref num " + paymentRefCode + " to UNKNOWN");
+			Log.info("Updating status of txn with ref num " + paymentRefCode + " to UNKNOWN");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -618,7 +618,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -680,7 +680,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -694,11 +694,11 @@ public class DBUtils extends JavaUtils {
 					+ "SET `value` = '0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c' "
 					+ "WHERE user_id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
 					+ "' ORDER BY id DESC LIMIT 1);";
-			System.out.println(query);
+			Log.info(query);
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 
 		}
@@ -715,7 +715,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -731,7 +731,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -747,7 +747,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -763,7 +763,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -779,7 +779,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -801,7 +801,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -818,7 +818,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -835,7 +835,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -853,7 +853,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -871,7 +871,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -908,7 +908,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -936,7 +936,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -968,7 +968,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1003,7 +1003,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1013,7 +1013,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
 					+ "(SELECT SUBSTR(RIGHT(`comment`, 11),1,10) FROM wallet.`m_savings_account_transaction` "
 					+ "ORDER BY id DESC LIMIT 1 OFFSET 3) ref_no, (SELECT SUBSTR(RIGHT(`comment`, 22),1,10) "
 					+ "FROM wallet.`m_savings_account_transaction` ORDER BY id DESC LIMIT 1 OFFSET 3) msisdn, "
@@ -1048,7 +1048,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1058,7 +1058,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
 					+ "(SELECT SUBSTR(RIGHT(`comment`, 11),1,10) FROM wallet.`m_savings_account_transaction` "
 					+ "ORDER BY id DESC LIMIT 1 OFFSET 3) ref_no, (SELECT SUBSTR(RIGHT(`comment`, 22),1,10) "
 					+ "FROM wallet.`m_savings_account_transaction` ORDER BY id DESC LIMIT 1 OFFSET 3) msisdn, "
@@ -1093,7 +1093,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1103,7 +1103,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
 					+ "SUBSTR(RIGHT(`comment`, 11),1,10) ref_no, SUBSTR(RIGHT(`comment`, 22),1,10) msisdn, "
 					+ "SUBSTR(`comment`,1,LENGTH(`comment`)-24) description, "
 					+ "CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) amount, 'NA' charge, 'NA' comm "
@@ -1128,7 +1128,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1140,96 +1140,53 @@ public class DBUtils extends JavaUtils {
 
 			String query = "";
 
-			if (partner.equalsIgnoreCase("CF") || partner.equalsIgnoreCase("FT")) {
-				if (txnDetailsFromIni("GetComm", "").equals("0.0")) {
-					query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
-							+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount, 'NA' charge, 'NA' comm FROM "
-							+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id " + "DESC LIMIT 1 OFFSET 1)))) ORDER BY id DESC LIMIT 1";
-				} else if (txnDetailsFromIni("GetTds", "").equals("0.0")) {
-					query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
-							+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount, 'NA' charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
-							+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
-							+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT "
-							+ "organization FROM master.user WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = "
-							+ "'" + mobNum + "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) comm FROM "
-							+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id " + "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 2";
-				} else {
-					query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
-							+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount, (SELECT CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount FROM wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id "
-							+ "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 1) charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
-							+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
-							+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT "
-							+ "organization FROM master.user WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = "
-							+ "'" + mobNum + "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) comm FROM "
-							+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id " + "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 3";
-				}
-			} else if (partner.equalsIgnoreCase("Swiggy")) {
-				if (txnDetailsFromIni("GetComm", "").equals("0.0")) {
-					query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
-							+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount, 'NA' charge, 'NA' comm FROM "
-							+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id " + "DESC LIMIT 1 OFFSET 1)))) ORDER BY id DESC LIMIT 3";
-				} else if (txnDetailsFromIni("GetTds", "").equals("0.0")) {
-					query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
-							+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount, 'NA' charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
-							+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
-							+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT "
-							+ "organization FROM master.user WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = "
-							+ "'" + mobNum + "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) comm FROM "
-							+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id " + "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 4";
-				} else {
-					query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, TIME(created_date) txn_time, "
-							+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount, (SELECT CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
-							+ "amount FROM wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id "
-							+ "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 1) charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
-							+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
-							+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT "
-							+ "organization FROM master.user WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = "
-							+ "'" + mobNum + "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) comm FROM "
-							+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
-							+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-							+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
-							+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-							+ "' ORDER BY id " + "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 5";
-				}
+			if (txnDetailsFromIni("GetComm", "").equals("0.0")) {
+				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+						+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
+						+ "amount, 'NA' charge, 'NA' comm FROM "
+						+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
+						+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
+						+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
+						+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+						+ "' ORDER BY id " + "DESC LIMIT 1 OFFSET 1)))) ORDER BY id DESC LIMIT 1";
+			} else if (txnDetailsFromIni("GetTds", "").equals("0.0")) {
+				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+						+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
+						+ "amount, 'NA' charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
+						+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
+						+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT "
+						+ "organization FROM master.user WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = "
+						+ "'" + mobNum
+						+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) comm, '0.00' tds FROM "
+						+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
+						+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
+						+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
+						+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+						+ "' ORDER BY id " + "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 1";
+			} else {
+				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+						+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
+						+ "amount, '0.00' charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
+						+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
+						+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT "
+						+ "organization FROM master.user WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = "
+						+ "'" + mobNum
+						+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) comm, (SELECT CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
+						+ "amount FROM wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
+						+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
+						+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
+						+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+						+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 1) tds FROM "
+						+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
+						+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
+						+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
+						+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+						+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 2";
 			}
 
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
+			System.out.println(query);
 			int nCol = rs.getMetaData().getColumnCount();
 			List<String[]> list = new ArrayList<String[]>();
 			while (rs.next()) {
@@ -1242,7 +1199,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1251,7 +1208,7 @@ public class DBUtils extends JavaUtils {
 	public List<String[]> accountStatementAEPS(String mobNum) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') `date`, (SELECT TIME(created_date) "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') `date`, (SELECT DATE_FORMAT(created_date, '%h:%i') "
 					+ "FROM wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id "
 					+ "FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
 					+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' "
@@ -1281,7 +1238,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1303,7 +1260,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1335,7 +1292,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1365,7 +1322,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1384,7 +1341,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1401,7 +1358,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1414,7 +1371,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -1431,7 +1388,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1447,7 +1404,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1462,7 +1419,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 
 		}
@@ -1492,7 +1449,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1509,7 +1466,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1526,7 +1483,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}
 	}
@@ -1541,7 +1498,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1557,7 +1514,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB..!");
+			Log.info("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1586,12 +1543,12 @@ public class DBUtils extends JavaUtils {
 
 			stmt = conn.createStatement();
 			stmt.executeUpdate(deleteQuery);
-			System.out.println("Deleting all contracts");
+			Log.info("Deleting all contracts");
 			stmt.executeUpdate(insertQuery1);
 			stmt.executeUpdate(insertQuery2);
-			System.out.println("Inserting " + contract.toLowerCase() + " along with rbl");
+			Log.info("Inserting " + contract.toLowerCase() + " along with rbl");
 		} catch (SQLException sqe) {
-			System.out.println("Duplicate entry for " + contract);
+			Log.info("Duplicate entry for " + contract);
 		}
 	}
 
@@ -1620,13 +1577,13 @@ public class DBUtils extends JavaUtils {
 				try {
 					stmt.executeUpdate(insertQuery);
 				} catch (Exception e) {
-					System.out.println("Duplicate entry for " + code);
+					Log.info("Duplicate entry for " + code);
 				}
 			}
 		} catch (
 
 		SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}
 	}
