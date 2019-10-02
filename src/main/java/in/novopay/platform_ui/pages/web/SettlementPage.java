@@ -172,6 +172,12 @@ public class SettlementPage extends BasePage {
 	@FindBy(xpath = "//li[1][contains(@class,'notifications')]/span[2]")
 	WebElement fcmContent;
 
+	@FindBy(xpath = "//li[2][contains(@class,'notifications')]//strong")
+	WebElement fcmHeading2;
+
+	@FindBy(xpath = "//li[2][contains(@class,'notifications')]/span[2]")
+	WebElement fcmContent2;
+
 	@FindBy(xpath = "//a[contains(text(),'Cashout Settlement')]")
 	WebElement cashoutTab;
 
@@ -201,13 +207,34 @@ public class SettlementPage extends BasePage {
 				dbUtils.updateOrgSettlementInfo("TO_BANK", "4", "0", "Incorrect bank details", mobileNumFromIni());
 			}
 
+			dbUtils.updateWlletManagedByBank(usrData.get("PARTNER").toUpperCase(),
+					getLoginMobileFromIni("RetailerMobNum"));
+
+			if (usrData.get("TYPE").equalsIgnoreCase("NEFT")) {
+				dbUtils.updateSettlementModeInPlatformMasterData("Y", usrData.get("PARTNER"));
+			} else if (usrData.get("TYPE").equalsIgnoreCase("IMPS")) {
+				dbUtils.updateSettlementModeInPlatformMasterData("N", usrData.get("PARTNER"));
+			}
+
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Public Holiday")) {
+				dbUtils.updatePublicHoliday(usrData.get("PARTNER"), "CURDATE()");
+			} else {
+				dbUtils.updatePublicHoliday(usrData.get("PARTNER"), "CURDATE() - INTERVAL 1 DAY");
+			}
+
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Non-Working Hours")) {
+				dbUtils.updateSetllementStartAndEndTime(usrData.get("PARTNER"), "TIME_FORMAT(CURTIME()-1, '%H:%i:%s')",
+						"CURTIME()");
+			} else {
+				dbUtils.updateSetllementStartAndEndTime(usrData.get("PARTNER"), "CURTIME()",
+						"DATE_ADD(CURTIME(), INTERVAL 1 HOUR)");
+			}
+
 			commonUtils.selectFeatureFromMenu1(manageWalletButton, pageTitle);
 
-//				Thread.sleep(2000);
 			waitUntilElementIsClickableAndClickTheElement(cashoutTab);
 			Log.info("Cashout tab clicked");
 
-//				Thread.sleep(2000);
 			commonUtils.waitForSpinner();
 
 			if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
@@ -228,7 +255,7 @@ public class SettlementPage extends BasePage {
 				Log.info("Drop down clicked");
 
 				bankAccountDropDownValue.click();
-				Log.info(usrData.get("TODROPDOWN") + "selected");
+				Log.info(usrData.get("TODROPDOWN") + " selected");
 
 				waitUntilElementIsClickableAndClickTheElement(amountField);
 				amountField.sendKeys(usrData.get("AMOUNT"));
@@ -286,7 +313,6 @@ public class SettlementPage extends BasePage {
 					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
 					Log.info(mpinButtonName + " button clicked");
 					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-						Log.info("Cancel button clicked");
 						commonUtils.waitForSpinner();
 					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 						if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
@@ -300,16 +326,21 @@ public class SettlementPage extends BasePage {
 							Log.info("Txn screen displayed");
 
 							// Verify the details on transaction screen
-							if (settlementTxnScreen.getText().equalsIgnoreCase("Success!")) {
-								assertionOnSuccessScreen(usrData);
+							if (settlementTxnScreen.getText().equalsIgnoreCase("Success!")
+									|| settlementTxnScreen.getText().equalsIgnoreCase("Pending!")) {
+								if (settlementTxnScreen.getText().equalsIgnoreCase("Success!")) {
+									assertionOnSuccessScreen(usrData);
+								} else if (settlementTxnScreen.getText().equalsIgnoreCase("Pending!")) {
+									assertionOnWarnScreen(usrData);
+								}
 								waitUntilElementIsClickableAndClickTheElement(doneButton);
 								Log.info("Done button clicked");
-								if (usrData.get("ASSERTION").contains("FCM")) {
-									assertionOnFCM(usrData);
-								}
 								commonUtils.waitForSpinner();
 								verifyUpdatedBalanceAfterSuccessTxn(usrData);
 								assertionOnSMS(usrData);
+								if (usrData.get("ASSERTION").contains("FCM")) {
+									assertionOnFCM(usrData);
+								}
 							} else if (settlementTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 									assertionOnFailedScreen(usrData);
@@ -362,6 +393,9 @@ public class SettlementPage extends BasePage {
 							}
 						}
 					}
+
+					dbUtils.updateWlletManagedByBank("RBL", getLoginMobileFromIni("RetailerMobNum"));
+
 				} else if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")) {
 					waitUntilElementIsClickableAndClickTheElement(applicableChargesButton);
 					waitUntilElementIsVisible(applicableChargesScreen);
@@ -382,10 +416,10 @@ public class SettlementPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		if (usrData.get("TODROPDOWN").equalsIgnoreCase("bank account")) {
-//			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request successful. " + 
-//					"Please check your bank account after 4 hours for updated balance.");
-		} else {
+		if (usrData.get("TYPE").equalsIgnoreCase("NEFT")) {
+			Assert.assertEquals(settlementTxnScreenMessage.getText().substring(29),
+					"Please check your bank account after 4 hours for updated balance.");
+		} else if (usrData.get("TYPE").equalsIgnoreCase("IMPS")) {
 			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request successful.");
 		}
 		Log.info(settlementTxnScreenMessage.getText());
@@ -394,7 +428,7 @@ public class SettlementPage extends BasePage {
 		Log.info("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
 		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()),
-				dbUtils.getOnDemandSettlementCharges(usrData.get("TODROPDOWN")));
+				dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER")));
 		Log.info("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
@@ -418,6 +452,28 @@ public class SettlementPage extends BasePage {
 		getWalletBalanceFromIni("cashout", newCashoutWalletBalance);
 	}
 
+	// Verify details on success screen
+	public void assertionOnWarnScreen(Map<String, String> usrData)
+			throws ClassNotFoundException, ParseException, InterruptedException {
+		Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request deemed successful.");
+		Log.info(settlementTxnScreenMessage.getText());
+		Assert.assertEquals(replaceSymbols(settlementTxnScreenRequestedAmount.getText()),
+				usrData.get("AMOUNT") + ".00");
+		Log.info("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
+		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
+		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()),
+				dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER")));
+		Log.info("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
+		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
+		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
+		double amount = Double.parseDouble(usrData.get("AMOUNT"));
+		double charges = Double.parseDouble(txnDetailsFromIni("GetCharges", ""));
+		double totalAmount = amount - charges;
+		String cashToBeCollected = df.format(totalAmount);
+		Assert.assertEquals(replaceSymbols(settlementTxnScreenTotalAmount.getText()), cashToBeCollected);
+		Log.info("Amount Transferred: " + replaceSymbols(settlementTxnScreenTotalAmount.getText()));
+	}
+
 	// Verify details on failed screen
 	public void assertionOnFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
@@ -425,6 +481,12 @@ public class SettlementPage extends BasePage {
 			Assert.assertEquals(settlementTxnFailScreenMessage.getText(), "Authentication Failed Invalid MPIN");
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient balance")) {
 			Assert.assertEquals(settlementTxnFailScreenMessage.getText(), "Insufficient balance");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Public Holiday")
+				|| usrData.get("ASSERTION").equalsIgnoreCase("Non-Working Hours")) {
+			Assert.assertEquals(settlementTxnFailScreenMessage.getText(),
+					dbUtils.settlementServiceUnavailableMessage());
+		} else {
+			Assert.assertEquals(settlementTxnFailScreenMessage.getText(), "Transaction has failed. Try again later!");
 		}
 		Log.info(settlementTxnFailScreenMessage.getText());
 	}
@@ -434,7 +496,7 @@ public class SettlementPage extends BasePage {
 		Log.info("Verifying charges");
 		Assert.assertEquals(replaceSymbols(applicableTxnAmount.getText()), usrData.get("AMOUNT") + ".00");
 		Log.info("Transaction Amount: " + replaceSymbols(applicableTxnAmount.getText()));
-		String chrges = dbUtils.getOnDemandSettlementCharges(usrData.get("TODROPDOWN"));
+		String chrges = dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"));
 		Assert.assertEquals(replaceSymbols(applicableCharges.getText()), chrges);
 		Log.info("Charges: " + replaceSymbols(applicableCharges.getText()));
 
@@ -448,23 +510,29 @@ public class SettlementPage extends BasePage {
 
 	// SMS assertion
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException {
-		String bankSMS = "Balance transfer: INR " + usrData.get("AMOUNT")
+		String SMSsuccessIMPS = "Balance transfer: INR " + usrData.get("AMOUNT")
 				+ " (Withdrawable balance->Bank account). Transfer request successful. Ref#"
 				+ txnDetailsFromIni("GetTxnRefNo", "") + ", charges: INR " + txnDetailsFromIni("GetCharges", "")
 				+ ", available Withdrawable balance: INR " + getWalletBalanceFromIni("GetCashout", "");
-
-		String walletSMS = "Balance transfer: INR " + usrData.get("AMOUNT")
-				+ " (Withdrawable balance->Retailer credit). Transfer request successful. Ref#"
+		String SMSpendingIMPS = "Balance transfer: INR " + usrData.get("AMOUNT")
+				+ " (Withdrawable balance->Bank account). Transfer request deemed successful. Ref#"
 				+ txnDetailsFromIni("GetTxnRefNo", "") + ", charges: INR " + txnDetailsFromIni("GetCharges", "")
-				+ ", available Withdrawable balance: INR " + getWalletBalanceFromIni("GetCashout", "")
-				+ ", available Retailer credit: INR " + getWalletBalanceFromIni("GetRetailer", "");
+				+ ", available Withdrawable balance: INR " + getWalletBalanceFromIni("GetCashout", "");
+		String SMSsuccessNEFT = "Balance transfer: INR " + usrData.get("AMOUNT")
+				+ " (Withdrawable balance->Bank account). Transfer request successful. "
+				+ "Please check your bank account after 4 hours for updated balance. Ref#"
+				+ txnDetailsFromIni("GetTxnRefNo", "") + ", charges: INR " + txnDetailsFromIni("GetCharges", "")
+				+ ", available Withdrawable balance: INR " + getWalletBalanceFromIni("GetCashout", "");
 
-		if (usrData.get("ASSERTION").equalsIgnoreCase("SMS Bank")) {
-			Assert.assertEquals(bankSMS, dbUtils.sms());
-			Log.info(bankSMS);
-		} else if (usrData.get("ASSERTION").equalsIgnoreCase("SMS Wallet")) {
-			Assert.assertEquals(walletSMS, dbUtils.sms());
-			Log.info(walletSMS);
+		if (usrData.get("ASSERTION").equalsIgnoreCase("SMS IMPS Success")) {
+			Assert.assertEquals(SMSsuccessIMPS, dbUtils.sms());
+			Log.info(SMSsuccessIMPS);
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("SMS IMPS Pending")) {
+			Assert.assertEquals(SMSpendingIMPS, dbUtils.sms());
+			Log.info(SMSpendingIMPS);
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("SMS NEFT Success")) {
+			Assert.assertEquals(SMSsuccessNEFT, dbUtils.sms());
+			Log.info(SMSsuccessNEFT);
 		}
 	}
 
@@ -472,18 +540,53 @@ public class SettlementPage extends BasePage {
 	public void assertionOnFCM(Map<String, String> usrData) throws ClassNotFoundException {
 		String bankFCMHeading = "Balance transfer: INR " + txnDetailsFromIni("GetTxfAmount", "")
 				+ " (Withdrawable balance->Bank account)";
-		String bankFCMContent = "Ref#" + txnDetailsFromIni("GetTxnRefNo", "") + ", charges: INR "
-				+ txnDetailsFromIni("GetCharges", "") + ", available Withdrawable balance: INR "
-				+ getWalletBalanceFromIni("GetCashout", "");
+		String bankFCMContent = "", bankFCMContentPending = "";
 
-		fcmMethod(usrData, bankFCMHeading, bankFCMContent);
+		if (usrData.get("ASSERTION").equalsIgnoreCase("FCM IMPS Success")) {
+			bankFCMContent = "Transfer request successful. Ref#" + txnDetailsFromIni("GetTxnRefNo", "")
+					+ ", charges: INR " + txnDetailsFromIni("GetCharges", "") + ", available Withdrawable balance: INR "
+					+ getWalletBalanceFromIni("GetCashout", "");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("FCM IMPS Pending")) {
+			bankFCMContent = "Transfer request deemed successful. Ref#" + txnDetailsFromIni("GetTxnRefNo", "")
+					+ ", charges: INR " + txnDetailsFromIni("GetCharges", "") + ", available Withdrawable balance: INR "
+					+ getWalletBalanceFromIni("GetCashout", "");
+			bankFCMContentPending = "Transfer request deemed successful.";
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("FCM NEFT Success")) {
+			bankFCMContent = "Please check your bank account after 4 hours for updated balance. Ref#"
+					+ txnDetailsFromIni("GetTxnRefNo", "") + ", charges: INR " + txnDetailsFromIni("GetCharges", "")
+					+ ", available Withdrawable balance: INR " + getWalletBalanceFromIni("GetCashout", "");
+		}
+
+		if (usrData.get("ASSERTION").equalsIgnoreCase("FCM IMPS Pending")) {
+			try {
+				fcmMethod1(usrData, bankFCMHeading, bankFCMContent);
+				fcmMethod2(bankFCMHeading, bankFCMContentPending);
+			} catch (Exception e) {
+				fcmMethod1(usrData, bankFCMHeading, bankFCMContentPending);
+				fcmMethod2(bankFCMHeading, bankFCMContent);
+			}
+		} else {
+			fcmMethod1(usrData, bankFCMHeading, bankFCMContent);
+		}
+
 	}
 
-	public void fcmMethod(Map<String, String> usrData, String heading, String content) {
+	public void fcmMethod1(Map<String, String> usrData, String heading, String content) {
 		Assert.assertEquals(fcmHeading.getText(), heading);
-		Assert.assertEquals(fcmContent.getText().substring(29), content);
+		if (usrData.get("ASSERTION").equalsIgnoreCase("FCM NEFT Success")) {
+			Assert.assertEquals(fcmContent.getText().substring(29), content);
+		} else {
+			Assert.assertEquals(fcmContent.getText(), content);
+		}
 		Log.info(fcmHeading.getText());
 		Log.info(fcmContent.getText());
+	}
+
+	public void fcmMethod2(String heading, String content) {
+		Assert.assertEquals(fcmHeading2.getText(), heading);
+		Assert.assertEquals(fcmContent2.getText(), content);
+		Log.info(fcmHeading2.getText());
+		Log.info(fcmContent2.getText());
 	}
 
 	// Get Partner name

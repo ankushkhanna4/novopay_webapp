@@ -48,7 +48,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn.close();
 		} catch (SQLException e) {
-			Log.info("Unable to close the connection due to below error..!");
+			System.out.println("Unable to close the connection due to below error..!");
 			e.printStackTrace();
 		}
 	}
@@ -67,7 +67,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -84,7 +84,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -99,7 +99,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -114,7 +114,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -129,7 +129,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -162,21 +162,25 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
 		return null;
 	}
 
-	public String getOnDemandSettlementCharges(String toDropDown) throws ClassNotFoundException {
+	public String getOnDemandSettlementCharges(String mode, String partner) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("limitCharges"));
 			String code = "";
-			if (toDropDown.equalsIgnoreCase("Bank Account")) {
+			if (mode.equalsIgnoreCase("NEFT") && partner.equalsIgnoreCase("RBL")) {
 				code = "MRCHNT_ON_DEMAND_CASHOUT_BANK_SETTLEMENT_DEFAULT_CHRG";
-			} else if (toDropDown.equalsIgnoreCase("Retailer Credit")) {
-				code = "MRCHNT_ON_DEMAND_WALLET_SETTLEMENT_DEFAULT_CHRG_YBL";
+			} else if (mode.equalsIgnoreCase("IMPS") && partner.equalsIgnoreCase("RBL")) {
+				code = "MRCHNT_ON_DEMAND_CASHOUT_BANK_SETTLEMENT_DEFAULT_CHRG_IMPS";
+			} else if (mode.equalsIgnoreCase("NEFT") && partner.equalsIgnoreCase("YBL")) {
+				code = "MRCHNT_ON_DEMAND_CASHOUT_YBL_BANK_NEFT_SETTLEMENT_AMOUNT";
+			} else if (mode.equalsIgnoreCase("IMPS") && partner.equalsIgnoreCase("YBL")) {
+				code = "MRCHNT_ON_DEMAND_CASHOUT_YBL_BANK_IMPS_SETTLEMENT_DEFAULT_CHRG_IMPS";
 			}
 			String query = "SELECT ROUND(`base_charge`/100,2) FROM `limit_charges`.`charge_category_slabs` "
 					+ "WHERE `category_code`='" + code + "'";
@@ -186,7 +190,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -210,7 +214,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -239,7 +243,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -265,7 +269,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -292,7 +296,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -319,7 +323,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -345,7 +349,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -360,7 +364,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -381,7 +385,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -399,7 +403,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -419,7 +423,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -436,7 +440,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -452,7 +456,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -478,7 +482,7 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("npOps"));
 			stmt = conn.createStatement();
 			stmt.execute(sql);
-			Log.info("Updating status of " + batchName + " to " + status);
+			System.out.println("Updating status of " + batchName + " to " + status);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -506,7 +510,7 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("npRemittance"));
 			stmt = conn.createStatement();
 			stmt.execute(sql);
-			Log.info("Updating status of txn with ref num " + paymentRefCode + " to UNKNOWN");
+			System.out.println("Updating status of txn with ref num " + paymentRefCode + " to UNKNOWN");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -618,7 +622,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -680,7 +684,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -694,11 +698,11 @@ public class DBUtils extends JavaUtils {
 					+ "SET `value` = '0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c' "
 					+ "WHERE user_id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
 					+ "' ORDER BY id DESC LIMIT 1);";
-			Log.info(query);
+			System.out.println(query);
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 
 		}
@@ -715,7 +719,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -731,7 +735,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -747,7 +751,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -763,7 +767,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -779,7 +783,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -801,7 +805,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -818,7 +822,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -835,7 +839,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -853,7 +857,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -871,7 +875,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -908,7 +912,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -936,7 +940,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -968,7 +972,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1003,7 +1007,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1048,7 +1052,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1093,7 +1097,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1128,7 +1132,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1199,7 +1203,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1238,7 +1242,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1260,7 +1264,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1292,7 +1296,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1322,7 +1326,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1341,7 +1345,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1358,7 +1362,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1371,7 +1375,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 
 		}
@@ -1388,7 +1392,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1404,7 +1408,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1419,7 +1423,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 
 		}
@@ -1449,7 +1453,7 @@ public class DBUtils extends JavaUtils {
 			}
 			return list;
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1466,7 +1470,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1482,8 +1486,9 @@ public class DBUtils extends JavaUtils {
 					+ mobNum + "') AND `status` = 'ACTIVE') ORDER BY id DESC LIMIT 1;";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
+			System.out.println("Updating org_stlmnt_info table as per mode " + mode + " and status " + status);
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}
 	}
@@ -1498,7 +1503,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1514,7 +1519,7 @@ public class DBUtils extends JavaUtils {
 				return rs.getString(1);
 			}
 		} catch (SQLException sqe) {
-			Log.info("Error connecting DB..!");
+			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
 		}
 		return null;
@@ -1543,12 +1548,12 @@ public class DBUtils extends JavaUtils {
 
 			stmt = conn.createStatement();
 			stmt.executeUpdate(deleteQuery);
-			Log.info("Deleting all contracts");
+			System.out.println("Deleting all contracts");
 			stmt.executeUpdate(insertQuery1);
 			stmt.executeUpdate(insertQuery2);
-			Log.info("Inserting " + contract.toLowerCase() + " along with rbl");
+			System.out.println("Inserting " + contract.toLowerCase() + " along with rbl");
 		} catch (SQLException sqe) {
-			Log.info("Duplicate entry for " + contract);
+			System.out.println("Duplicate entry for " + contract);
 		}
 	}
 
@@ -1577,13 +1582,96 @@ public class DBUtils extends JavaUtils {
 				try {
 					stmt.executeUpdate(insertQuery);
 				} catch (Exception e) {
-					Log.info("Duplicate entry for " + code);
+					System.out.println("Duplicate entry for " + code);
 				}
 			}
 		} catch (
 
 		SQLException sqe) {
-			Log.info("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void updateSettlementModeInPlatformMasterData(String value, String partner) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "UPDATE np_actor.`platform_master_data` SET `value` = '" + value + "' WHERE partner_code = '"
+					+ partner + "' AND data_sub_type = 'CASHOUT_ON_DEMAND_SETTLEMENT' AND "
+					+ "`code` = 'IMPS_DISABLE';";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating IMPS_DISABLE as " + value + " for partner " + partner);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			sqe.printStackTrace();
+		}
+	}
+
+	public String settlementServiceUnavailableMessage() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("limitCharges"));
+			String query = "SELECT `desc` FROM `np_errors`.`novopay_codes` WHERE `code` = '220700';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+
+	public void updatePublicHoliday(String partner, String date) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query1 = "TRUNCATE TABLE `np_master`.`public_holidays`;";
+			String query2 = "INSERT INTO `np_master`.`public_holidays` (partner, `date`) VALUES ('"
+					+ partner.toLowerCase() + "'," + date + ")";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query1);
+			stmt.executeUpdate(query2);
+			System.out.println("Updating public holiday as " + date);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void updateWlletManagedByBank(String partner, String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "UPDATE master.organization_attribute SET attr_value = '" + partner
+					+ "' WHERE orgnization_id = (SELECT organization FROM master.user "
+					+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "')) AND attr_key = 'WALLET_MANAGED_BY_BANK';";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating wallet managed by bank as " + partner);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void updateSetllementStartAndEndTime(String partner, String startTime, String endTime)
+			throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query1 = "UPDATE np_actor.`platform_master_data` SET `value` = " + startTime
+					+ " WHERE data_type = 'SETTLEMENT' AND data_sub_type = '" + partner
+					+ "' AND `code` = 'START_TIME';";
+			String query2 = "UPDATE np_actor.`platform_master_data` SET `value` = " + endTime
+					+ " WHERE data_type = 'SETTLEMENT' AND data_sub_type = '" + partner + "' AND `code` = 'END_TIME';";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query1);
+			stmt.executeUpdate(query2);
+			System.out.println("Updating start time as " + startTime + " and end time as " + endTime);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}
 	}

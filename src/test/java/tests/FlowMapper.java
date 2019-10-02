@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.JavaUtils;
+import in.novopay.platform_ui.utils.Log;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 
@@ -53,7 +54,7 @@ public class FlowMapper {
 	@Test(dataProvider = "getData")
 	public void flowMapperTest(HashMap<String, String> usrData) throws Throwable {
 		this.usrData = usrData;
-		System.out.println("Executing --> " + usrData.get("TCID"));
+		Log.info("Executing --> " + usrData.get("TCID"));
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
 			dbUtils.modifyContract(usrData.get("CONTRACT"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}

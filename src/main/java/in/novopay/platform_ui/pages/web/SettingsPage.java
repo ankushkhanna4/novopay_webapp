@@ -223,7 +223,7 @@ public class SettingsPage extends BasePage {
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
 				waitUntilElementIsVisible(accountStatus);
-				Assert.assertEquals(accountStatus.getText(), "PENDING VERIFICATION");
+				Assert.assertEquals(accountStatus.getText(), "PENDINGVERIFICATION");
 				Log.info("The status is " + accountStatus.getText());
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
 				waitUntilElementIsVisible(accountStatus);
