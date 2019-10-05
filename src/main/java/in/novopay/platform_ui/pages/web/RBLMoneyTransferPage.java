@@ -455,7 +455,7 @@ public class RBLMoneyTransferPage extends BasePage {
 					Log.info("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 				}
 				getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("BENEIFSC"), "bank"));
-				waitUntilElementIsVisible(validateIFSC); // wait for Branch name to be displayed
+				waitUntilElementIsVisible(validateIFSC);
 				Log.info(validateIFSC.getText());
 
 				// Validate beneficiary before registration

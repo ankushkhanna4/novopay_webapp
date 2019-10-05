@@ -96,6 +96,9 @@ public class RBLStatusEnquiryPage extends BasePage {
 
 	@FindBy(xpath = "//div/button[contains(text(),'Done')]")
 	WebElement seDoneBtn;
+	
+	@FindBy(xpath = "//div/button[contains(text(),'Print')]")
+	WebElement sePrintBtn;
 
 	@FindBy(xpath = "//div/button[contains(text(),'Retry')]")
 	WebElement seRetryBtn;
@@ -232,6 +235,9 @@ public class RBLStatusEnquiryPage extends BasePage {
 				Thread.sleep(1000);
 				waitUntilElementIsVisible(seTxnTitle);
 				assertionOnTxnScreen(usrData);
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Print")) {
+					sePrintBtn.click();
+				}
 				if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
 					seDoneBtn.click();
 				} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
@@ -256,6 +262,9 @@ public class RBLStatusEnquiryPage extends BasePage {
 						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(seTxnTitle);
+						if (usrData.get("ASSERTION").equalsIgnoreCase("Print")) {
+							sePrintBtn.click();
+						}
 						seDoneBtn.click();
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(pageTxnId);

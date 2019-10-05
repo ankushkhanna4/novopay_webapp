@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
 import in.novopay.platform_ui.utils.BasePage;
@@ -65,6 +66,9 @@ public class ReportsPage extends BasePage {
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
 
+	@FindBy(id = "wallet-type")
+	WebElement walletType;
+
 	@FindBy(id = "money-transfer-customer-startDate")
 	WebElement startDate;
 
@@ -94,11 +98,10 @@ public class ReportsPage extends BasePage {
 				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "SUCCESS");
 			}
 			Thread.sleep(4000);
-			if (usrData.get("STATUS").equalsIgnoreCase("UNKNOWN")
-					&& usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
+			if (usrData.get("STATUS").equalsIgnoreCase("UNKNOWN") && usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
 				dbUtils.updateRBLTxnStatus(dbUtils.selectPaymentRefCode());
 			}
-			
+
 			waitUntilElementIsClickableAndClickTheElement(reportsDropdown);
 			Log.info("Drop down clicked");
 			waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
@@ -112,10 +115,20 @@ public class ReportsPage extends BasePage {
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Timeout")
 					|| (usrData.get("REPORTTYPE").equalsIgnoreCase("Refund Report")
 							|| (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")))) {
+				if (usrData.get("STATUS").equalsIgnoreCase("withdrwal")) {
+					Select wallet = new Select(walletType);
+					wallet.selectByVisibleText("Cashout Wallet");
+					Log.info("Cashout wallet selected");
+				} else {
+					Log.info("Main wallet remain selected");
+				}
 				waitUntilElementIsVisible(startDate);
 				startDate.sendKeys(currentDate());
+				Log.info(currentDate() + " entered");
 				endDate.sendKeys(todayDate());
+				Log.info(todayDate() + " entered");
 				submit.click();
+				Log.info("Submit button clicked");
 				Thread.sleep(3000);
 			}
 			commonUtils.waitForSpinner();
@@ -159,7 +172,7 @@ public class ReportsPage extends BasePage {
 				WebElement data = wdriver.findElement(By.xpath(dataXpath));
 				if (j == 5 || j == 6 || j == 7 || j == 8 || j == 9) {
 					dataFromUI[i][j] = replaceSymbols(data.getText());
-				} else if (j == 1) {
+				} else if (j == 1 && !usrData.get("REPORTTYPE").equalsIgnoreCase("Refund Report")) {
 					dataFromUI[i][j] = data.getText().substring(0, 5);
 				} else {
 					dataFromUI[i][j] = data.getText();
@@ -169,17 +182,22 @@ public class ReportsPage extends BasePage {
 
 		// System.out.println(Arrays.deepToString(dataFromUI));
 		if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Banks in Queue")
-				|| usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
-				|| usrData.get("STATUS").equalsIgnoreCase("Date")) {
-			System.out.print("");
-		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Banks in Queue")
+//				|| usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
+//				|| usrData.get("STATUS").equalsIgnoreCase("Date")) {
+//			System.out.print("");
+//		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Banks in Queue")
 				&& usrData.get("STATUS").equalsIgnoreCase("INQUEUE")) {
 			Assert.assertEquals(dataFromUI[0][columnCount - 1], "NA");
 		} else if (!usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")) {
 			Assert.assertEquals(dataFromUI[0][columnCount - 1], usrData.get("STATUS").toUpperCase());
 		} else {
-			Assert.assertEquals(replaceSymbols(dataFromUI[0][columnCount - 1]),
-					dbUtils.closingBalance(mobileNumFromIni()));
+			if (usrData.get("STATUS").equalsIgnoreCase("withdrwal")) {
+				Assert.assertEquals(replaceSymbols(dataFromUI[0][columnCount - 1] + "0000"),
+						dbUtils.closingBalance(mobileNumFromIni(),"CASH_OUT_WALLET_ACCOUNT_NUMBER"));
+			} else {
+				Assert.assertEquals(replaceSymbols(dataFromUI[0][columnCount - 1] + "0000"),
+						dbUtils.closingBalance(mobileNumFromIni(),"WALLET_ACCOUNT_NUMBER"));
+			}
 		}
 
 		List<String> listFromUI = new ArrayList<String>();
@@ -221,8 +239,10 @@ public class ReportsPage extends BasePage {
 			List<String[]> accountStatementBV = dbUtils.accountStatementBV(mobileNumFromIni());
 			list = accountStatementBV;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
-				&& usrData.get("STATUS").equalsIgnoreCase("AEPS")) {
-			List<String[]> accountStatementAEPS = dbUtils.accountStatementAEPS(mobileNumFromIni());
+				&& (usrData.get("STATUS").equalsIgnoreCase("Deposit")
+						|| usrData.get("STATUS").equalsIgnoreCase("withdrwal"))) {
+			List<String[]> accountStatementAEPS = dbUtils.accountStatementAEPS(mobileNumFromIni(),
+					usrData.get("STATUS"));
 			list = accountStatementAEPS;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
 				&& usrData.get("STATUS").contains("CMS")) {

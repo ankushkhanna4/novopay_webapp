@@ -130,7 +130,7 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.password", "qazxsw123");
 			} else if (env.equalsIgnoreCase("QA2")) {
 				ini.put("Common", "env", "qa2");
-				ini.put("Common", "webAppUrl", "https://qa2-retailer.novopay.in/");
+				ini.put("Common", "webAppUrl", "https://retailer.novopay.in/");
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.24:3306/");
 				ini.put("Common", "mongoDbUrl", "192.168.150.24:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "nodecms");

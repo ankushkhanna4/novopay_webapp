@@ -1017,7 +1017,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') txn_time, "
 					+ "(SELECT SUBSTR(RIGHT(`comment`, 11),1,10) FROM wallet.`m_savings_account_transaction` "
 					+ "ORDER BY id DESC LIMIT 1 OFFSET 3) ref_no, (SELECT SUBSTR(RIGHT(`comment`, 22),1,10) "
 					+ "FROM wallet.`m_savings_account_transaction` ORDER BY id DESC LIMIT 1 OFFSET 3) msisdn, "
@@ -1209,20 +1209,27 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public List<String[]> accountStatementAEPS(String mobNum) throws ClassNotFoundException {
+	public List<String[]> accountStatementAEPS(String mobNum, String type) throws ClassNotFoundException {
 		try {
+			String walletKey = "", sign = "";
+			if (type.equalsIgnoreCase("Deposit")) {
+				walletKey = "WALLET_ACCOUNT_NUMBER";
+				sign = "-";
+			} else {
+				walletKey = "CASH_OUT_WALLET_ACCOUNT_NUMBER";
+			}
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') `date`, (SELECT DATE_FORMAT(created_date, '%h:%i') "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') `date`, (SELECT DATE_FORMAT(created_date, '%H:%i') "
 					+ "FROM wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id "
 					+ "FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
-					+ "FROM master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' "
+					+ "FROM master.organization_attribute WHERE attr_key = '" + walletKey + "' "
 					+ "AND orgnization_id = (SELECT organization FROM master.user WHERE id = (SELECT user_id "
 					+ "FROM master.user_attribute WHERE attr_value = '" + mobNum
-					+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) `time`, aeps.novopay_txn_ref, "
-					+ getAEPSMobNum("GetAEPSMobNum")
-					+ ", 'Debit Agent Wallet for Deposit transaction with identifier: XXXX XXXX "
-					+ getAadhaarFromIni("GetAadhaarNum").substring(8, 12)
-					+ "',CONCAT('-',LEFT(amount, LENGTH(amount)-2), '.', RIGHT(amount, 2)) amount, '"
+					+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) `time`, aeps.novopay_txn_ref, '"
+					+ getAEPSMobNum("GetAEPSMobNum") + "', 'Credit Agent for " + type
+					+ " transaction with identifier: XXXX XXXX " + getAadhaarFromIni("GetAadhaarNum").substring(8, 12)
+					+ "' description, CONCAT('" + sign
+					+ "',LEFT(txn_amount, LENGTH(txn_amount)-2), '.', RIGHT(txn_amount, 2)) amount, '"
 					+ (txnDetailsFromIni("GetTds", "").equalsIgnoreCase(".00") ? "NA" : txnDetailsFromIni("GetTds", ""))
 					+ "' tds, '"
 					+ (txnDetailsFromIni("GetComm", "").equalsIgnoreCase("0.00") ? "NA"
@@ -1248,14 +1255,13 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public String closingBalance(String mobNum) throws ClassNotFoundException {
+	public String closingBalance(String mobNum, String type) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT LEFT(running_balance_derived, LENGTH(running_balance_derived)-7) balance "
-					+ "FROM wallet.`m_savings_account_transaction` "
+			String query = "SELECT running_balance_derived FROM wallet.`m_savings_account_transaction` "
 					+ "WHERE `savings_account_id` = (SELECT id FROM wallet.`m_savings_account` "
-					+ "WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
-					+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
+					+ "WHERE account_no = (SELECT attr_value FROM master.organization_attribute " + "WHERE attr_key = '"
+					+ type + "' AND orgnization_id = (SELECT organization FROM master.user "
 					+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
 					+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1";
 			stmt = conn.createStatement();
