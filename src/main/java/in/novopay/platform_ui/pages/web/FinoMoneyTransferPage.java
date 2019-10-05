@@ -271,10 +271,10 @@ public class FinoMoneyTransferPage extends BasePage {
 
 	@FindBy(xpath = "//strong[contains(text(),'Suggestion')]")
 	WebElement beneValidationCase5;
-	
+
 	@FindBy(xpath = "//*[@name='useNameFromBank']")
 	WebElement beneCheckbox;
-	
+
 	@FindBy(xpath = "//h5[contains(text(),'Beneficiary Validation')]/parent::div/following-sibling::div[4]/button")
 	WebElement beneSuccessOkButton;
 
@@ -476,13 +476,26 @@ public class FinoMoneyTransferPage extends BasePage {
 				String beneXpath = "//span[contains(text(),'" + beneName
 						+ "')]/following-sibling::span[contains(text(),'" + beneACNum + "') and contains(text(),'"
 						+ dbUtils.getBank(beneIFSC) + "')]/parent::li";
-				if (usrData.get("ASSERTION").equalsIgnoreCase("Validate Icon")) {
-					String beneValIconXpath = "//span[contains(text(),'" + beneName
-							+ "')]/following-sibling::span[contains(text(),'" + beneACNum + "') and contains(text(),'"
-							+ dbUtils.getBank(beneIFSC) + "')]/parent::li//i";
+				if (usrData.get("ASSERTION").contains("Icon + Name")) {
+					String beneValIconXpath = beneXpath + "//i";
 					WebElement beneValIcon = wdriver.findElement(By.xpath(beneValIconXpath));
+					String beneNickNameXpath = beneXpath + "/span[1]";
+					WebElement beneNickNameName = wdriver.findElement(By.xpath(beneNickNameXpath));
+					String accountHolderNameXpath = beneXpath + "/span[2]";
+					WebElement accountHolderName = wdriver.findElement(By.xpath(accountHolderNameXpath));
 					waitUntilElementIsVisible(beneValIcon);
 					Log.info("Validate icon visible");
+					if (usrData.get("ASSERTION").equalsIgnoreCase("Icon + Name (Same)")) {
+						Assert.assertEquals(beneNickNameName.getText().trim(), getBeneNameFromBank("GetBeneName", ""));
+						Assert.assertEquals(accountHolderName.getText(),
+								getBeneNameFromBank("GetBeneName", "").toUpperCase());
+						Log.info("Bene nickname and Account Holder Name are same");
+					} else if (usrData.get("ASSERTION").equalsIgnoreCase("Icon + Name (Different)")) {
+						Assert.assertEquals(beneNickNameName.getText().trim(), getBeneNameFromIni("GetBeneName"));
+						Assert.assertEquals(accountHolderName.getText(),
+								getBeneNameFromBank("GetBeneName", "").toUpperCase());
+						Log.info("Bene nickname and Account Holder Name are different");
+					}
 				}
 				waitUntilElementIsClickableAndClickTheElement(wdriver.findElement(By.xpath(beneXpath)));
 				Log.info(beneName + " beneficiary selected");
@@ -724,7 +737,7 @@ public class FinoMoneyTransferPage extends BasePage {
 			Assert.assertEquals(beneName.getAttribute("value"), usrData.get("BENENAME"));
 			Log.info("Bene name remains " + beneName.getAttribute("value"));
 		} else {
-			Assert.assertEquals(beneName.getAttribute("value"), getBeneNameFromBank("GetBeneName",""));
+			Assert.assertEquals(beneName.getAttribute("value"), getBeneNameFromBank("GetBeneName", ""));
 			Log.info("Bene name got replaced by " + beneName.getAttribute("value"));
 		}
 		if (usrData.get("ASSERTION").contains("FCM")) {
@@ -1125,7 +1138,7 @@ public class FinoMoneyTransferPage extends BasePage {
 						Log.info("Case 3 validated");
 					} else {
 						Log.info("Case 2 validated");
-						getBeneNameFromBank("StoreBeneName",beneNameCase2NameByBank.getText());
+						getBeneNameFromBank("StoreBeneName", beneNameCase2NameByBank.getText());
 					}
 				}
 			} catch (Exception f) {
