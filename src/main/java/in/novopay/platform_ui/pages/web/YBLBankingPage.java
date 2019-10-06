@@ -1214,11 +1214,11 @@ public class YBLBankingPage extends BasePage {
 		String successFCMHeading = "Balance Enquiry: SUCCESS";
 		String failFCMHeading = "Balance Enquiry: FAIL";
 
-		String successFCMContent = "Balance in " + usrData.get("BANKNAME") + " a/c linked with Aadhaar/VID XXXX XXXX "
+		String successFCMContent = "Balance in " + usrData.get("BANKNAME") + " a/c linked with Aadhaar XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " as on " + dbUtils.aepsTxnDate()
 				+ " IST is Led Bal: 5944.85, Ava Bal: 5944.85 Response code: (00) SUCCESS Reference No: "
 				+ txnDetailsFromIni("GetTxnRefNo", "");
-		String failFCMContent = "Balance Enquiry for customer with Aadhaar/VID XXXX XXXX "
+		String failFCMContent = "Balance Enquiry for customer with Aadhaar XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " has failed : Failed to perform transaction(M3)";
 
 		switch (usrData.get("ASSERTION")) {

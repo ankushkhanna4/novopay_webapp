@@ -159,6 +159,7 @@ public class SwiggyPage extends BasePage {
 			if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
 				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
 					fetchedAmount.clear();
+					Thread.sleep(1000);
 					fetchedAmount.sendKeys(usrData.get("AMOUNT"));
 					cmsDetailsFromIni("StoreSwiggyAmount", usrData.get("AMOUNT"));
 				}

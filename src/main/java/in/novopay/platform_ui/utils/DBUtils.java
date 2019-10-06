@@ -884,20 +884,18 @@ public class DBUtils extends JavaUtils {
 	public List<String[]> queuedTxnReport(String mobNum, int limit) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT \r\n"
-					+ "	CONCAT(DAY(DATE(rot.`created_on`)),' ',SUBSTRING(MONTHNAME(DATE(rot.`created_on`)),1,3),' ',YEAR(DATE(rot.`created_on`))) Txn_Date, \r\n"
-					+ "	CONCAT(CONCAT(DAY(DATE(rot.`created_on`)),' ',SUBSTRING(MONTHNAME(DATE(rot.`created_on`)),1,3),' ',YEAR(DATE(rot.`created_on`))),', ',CONCAT(IF(IF(HOUR(TIME(rot.`created_on`))>12,HOUR(TIME(rot.`created_on`))-12,HOUR(TIME(rot.`created_on`)))<10,IF(CONCAT('0',IF(HOUR(TIME(rot.`created_on`))>12,HOUR(TIME(rot.`created_on`))-12,HOUR(TIME(rot.`created_on`))))='00',12,CONCAT('0',IF(HOUR(TIME(rot.`created_on`))>12,HOUR(TIME(rot.`created_on`))-12,HOUR(TIME(rot.`created_on`))))),IF(HOUR(TIME(rot.`created_on`))>12,HOUR(TIME(rot.`created_on`))-12,HOUR(TIME(rot.`created_on`)))),RIGHT(TIME(rot.`created_on`),6)),' ',IF(HOUR(TIME(rot.`created_on`))<12,'AM','PM')) `Txn_Time_Initiated`,\r\n"
-					+ "	CONCAT(CONCAT(DAY(DATE(rot.`processed_on`)),' ',SUBSTRING(MONTHNAME(DATE(rot.`processed_on`)),1,3),' ',YEAR(DATE(rot.`processed_on`))),', ',CONCAT(IF(IF(HOUR(TIME(rot.`processed_on`))>12,HOUR(TIME(rot.`processed_on`))-12,HOUR(TIME(rot.`processed_on`)))<10,IF(CONCAT('0',IF(HOUR(TIME(rot.`processed_on`))>12,HOUR(TIME(rot.`processed_on`))-12,HOUR(TIME(rot.`processed_on`))))='00',12,CONCAT('0',IF(HOUR(TIME(rot.`processed_on`))>12,HOUR(TIME(rot.`processed_on`))-12,HOUR(TIME(rot.`processed_on`))))),IF(HOUR(TIME(rot.`processed_on`))>12,HOUR(TIME(rot.`processed_on`))-12,HOUR(TIME(rot.`processed_on`)))),RIGHT(TIME(rot.`processed_on`),6)),' ',IF(HOUR(TIME(rot.`processed_on`))<12,'AM','PM')) `Txn_Time_Processed`,\r\n"
-					+ "	IF(STRCMP(rot.`remittance_type`,\"C2A\") = 0,'REMITTANCE','F') Txn_Type,\r\n"
-					+ "	rot.`remitter_msisdn` `Remitter_Mobile#`,\r\n" + "	rot.`payment_ref_code` Txn_Id,\r\n"
-					+ "	CONCAT(LEFT(rot.amount, LENGTH(rot.amount)-2), '.', RIGHT(rot.amount, 2)) Txn_Amount,\r\n"
-					+ "	rot.`beneficiary_bank` Bene_Bank,\r\n" + "	rot.`status` `Status` \r\n"
-					+ "	FROM np_remittance.remittance_outward_table rot \r\n"
-					+ "	JOIN np_remittance.queued_remittance qr ON rot.payment_ref_code = qr.`payment_ref_code` \r\n"
-					+ "	WHERE rot.`csp_code` = (SELECT o.code FROM `master`.`user` AS u JOIN `master`.`user_attribute` AS ua ON u.`id`=ua.`user_id` JOIN `master`.organization o ON u.organization = o.id WHERE ua.`attr_value`='"
-					+ mobNum
-					+ "' ORDER BY u.id DESC LIMIT 1) AND qr.`created_on`>=DATE_ADD(CURDATE(), INTERVAL -1 DAY)\r\n"
-					+ "	ORDER BY rot.id DESC LIMIT " + limit + ";";
+			String query = "SELECT DATE_FORMAT(rot.created_on, '%e %b %Y') Txn_Date, DATE_FORMAT(rot.created_on, "
+					+ "'%e %b %Y, %r') `Txn_Time_Initiated`, DATE_FORMAT(rot.processed_on, '%e %b %Y, %r') "
+					+ "`Txn_Time_Processed`,IF(STRCMP(rot.`remittance_type`,'C2A') = 0,'REMITTANCE','F') "
+					+ "Txn_Type,rot.`remitter_msisdn` `Remitter_Mobile#`,rot.`payment_ref_code` Txn_Id,"
+					+ "CONCAT(LEFT(rot.amount, LENGTH(rot.amount)-2), '.', RIGHT(rot.amount, 2)) "
+					+ "Txn_Amount,rot.`beneficiary_bank` Bene_Bank,rot.`status` `Status` FROM "
+					+ "np_remittance.remittance_outward_table rot JOIN np_remittance.queued_remittance qr "
+					+ "ON rot.payment_ref_code = qr.`payment_ref_code` WHERE rot.`csp_code` = (SELECT o.code "
+					+ "FROM `master`.`user` AS u JOIN `master`.`user_attribute` AS ua ON u.`id`=ua.`user_id` "
+					+ "JOIN `master`.organization o ON u.organization = o.id WHERE ua.`attr_value`='" + mobNum
+					+ "' ORDER BY u.id DESC LIMIT 1) AND qr.`created_on`>=DATE_ADD(CURDATE(), INTERVAL -1 DAY) "
+					+ "ORDER BY rot.id DESC LIMIT " + limit + ";";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			int nCol = rs.getMetaData().getColumnCount();
@@ -921,11 +919,11 @@ public class DBUtils extends JavaUtils {
 	public List<String[]> queuedBankReport() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT bank_name, partner, "
-					+ "CONCAT(CONCAT(DAY(DATE(start_time)),' ',SUBSTRING(MONTHNAME(DATE(start_time)),1,3),' ',YEAR(DATE(start_time))),', ',CONCAT(IF(IF(HOUR(TIME(start_time))>12,HOUR(TIME(start_time))-12,HOUR(TIME(start_time)))<10,IF(CONCAT('0',IF(HOUR(TIME(start_time))>12,HOUR(TIME(start_time))-12,HOUR(TIME(start_time))))='00',12,CONCAT('0',IF(HOUR(TIME(start_time))>12,HOUR(TIME(start_time))-12,HOUR(TIME(start_time))))),IF(HOUR(TIME(start_time))>12,HOUR(TIME(start_time))-12,HOUR(TIME(start_time)))),RIGHT(TIME(start_time),6)),' ',IF(HOUR(TIME(start_time))<12,'AM','PM')) start_time, "
-					+ "IF(end_time IS NULL, \"INQUEUE\", CONCAT(CONCAT(DAY(DATE(end_time)),' ',SUBSTRING(MONTHNAME(DATE(end_time)),1,3),' ',YEAR(DATE(end_time))),', ',CONCAT(IF(IF(HOUR(TIME(end_time))>12,HOUR(TIME(end_time))-12,HOUR(TIME(end_time)))<10,IF(CONCAT('0',IF(HOUR(TIME(end_time))>12,HOUR(TIME(end_time))-12,HOUR(TIME(end_time))))='00',12,CONCAT('0',IF(HOUR(TIME(end_time))>12,HOUR(TIME(end_time))-12,HOUR(TIME(end_time))))),IF(HOUR(TIME(end_time))>12,HOUR(TIME(end_time))-12,HOUR(TIME(end_time)))),RIGHT(TIME(end_time),6)),' ',IF(HOUR(TIME(end_time))<12,'AM','PM'))) end_time, "
-					+ "IF(CONCAT(IF(HOUR(TIMEDIFF(end_time, start_time))<10,CONCAT('0',HOUR(TIMEDIFF(end_time, start_time))),HOUR(TIMEDIFF(end_time, start_time))),'h ',IF(MINUTE(TIMEDIFF(end_time, start_time))<10,CONCAT('0',MINUTE(TIMEDIFF(end_time, start_time))),MINUTE(TIMEDIFF(end_time, start_time))),'m ',IF(SECOND(TIMEDIFF(end_time, start_time))<10,CONCAT('0',SECOND(TIMEDIFF(end_time, start_time))),SECOND(TIMEDIFF(end_time, start_time))),'s') IS NULL,\"NA\",CONCAT(IF(HOUR(TIMEDIFF(end_time, start_time))<10,CONCAT('0',HOUR(TIMEDIFF(end_time, start_time))),HOUR(TIMEDIFF(end_time, start_time))),'h ',IF(MINUTE(TIMEDIFF(end_time, start_time))<10,CONCAT('0',MINUTE(TIMEDIFF(end_time, start_time))),MINUTE(TIMEDIFF(end_time, start_time))),'m ',IF(SECOND(TIMEDIFF(end_time, start_time))<10,CONCAT('0',SECOND(TIMEDIFF(end_time, start_time))),SECOND(TIMEDIFF(end_time, start_time))),'s')) duration "
-					+ "FROM np_remittance.queued_banks " + "WHERE end_time IS NULL ORDER BY id DESC LIMIT 1";
+			String query = "SELECT bank_name, partner, DATE_FORMAT(start_time, '%e %b %Y, %r') start_time, "
+					+ "IF(end_time IS NULL, 'INQUEUE', DATE_FORMAT(end_time, '%e %b %Y, %r')) end_time, "
+					+ "DATE_FORMAT(TIMEDIFF(end_time, start_time), '%Hh %im %ss') duration "
+					+ "FROM np_remittance.queued_banks WHERE partner = 'RBL' AND start_time >= "
+					+ "DATE_ADD(CURDATE(), INTERVAL -1 DAY) LIMIT 1";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			int nCol = rs.getMetaData().getColumnCount();
@@ -949,15 +947,15 @@ public class DBUtils extends JavaUtils {
 	public List<String[]> timeoutReport(String mobNum, String status) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT \r\n"
-					+ "CONCAT(CONCAT(DAY(DATE(created_on)),' ',SUBSTRING(MONTHNAME(DATE(created_on)),1,3),' ',YEAR(DATE(created_on))),', ',CONCAT(IF(IF(HOUR(TIME(created_on))>12,HOUR(TIME(created_on))-12,HOUR(TIME(created_on)))<10,IF(CONCAT('0',IF(HOUR(TIME(created_on))>12,HOUR(TIME(created_on))-12,HOUR(TIME(created_on))))='00',12,CONCAT('0',IF(HOUR(TIME(created_on))>12,HOUR(TIME(created_on))-12,HOUR(TIME(created_on))))),IF(HOUR(TIME(created_on))>12,HOUR(TIME(created_on))-12,HOUR(TIME(created_on)))),RIGHT(TIME(created_on),6)),' ',IF(HOUR(TIME(created_on))<12,'AM','PM')) `txn_time_initiated`, "
-					+ "IF(`remittance_type`='C2A','REMITTANCE',`remittance_type`) txn_type,"
-					+ "`remitter_msisdn`,`beneficiary_name`,`beneficiary_bank`,`payment_ref_code`,CONCAT(LEFT(amount, LENGTH(amount)-2), '.', RIGHT(amount, 2)) amount,`partner`,`status` "
-					+ "FROM np_remittance.remittance_outward_table "
-					+ "WHERE `csp_code` = (SELECT o.code FROM `master`.`user` AS u JOIN `master`.`user_attribute` AS ua ON u.`id`=ua.`user_id` "
+			String query = "SELECT DATE_FORMAT(created_on, '%e %b %Y, %r') `txn_time_initiated`, "
+					+ "IF(`remittance_type`='C2A','REMITTANCE',`remittance_type`) txn_type,`remitter_msisdn`,"
+					+ "`beneficiary_name`,`beneficiary_bank`,`payment_ref_code`,CONCAT(LEFT(amount, "
+					+ "LENGTH(amount)-2), '.', RIGHT(amount, 2)) amount,`partner`,`status` FROM "
+					+ "np_remittance.remittance_outward_table WHERE `csp_code` = (SELECT o.code "
+					+ "FROM `master`.`user` AS u JOIN `master`.`user_attribute` AS ua ON u.`id`=ua.`user_id` "
 					+ "JOIN `master`.organization o ON u.organization = o.id WHERE ua.`attr_value`='" + mobNum
-					+ "' ORDER BY u.id DESC LIMIT 1) AND `status` = '" + status + "' "
-					+ "AND (`npci_response_code` = '91' OR `npci_response_code` IS NULL) ORDER BY id DESC";
+					+ "' ORDER BY u.id DESC LIMIT 1) AND `status` = '" + status + "' AND (`npci_response_code` = '91' "
+					+ "OR `npci_response_code` IS NULL) ORDER BY id DESC LIMIT 1";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			int nCol = rs.getMetaData().getColumnCount();
@@ -992,7 +990,7 @@ public class DBUtils extends JavaUtils {
 					+ "WHERE `csp_code` = (SELECT o.code FROM `master`.`user` AS u JOIN `master`.`user_attribute` AS ua "
 					+ "ON u.`id`=ua.`user_id` JOIN `master`.organization o ON u.organization = o.id "
 					+ "WHERE ua.`attr_value`='" + mobNum + "' ORDER BY u.id DESC LIMIT 1) "
-					+ "AND refund_status IS NOT NULL ORDER BY id DESC";
+					+ "AND refund_status IS NOT NULL ORDER BY id DESC LIMIT 1";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			int nCol = rs.getMetaData().getColumnCount();
@@ -1062,7 +1060,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') txn_time, "
 					+ "(SELECT SUBSTR(RIGHT(`comment`, 11),1,10) FROM wallet.`m_savings_account_transaction` "
 					+ "ORDER BY id DESC LIMIT 1 OFFSET 3) ref_no, (SELECT SUBSTR(RIGHT(`comment`, 22),1,10) "
 					+ "FROM wallet.`m_savings_account_transaction` ORDER BY id DESC LIMIT 1 OFFSET 3) msisdn, "
@@ -1107,7 +1105,7 @@ public class DBUtils extends JavaUtils {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 
-			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') txn_time, "
 					+ "SUBSTR(RIGHT(`comment`, 11),1,10) ref_no, SUBSTR(RIGHT(`comment`, 22),1,10) msisdn, "
 					+ "SUBSTR(`comment`,1,LENGTH(`comment`)-24) description, "
 					+ "CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) amount, 'NA' charge, 'NA' comm "
@@ -1145,7 +1143,7 @@ public class DBUtils extends JavaUtils {
 			String query = "";
 
 			if (txnDetailsFromIni("GetComm", "").equals("0.0")) {
-				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') txn_time, "
 						+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
 						+ "amount, 'NA' charge, 'NA' comm FROM "
 						+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
@@ -1154,7 +1152,7 @@ public class DBUtils extends JavaUtils {
 						+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
 						+ "' ORDER BY id " + "DESC LIMIT 1 OFFSET 1)))) ORDER BY id DESC LIMIT 1";
 			} else if (txnDetailsFromIni("GetTds", "").equals("0.0")) {
-				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') txn_time, "
 						+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
 						+ "amount, 'NA' charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
 						+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
@@ -1168,7 +1166,7 @@ public class DBUtils extends JavaUtils {
 						+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
 						+ "' ORDER BY id " + "DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1 OFFSET 1";
 			} else {
-				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%h:%i') txn_time, "
+				query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') txn_time, "
 						+ "'NA' ref_no, 'NA' msisdn, `comment` description, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
 						+ "amount, '0.00' charge, (SELECT SUBSTR(amount,1,LENGTH(`amount`)-4) amount FROM wallet.`m_savings_account_transaction` WHERE "
 						+ "`savings_account_id` = (SELECT id FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value "
@@ -1591,9 +1589,7 @@ public class DBUtils extends JavaUtils {
 					System.out.println("Duplicate entry for " + code);
 				}
 			}
-		} catch (
-
-		SQLException sqe) {
+		} catch (SQLException sqe) {
 			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}
