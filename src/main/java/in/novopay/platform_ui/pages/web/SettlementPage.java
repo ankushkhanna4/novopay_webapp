@@ -561,7 +561,7 @@ public class SettlementPage extends BasePage {
 			try {
 				fcmMethod1(usrData, bankFCMHeading, bankFCMContent);
 				fcmMethod2(bankFCMHeading, bankFCMContentPending);
-			} catch (Exception e) {
+			} catch (AssertionError e) {
 				fcmMethod1(usrData, bankFCMHeading, bankFCMContentPending);
 				fcmMethod2(bankFCMHeading, bankFCMContent);
 			}

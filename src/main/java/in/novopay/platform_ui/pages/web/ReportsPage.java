@@ -96,8 +96,8 @@ public class ReportsPage extends BasePage {
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Queued Transactions")
 					&& !usrData.get("STATUS").equalsIgnoreCase("INQUEUE")) {
 				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "SUCCESS");
+				Thread.sleep(4000);
 			}
-			Thread.sleep(4000);
 			if (usrData.get("STATUS").equalsIgnoreCase("UNKNOWN") && usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
 				dbUtils.updateRBLTxnStatus(dbUtils.selectPaymentRefCode());
 			}

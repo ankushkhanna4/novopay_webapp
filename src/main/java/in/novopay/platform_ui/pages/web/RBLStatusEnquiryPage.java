@@ -36,10 +36,10 @@ public class RBLStatusEnquiryPage extends BasePage {
 
 	@FindBy(xpath = "//li[contains(text(),'Money Transfer')]")
 	WebElement moneyTransferProduct;
-	
+
 	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
 	WebElement pageTitle2;
-	
+
 	@FindBy(xpath = "//a[@href='/newportal/rbl-transfer']/span[contains(text(),'Money Transfer')]")
 	WebElement moneyTransfer;
 
@@ -96,7 +96,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 
 	@FindBy(xpath = "//div/button[contains(text(),'Done')]")
 	WebElement seDoneBtn;
-	
+
 	@FindBy(xpath = "//div/button[contains(text(),'Print')]")
 	WebElement sePrintBtn;
 
@@ -185,8 +185,10 @@ public class RBLStatusEnquiryPage extends BasePage {
 				updateTxnStatus("3");
 			} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
 				updateTxnStatus("1");
-			} else if (usrData.get("STATUS").equalsIgnoreCase("Queued")) {
-				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "STOPPED");
+			} else if (usrData.get("STATUS").equalsIgnoreCase("Queued to Success")
+					|| usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
+				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "SUCCESS");
+				Thread.sleep(10000);
 			}
 			if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
 				statusEnquirySection(usrData);
@@ -238,10 +240,12 @@ public class RBLStatusEnquiryPage extends BasePage {
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Print")) {
 					sePrintBtn.click();
 				}
-				if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
+				if (usrData.get("STATUS").equalsIgnoreCase("Success")
+						|| usrData.get("STATUS").equalsIgnoreCase("Queued to Success")) {
 					seDoneBtn.click();
 				} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
-						|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
+						|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")
+						|| usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
 					seDoneBtn.click();
 				} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
 					seDoneBtn.click();
@@ -389,7 +393,8 @@ public class RBLStatusEnquiryPage extends BasePage {
 		}
 		String statusXpath = "//tbody/tr[1]/td[10]";
 		WebElement statusData = wdriver.findElement(By.xpath(statusXpath));
-		if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
+		if (usrData.get("STATUS").equalsIgnoreCase("Success")
+				|| usrData.get("STATUS").equalsIgnoreCase("Queued to Success")) {
 			Assert.assertEquals(statusData.getText(),
 					usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID") ? "TXN_SUCCESS" : "SUCCESS");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")) {
@@ -398,7 +403,8 @@ public class RBLStatusEnquiryPage extends BasePage {
 			Assert.assertEquals(statusData.getText(), "91");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
 			Assert.assertEquals(statusData.getText(), "TXN_REVERSAL_INITIATED");
-		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
+		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")
+				|| usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
 			Assert.assertEquals(statusData.getText(), "TXN_REVERSED");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Queued")) {
 			Assert.assertEquals(statusData.getText(), "TXN_INQUEUE");
@@ -456,7 +462,8 @@ public class RBLStatusEnquiryPage extends BasePage {
 			Log.info(seTxnSuccessMessage.getText());
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
 				|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")
-				|| usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
+				|| usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")
+				|| usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
 			Assert.assertEquals(seTxnRefundedMessage.getText().contains("Funds transfer failed"), true);
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Queued")) {
 			Assert.assertEquals(seTxnSuccessMessage.getText(),
@@ -481,6 +488,10 @@ public class RBLStatusEnquiryPage extends BasePage {
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
 			Assert.assertEquals(replaceSymbols(seTxnScreenRefundedAmount.getText()),
 					txnDetailsFromIni("GetTxfAmount", "") + ".00");
+			Log.info("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
+		} else if (usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
+			Assert.assertEquals(replaceSymbols(seTxnScreenRefundedAmount.getText()),
+					txnDetailsFromIni("GetFailAmount", "") + ".00");
 			Log.info("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
 		}
 		Assert.assertEquals(replaceSymbols(seTxnScreenCharges.getText()), txnDetailsFromIni("GetCharges", ""));

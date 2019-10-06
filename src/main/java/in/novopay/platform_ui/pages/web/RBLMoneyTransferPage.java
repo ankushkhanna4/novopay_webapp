@@ -1371,7 +1371,7 @@ public class RBLMoneyTransferPage extends BasePage {
 			try {
 				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
 				fcmMethod2(successFCMHeading, successFCMContent);
-			} catch (Exception e) {
+			} catch (AssertionError e) {
 				fcmMethod1(successFCMHeading, successFCMContent);
 				fcmMethod2(successSummaryFCMHeading, successSummaryFCMContent);
 			}
@@ -1380,7 +1380,7 @@ public class RBLMoneyTransferPage extends BasePage {
 			try {
 				fcmMethod1(failSummaryFCMHeading, failSummaryFCMContent);
 				fcmMethod2(failFCMHeading, failFCMContent);
-			} catch (Exception e) {
+			} catch (AssertionError e) {
 				fcmMethod1(failFCMHeading, failFCMContent);
 				fcmMethod2(failSummaryFCMHeading, failSummaryFCMContent);
 			}
@@ -1389,7 +1389,7 @@ public class RBLMoneyTransferPage extends BasePage {
 			try {
 				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
 				fcmMethod2(successFCMHeading, queuedTxnFCMContent);
-			} catch (Exception e) {
+			} catch (AssertionError e) {
 				fcmMethod2(successFCMHeading, queuedTxnFCMContent);
 				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
 			}
