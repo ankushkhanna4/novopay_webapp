@@ -398,10 +398,10 @@ public class BasePage extends JavaUtils {
 	public void captureScreenshotOnFailedTest(ITestResult result, String Tcid) {
 		if (ITestResult.FAILURE == result.getStatus()) {
 			try {
-				Log.info("Taking screenshot on failed test");
+				System.out.println("Taking screenshot on failed test");
 				File source = ((TakesScreenshot) wdriver).getScreenshotAs(OutputType.FILE);
 				FileUtils.copyFile(source, new File("./Screenshots/" + Tcid + ".png"));
-				Log.info("Screenshot taken");
+				System.out.println("Screenshot taken");
 			} catch (Exception e) {
 				System.out.println("Exception while taking screenshot " + e.getMessage());
 			}

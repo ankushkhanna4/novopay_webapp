@@ -15,7 +15,6 @@ import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
 
 public class SwiggyPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
@@ -127,12 +126,12 @@ public class SwiggyPage extends BasePage {
 
 			// Click on Swiggy icon
 			waitUntilElementIsClickableAndClickTheElement(swiggyIcon);
-			Log.info("Swiggy icon clicked");
+			System.out.println("Swiggy icon clicked");
 
 			// Click on depositor mobile number field
 			waitUntilElementIsClickableAndClickTheElement(depositorMobNum);
 			depositorMobNum.sendKeys(usrData.get("MOBILENUMBER"));
-			Log.info("Depositor mobile number entered");
+			System.out.println("Depositor mobile number entered");
 
 			if (usrData.get("GETAMOUNT").equalsIgnoreCase("YES")) {
 				// Click on Get Amount button
@@ -143,12 +142,12 @@ public class SwiggyPage extends BasePage {
 				if (usrData.get("MOBILENUMBER").equalsIgnoreCase("6000000001")) {
 					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Invalid delivery boy");
-					Log.info(toasterMsg.getText());
+					System.out.println(toasterMsg.getText());
 				} else {
 					// Store fetched amount
 					waitUntilElementIsVisible(fetchedAmount);
 					String amount = fetchedAmount.getAttribute("value");
-					Log.info("Amount is " + amount);
+					System.out.println("Amount is " + amount);
 					cmsDetailsFromIni("StoreSwiggyAmount", replaceSymbols(amount));
 				}
 			} else if (usrData.get("GETAMOUNT").equalsIgnoreCase("Clear")) {
@@ -168,21 +167,21 @@ public class SwiggyPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(swgSubmitButton);
 
 				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
-					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+					System.out.println("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 				} else {
 					commonUtils.chooseWalletScreen(usrData);
 				}
 
 				if (!getWalletFromIni("GetWallet", "").equalsIgnoreCase("-")) {
 					waitUntilElementIsVisible(MPINScreen);
-					Log.info("MPIN screen displayed");
+					System.out.println("MPIN screen displayed");
 					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 						enterMPIN.sendKeys("9999");
 					}
-					Log.info("MPIN entered");
+					System.out.println("MPIN entered");
 
 					String mpinButtonName = usrData.get("MPINSCREENBUTTON");
 					String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
@@ -190,14 +189,14 @@ public class SwiggyPage extends BasePage {
 							+ "')]";
 					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
 					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-					Log.info(mpinButtonName + " button clicked");
+					System.out.println(mpinButtonName + " button clicked");
 					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-						Log.info("Cancel button clicked");
+						System.out.println("Cancel button clicked");
 					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 						commonUtils.processingScreen();
 
 						waitUntilElementIsVisible(cmsTxnScreen);
-						Log.info("Txn screen displayed");
+						System.out.println("Txn screen displayed");
 
 						// Verify the details on transaction screen
 						if (cmsTxnScreen.getText().equalsIgnoreCase("Success!")) {
@@ -205,7 +204,7 @@ public class SwiggyPage extends BasePage {
 							assertionOnSMS(usrData);
 
 							waitUntilElementIsClickableAndClickTheElement(doneButton);
-							Log.info("Done button clicked");
+							System.out.println("Done button clicked");
 							if (usrData.get("ASSERTION").contains("FCM")) {
 								assertionOnFCM(usrData);
 							}
@@ -216,49 +215,49 @@ public class SwiggyPage extends BasePage {
 								assertionOnFailedScreen(usrData);
 								assertionOnSMS(usrData);
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-									Log.info("Clicking exit button");
+									System.out.println("Clicking exit button");
 								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 									retryButton.click();
 									Thread.sleep(1000);
 									waitUntilElementIsVisible(MPINScreen);
-									Log.info("MPIN screen displayed");
+									System.out.println("MPIN screen displayed");
 									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									Log.info("MPIN entered");
+									System.out.println("MPIN entered");
 									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									Log.info("Submit button clicked");
+									System.out.println("Submit button clicked");
 									commonUtils.processingScreen();
 									waitUntilElementIsVisible(cmsTxnScreen);
-									Log.info("Txn screen displayed");
+									System.out.println("Txn screen displayed");
 									assertionOnFailedScreen(usrData);
 								}
 								waitUntilElementIsClickableAndClickTheElement(exitButton);
-								Log.info("Exit button clicked");
+								System.out.println("Exit button clicked");
 								if (usrData.get("ASSERTION").contains("FCM")) {
 									assertionOnFCM(usrData);
 								}
 							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 								waitUntilElementIsVisible(cmsTxnScreenMessage);
-								Log.info(cmsTxnScreenMessage.getText());
+								System.out.println(cmsTxnScreenMessage.getText());
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
 									exitButton.click();
-									Log.info("Exit button clicked");
+									System.out.println("Exit button clicked");
 								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 									retryButton.click();
 									Thread.sleep(1000);
 									waitUntilElementIsVisible(MPINScreen);
-									Log.info("MPIN screen displayed");
+									System.out.println("MPIN screen displayed");
 									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									Log.info("MPIN entered");
+									System.out.println("MPIN entered");
 									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									Log.info("Submit button clicked");
+									System.out.println("Submit button clicked");
 									commonUtils.processingScreen();
 									waitUntilElementIsVisible(cmsTxnScreen);
-									Log.info("Txn screen displayed");
+									System.out.println("Txn screen displayed");
 									assertionOnSuccessScreen(usrData);
 									doneButton.click();
-									Log.info("Done button clicked");
+									System.out.println("Done button clicked");
 									commonUtils.refreshBalance();
 								}
 							}
@@ -267,12 +266,12 @@ public class SwiggyPage extends BasePage {
 				}
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
 				clearButton.click();
-				Log.info("Clear button clicked");
+				System.out.println("Clear button clicked");
 			}
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -281,7 +280,7 @@ public class SwiggyPage extends BasePage {
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Swiggy successful.");
-		Log.info(cmsTxnScreenMessage.getText());
+		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
 	// Verify details on failed screen
@@ -295,7 +294,7 @@ public class SwiggyPage extends BasePage {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(),
 					"Deposit to Swiggy failed. Transaction reversed successfully.");
 		}
-		Log.info(cmsTxnScreenMessage.getText());
+		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
 	// SMS assertion
@@ -307,10 +306,10 @@ public class SwiggyPage extends BasePage {
 		Thread.sleep(5000);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successSMS, dbUtils.sms());
-			Log.info(successSMS);
+			System.out.println(successSMS);
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Fail SMS")) {
 			Assert.assertEquals(failSMS, dbUtils.sms());
-			Log.info(successSMS);
+			System.out.println(successSMS);
 		}
 	}
 
@@ -337,8 +336,8 @@ public class SwiggyPage extends BasePage {
 	public void fcmMethod(String heading, String content) {
 		Assert.assertEquals(fcmHeading1.getText(), heading);
 		Assert.assertEquals(fcmContent1.getText(), content);
-		Log.info(fcmHeading1.getText());
-		Log.info(fcmContent1.getText());
+		System.out.println(fcmHeading1.getText());
+		System.out.println(fcmContent1.getText());
 	}
 
 	// Assertion after success or orange screen is displayed
@@ -360,10 +359,10 @@ public class SwiggyPage extends BasePage {
 		String newWalletBalance = df.format(newWalletBal);
 		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
 			Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
-			Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+			System.out.println("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
 		} else {
 			Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
-			Log.info("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+			System.out.println("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
 		}
 	}
 

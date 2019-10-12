@@ -15,7 +15,6 @@ import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
 
 public class SettingsPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
@@ -224,20 +223,20 @@ public class SettingsPage extends BasePage {
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
 				waitUntilElementIsVisible(accountStatus);
 				Assert.assertEquals(accountStatus.getText(), "PENDINGVERIFICATION");
-				Log.info("The status is " + accountStatus.getText());
+				System.out.println("The status is " + accountStatus.getText());
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
 				waitUntilElementIsVisible(accountStatus);
 				Assert.assertEquals(accountStatus.getText(), "REJECTED");
-				Log.info("The status is " + accountStatus.getText());
+				System.out.println("The status is " + accountStatus.getText());
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
 				waitUntilElementIsVisible(blockedIcon);
-				Log.info("The status is blocked");
+				System.out.println("The status is blocked");
 
 			}
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")
 					|| usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-				Log.info("No edit is allowed on this page");
+				System.out.println("No edit is allowed on this page");
 			} else {
 				// Changing mode
 				if (usrData.get("MODE").contains("Change")) {
@@ -248,20 +247,20 @@ public class SettingsPage extends BasePage {
 						Thread.sleep(1000);
 						waitUntilElementIsClickableAndClickTheElement(doNotSettleRadioButton);
 					}
-					Log.info("Radio button clicked");
+					System.out.println("Radio button clicked");
 					Thread.sleep(1000);
 					waitUntilElementIsClickableAndClickTheElement(saveChangesButton);
-					Log.info("Save changes button clicked");
+					System.out.println("Save changes button clicked");
 				}
 
 				if (usrData.get("MODE").contains("Keep")) {
 					if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
 						waitUntilElementIsClickableAndClickTheElement(editButton);
 						waitUntilElementIsVisible(settingsTxnScreen);
-						Log.info("Txn screen displayed");
+						System.out.println("Txn screen displayed");
 						assertionOnInfoScreen(usrData);
 						waitUntilElementIsClickableAndClickTheElement(okButton);
-						Log.info("Ok button clicked");
+						System.out.println("Ok button clicked");
 					} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
 						waitUntilElementIsClickableAndClickTheElement(editButton);
 
@@ -270,48 +269,48 @@ public class SettingsPage extends BasePage {
 							waitUntilElementIsClickableAndClickTheElement(accHolderName);
 							accHolderName.clear();
 							accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
-							Log.info("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
+							System.out.println("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
 							if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
 								waitUntilElementIsClickableAndClickTheElement(ifscCode);
 								ifscCode.clear();
 								ifscCode.sendKeys(usrData.get("IFSCCODE"));
-								Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+								System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
 							} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Search Screen")) {
 								waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
-								Log.info("IFSC search icon clicked");
+								System.out.println("IFSC search icon clicked");
 								waitUntilElementIsVisible(ifscSearchScreen);
 								waitUntilElementIsVisible(ifscSearchBankList);
 								ifscSearchBankList.click();
-								Log.info("IFSC bank drop down clicked");
+								System.out.println("IFSC bank drop down clicked");
 								String ifscBank = "//li[contains(text(),'"
 										+ dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank") + "')]";
 								WebElement ifscSearchBank = wdriver.findElement(By.xpath(ifscBank));
 								ifscSearchBank.click();
-								Log.info("IFSC bank selected");
+								System.out.println("IFSC bank selected");
 								ifscSearchStateList.click();
-								Log.info("IFSC state drop down clicked");
+								System.out.println("IFSC state drop down clicked");
 								String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "state");
 								String stateCapitalized = stateFromDB.toUpperCase();
 								String ifscState = "//li[contains(text(),'" + stateCapitalized + "')]";
 								WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
 								ifscSearchState.click();
-								Log.info("IFSC state selected");
+								System.out.println("IFSC state selected");
 								ifscSearchDistrict
 										.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "district"));
-								Log.info("IFSC district entered");
+								System.out.println("IFSC district entered");
 								ifscSearchBranch.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "branch"));
-								Log.info("IFSC branch entered");
+								System.out.println("IFSC branch entered");
 								ifscSearchButton.click();
-								Log.info("Search button clicked");
+								System.out.println("Search button clicked");
 								commonUtils.waitForSpinner();
 								waitUntilElementIsVisible(ifscSearchBack);
 								String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
 										+ usrData.get("IFSCCODE") + "')]/parent::li";
 								WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
 								waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-								Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+								System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
 								ifscSearchOK.click();
-								Log.info("OK button clicked");
+								System.out.println("OK button clicked");
 							} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Drop Down")) {
 								waitUntilElementIsClickableAndClickTheElement(ifscCode);
 								ifscCode.clear();
@@ -319,19 +318,19 @@ public class SettingsPage extends BasePage {
 										+ usrData.get("IFSCCODE") + "')]/parent::li";
 								WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
 								waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-								Log.info("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+								System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
 							}
 							getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
 							waitUntilElementIsVisible(validateIFSC); // wait for Branch name
-							Log.info(validateIFSC.getText());
+							System.out.println(validateIFSC.getText());
 
 							waitUntilElementIsClickableAndClickTheElement(accNumber);
 							accNumber.clear();
 							accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
-							Log.info("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
+							System.out.println("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 						}
 						uploadFile(uploadFile);
-						Log.info("Image selected");
+						System.out.println("Image selected");
 
 						String buttonName = usrData.get("SETTINGSBUTTON");
 						String buttonXpath = "//button[contains(text(),'" + buttonName + "')]";
@@ -340,27 +339,27 @@ public class SettingsPage extends BasePage {
 						waitUntilElementIsClickableAndClickTheElement(button);
 						if (buttonName.equalsIgnoreCase("Clear")) {
 							Thread.sleep(2000);
-							Log.info("Clear button clicked");
+							System.out.println("Clear button clicked");
 						} else if (buttonName.equalsIgnoreCase("Submit")) {
-							Log.info("Submit button clicked");
+							System.out.println("Submit button clicked");
 						}
 					}
 				}
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Same Data")) {
 					Assert.assertEquals(toasterMsg.getText(),
 							"The Bank detail provided already exists in our system, kindly check and update");
-					Log.info(toasterMsg.getText());
+					System.out.println(toasterMsg.getText());
 				} else if (!usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")
 						&& !usrData.get("SETTINGSBUTTON").equalsIgnoreCase("Clear")) {
 					waitUntilElementIsVisible(MPINScreen);
-					Log.info("MPIN screen displayed");
+					System.out.println("MPIN screen displayed");
 					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 						enterMPIN.sendKeys("9999");
 					}
-					Log.info("MPIN entered");
+					System.out.println("MPIN entered");
 
 					String mpinButtonName = usrData.get("MPINSCREENBUTTON");
 					String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
@@ -368,19 +367,19 @@ public class SettingsPage extends BasePage {
 							+ "')]";
 					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
 					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-					Log.info(mpinButtonName + " button clicked");
+					System.out.println(mpinButtonName + " button clicked");
 					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-						Log.info("Cancel button clicked");
+						System.out.println("Cancel button clicked");
 					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(settingsTxnScreen);
-						Log.info("Txn screen displayed");
+						System.out.println("Txn screen displayed");
 
 						// Verify the details on transaction screen
 						if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
 							assertionOnSuccessScreen(usrData);
 							waitUntilElementIsClickableAndClickTheElement(doneButton);
-							Log.info("Done button clicked");
+							System.out.println("Done button clicked");
 							if (usrData.get("ASSERTION").contains("FCM")) {
 								commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
 								assertionOnFCM(usrData);
@@ -389,58 +388,58 @@ public class SettingsPage extends BasePage {
 							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 								assertionOnFailedScreen(usrData);
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-									Log.info("Clicking exit button");
+									System.out.println("Clicking exit button");
 								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 									retryButton.click();
 									waitUntilElementIsVisible(MPINScreen);
-									Log.info("MPIN screen displayed");
+									System.out.println("MPIN screen displayed");
 									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									Log.info("MPIN entered");
+									System.out.println("MPIN entered");
 									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									Log.info("Submit button clicked");
+									System.out.println("Submit button clicked");
 									commonUtils.waitForSpinner();
 									waitUntilElementIsVisible(settingsTxnScreen);
-									Log.info("Txn screen displayed");
+									System.out.println("Txn screen displayed");
 									assertionOnFailedScreen(usrData);
 								}
 								waitUntilElementIsClickableAndClickTheElement(exitButton);
-								Log.info("Exit button clicked");
+								System.out.println("Exit button clicked");
 							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 								waitUntilElementIsVisible(settingsTxnScreenMessage);
-								Log.info(settingsTxnScreenMessage.getText());
+								System.out.println(settingsTxnScreenMessage.getText());
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
 									exitButton.click();
-									Log.info("Exit button clicked");
+									System.out.println("Exit button clicked");
 								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 									retryButton.click();
 									waitUntilElementIsVisible(MPINScreen);
-									Log.info("MPIN screen displayed");
+									System.out.println("MPIN screen displayed");
 									Thread.sleep(1000);
 									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									Log.info("MPIN entered");
+									System.out.println("MPIN entered");
 									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									Log.info("Submit button clicked");
+									System.out.println("Submit button clicked");
 									commonUtils.waitForSpinner();
 									waitUntilElementIsVisible(settingsTxnScreen);
-									Log.info("Txn screen displayed");
+									System.out.println("Txn screen displayed");
 									assertionOnSuccessScreen(usrData);
 									waitUntilElementIsClickableAndClickTheElement(doneButton);
-									Log.info("Done button clicked");
+									System.out.println("Done button clicked");
 								}
 							}
 						}
 					} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
 						clearButton.click();
-						Log.info("Clear button clicked");
+						System.out.println("Clear button clicked");
 					}
 				}
 			}
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -451,16 +450,16 @@ public class SettingsPage extends BasePage {
 		if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
 					"Your end of the day withdrawable amount will now be credited to your verified bank account.");
-			Log.info(settingsTxnScreenMessage.getText());
+			System.out.println(settingsTxnScreenMessage.getText());
 		} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
 					"You can now use your withdrawable amount for transaction purposes.");
-			Log.info(settingsTxnScreenMessage.getText());
+			System.out.println(settingsTxnScreenMessage.getText());
 		} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
 					"The bank account details have been submitted for verification. "
 					+ "Amount shall not be settled to older account.");
-			Log.info(settingsTxnScreenMessage.getText());
+			System.out.println(settingsTxnScreenMessage.getText());
 		}
 	}
 
@@ -470,7 +469,7 @@ public class SettingsPage extends BasePage {
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid MPIN")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(), "Authentication Failed Invalid MPIN");
 		}
-		Log.info(settingsTxnScreenMessage.getText());
+		System.out.println(settingsTxnScreenMessage.getText());
 	}
 
 	// Verify details on info screen
@@ -478,11 +477,11 @@ public class SettingsPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(settingsTxnScreenMessage.getText(),
 				"Please change settlement mode to 'Do Not Settle' before updating bank details");
-		Log.info(settingsTxnScreenMessage.getText());
+		System.out.println(settingsTxnScreenMessage.getText());
 	}
 
 	public void uploadFile(WebElement cancelledCheque) throws InterruptedException, IOException {
-		Log.info("selecting cancelled cheque image");
+		System.out.println("selecting cancelled cheque image");
 		Thread.sleep(2000);
 		waitUntilElementIsClickableAndClickTheElement(cancelledCheque);
 		Thread.sleep(500);
@@ -502,8 +501,8 @@ public class SettingsPage extends BasePage {
 	public void fcmMethod(String heading, String content) {
 		Assert.assertEquals(fcmHeading.getText().substring(0, 43), heading);
 		Assert.assertEquals(fcmContent.getText().substring(0, 62), content);
-		Log.info(fcmHeading.getText());
-		Log.info(fcmContent.getText());
+		System.out.println(fcmHeading.getText());
+		System.out.println(fcmContent.getText());
 	}
 
 	// Get Partner name

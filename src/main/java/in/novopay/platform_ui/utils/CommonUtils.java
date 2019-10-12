@@ -2,7 +2,6 @@ package in.novopay.platform_ui.utils;
 
 import java.util.Map;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -102,13 +101,13 @@ public class CommonUtils extends BasePage {
 		if (usrData.get("WELCOMEPOPUP").equalsIgnoreCase("YES")) {
 			try {
 				waitUntilElementIsVisible(welcomeMessage);
-				Log.info("Welcome pop-up displayed");
+				System.out.println("Welcome pop-up displayed");
 				waitUntilElementIsClickableAndClickTheElement(welcomeOKButton);
-				Log.info("OK button clicked");
+				System.out.println("OK button clicked");
 				waitUntilElementIsInvisible("//button[contains(text(),'OK. Got it!')]");
-				Log.info("Pop-up disappeared");
+				System.out.println("Pop-up disappeared");
 			} catch (Exception e) {
-				Log.info("No pop-up displayed");
+				System.out.println("No pop-up displayed");
 			}
 		}
 	}
@@ -116,9 +115,9 @@ public class CommonUtils extends BasePage {
 	public void selectFeatureFromMenu1(WebElement feature, WebElement pageTitle) throws InterruptedException {
 		clickElement(menu);
 		scrollElementDown(scrollBar, feature);
-		Log.info("Money Transfer option clicked");
+		System.out.println("Money Transfer option clicked");
 		waitUntilElementIsVisible(pageTitle);
-		Log.info(pageTitle.getText() + " page displayed");
+		System.out.println(pageTitle.getText() + " page displayed");
 		clickElement(menu);
 	}
 
@@ -126,16 +125,16 @@ public class CommonUtils extends BasePage {
 		clickElement(menu);
 		refreshBalance();
 		scrollElementDown(scrollBar, feature);
-		Log.info("Money Transfer option clicked");
+		System.out.println("Money Transfer option clicked");
 		waitUntilElementIsVisible(pageTitle);
-		Log.info(pageTitle.getText() + " page displayed");
+		System.out.println(pageTitle.getText() + " page displayed");
 		clickElement(menu);
 	}
 
 	// Wait for screen to complete loading
 	public void waitForSpinner() {
 		waitUntilElementIsInvisible("//div[contains(@class,'spinner')]/parent::div");
-		Log.info("Please wait...");
+		System.out.println("Please wait...");
 	}
 
 	// To refresh the wallet balance
@@ -143,7 +142,7 @@ public class CommonUtils extends BasePage {
 		waitUntilElementIsClickableAndClickTheElement(refreshButton);
 		waitUntilElementIsVisible(syncButton);
 		waitUntilElementIsVisible(refreshButton);
-		Log.info("Balance refreshed successfully");
+		System.out.println("Balance refreshed successfully");
 	}
 
 	// Get wallet(s) balance
@@ -177,10 +176,10 @@ public class CommonUtils extends BasePage {
 		Assert.assertEquals(cashoutBal, initialCashoutBal);
 
 		if (wallet.equalsIgnoreCase("retailer")) {
-			Log.info("Retailer Balance: " + initialWalletBal);
+			System.out.println("Retailer Balance: " + initialWalletBal);
 			getWalletBalanceFromIni(wallet.toLowerCase(), replaceSymbols(retailerWalletBalance.getText()));
 		} else if (wallet.equalsIgnoreCase("cashout")) {
-			Log.info("Cashout Balance: " + initialCashoutBal);
+			System.out.println("Cashout Balance: " + initialCashoutBal);
 			getWalletBalanceFromIni(wallet.toLowerCase(), replaceSymbols(cashoutWalletBalance.getText()));
 		}
 	}
@@ -220,7 +219,7 @@ public class CommonUtils extends BasePage {
 	// Choose Wallet screen
 	public void chooseWalletScreen(Map<String, String> usrData) throws InterruptedException, ClassNotFoundException {
 		waitUntilElementIsVisible(chooseWalletScreen);
-		Log.info("Choose a Wallet screen displayed");
+		System.out.println("Choose a Wallet screen displayed");
 
 		// display wallet balances in console
 		displayInitialBalance("retailer"); // display main wallet balance
@@ -228,53 +227,53 @@ public class CommonUtils extends BasePage {
 
 		Assert.assertEquals(replaceSymbols(mainWalletScreenBalance.getText()),
 				getWalletBalanceFromIni("GetRetailer", ""));
-		Log.info("Main Wallet balance: " + mainWalletScreenBalance.getText());
+		System.out.println("Main Wallet balance: " + mainWalletScreenBalance.getText());
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Main < Amount")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Main=0 Cashout!=0")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
 			Assert.assertEquals(chooseWalletMainErrorMsg.getText(), "Balance is low!");
-			Log.info("Main wallet balance is low");
+			System.out.println("Main wallet balance is low");
 			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 		}
 		Assert.assertEquals(replaceSymbols(cashoutWalletScreenBalance.getText()),
 				getWalletBalanceFromIni("GetCashout", ""));
-		Log.info("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
+		System.out.println("Cashout Wallet balance: " + cashoutWalletScreenBalance.getText());
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Cashout < Amount")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
 			Assert.assertEquals(chooseWalletCashoutErrorMsg.getText(), "Balance is low!");
-			Log.info("Cashout wallet balance is low");
+			System.out.println("Cashout wallet balance is low");
 			dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
 		}
 		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
 			mainWalletRadioButton.click();
-			Log.info("Main wallet radio button clicked");
+			System.out.println("Main wallet radio button clicked");
 		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
 			cashoutWalletRadioButton.click();
-			Log.info("Cashout wallet radio button clicked");
+			System.out.println("Cashout wallet radio button clicked");
 		}
 		if (!getWalletFromIni("GetWallet", "").equalsIgnoreCase("-")) {
 			waitUntilElementIsVisible(chooseWalletProceedButton);
 			chooseWalletProceedButton.click();
-			Log.info("Proceed button clicked");
+			System.out.println("Proceed button clicked");
 		} else {
 			waitUntilElementIsVisible(chooseWalletCancelButton);
 			chooseWalletCancelButton.click();
-			Log.info("Cancel button clicked");
+			System.out.println("Cancel button clicked");
 		}
 	}
 
 	public void selectTxn() throws ClassNotFoundException {
 		waitUntilElementIsClickableAndClickTheElement(firstTxnInList);
-		Log.info("Transaction selected");
+		System.out.println("Transaction selected");
 		waitForSpinner();
 	}
 
 	public void processingScreen() {
 		try {
 			waitUntilElementIsVisible(processingScreen);
-			Log.info("Processing screen displayed");
+			System.out.println("Processing screen displayed");
 		} catch (Exception e) {
-			Log.info("Processing screen skipped");
+			System.out.println("Processing screen skipped");
 		}
 	}
 }

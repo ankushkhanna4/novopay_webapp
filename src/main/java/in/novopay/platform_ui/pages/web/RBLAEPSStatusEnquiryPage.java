@@ -14,7 +14,6 @@ import java.util.Map;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
 import in.novopay.platform_ui.utils.ServerUtils;
 
 import org.openqa.selenium.By;
@@ -235,23 +234,23 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 			System.out.println(reportsPage.getText() + " page displayed");
 			clickElement(menu);
 			clickElement(menu);
-			Log.info("Status enquiry of " + usrData.get("STATUS") + " Transaction");
+			System.out.println("Status enquiry of " + usrData.get("STATUS") + " Transaction");
 			Thread.sleep(1000);
 
 			waitUntilElementIsVisible(firstTxnInList);
 			if (usrData.get("ASSERTION").equalsIgnoreCase("11112222")) {
 				pageTxnId.click();
 				pageTxnId.sendKeys("11112222");
-				Log.info("Txn ID entered");
+				System.out.println("Txn ID entered");
 				pageSubmitButton.click();
-				Log.info("Submit button clicked");
+				System.out.println("Submit button clicked");
 				commonUtils.waitForSpinner();
 				waitUntilElementIsVisible(firstTxnInList);
 				Assert.assertEquals(noTxnAvailable.getText(), "Transaction with RRN number 11112222 does not exist");
-				Log.info(noTxnAvailable.getText());
+				System.out.println(noTxnAvailable.getText());
 			} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
 				Assert.assertEquals(noTxnAvailable.getText(), "Transaction with RRN number 11112222 does not exist");
-				Log.info(noTxnAvailable.getText());
+				System.out.println(noTxnAvailable.getText());
 			} else {
 				reportsData(usrData);
 				if (usrData.get("ASSERTION").contains("FCM")) {
@@ -265,16 +264,16 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 				if (usrData.get("AADHAAR").equalsIgnoreCase("Valid")) {
 					aadhaarNum.click();
 					aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
-					Log.info("Aadhaar Number entered");
+					System.out.println("Aadhaar Number entered");
 					Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
 					fingerprintScan.click();
-					Log.info("Scan fingerprint button clicked");
+					System.out.println("Scan fingerprint button clicked");
 					waitUntilElementIsVisible(fingerprintGreen);
 					Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
 					waitUntilElementIsVisible(proceedBtn);
 					proceedBtn.click();
 					waitUntilElementIsVisible(MPINScreen);
-					Log.info("MPIN screen displayed");
+					System.out.println("MPIN screen displayed");
 					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 					if (usrData.get("MPIN").equalsIgnoreCase("Cancel")) {
 						mpinCancelButton.click();
@@ -285,72 +284,72 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 						} else {
 							enterMPIN.sendKeys("0000");
 						}
-						Log.info(usrData.get("MPIN") + " entered");
+						System.out.println(usrData.get("MPIN") + " entered");
 						mpinSubmitButton.click();
-						Log.info("MPIN button clicked");
+						System.out.println("MPIN button clicked");
 						waitUntilElementIsVisible(refundTxnScreen);
-						Log.info("Txn screen displayed");
+						System.out.println("Txn screen displayed");
 						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 							if (!usrData.get("KEY").equalsIgnoreCase("fail")) {
 								assertionOnRefundSuccessScreen(usrData);
-								Log.info("Refund successful");
+								System.out.println("Refund successful");
 								assertionOnRefundSMS(usrData);
 								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-								Log.info("Done button clicked");
+								System.out.println("Done button clicked");
 								commonUtils.refreshBalance();
 								verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialWalletBalance);
 							} else {
 								assertionOnRefundFailedScreen(usrData);
-								Log.info("Refund failed");
+								System.out.println("Refund failed");
 								seExitBtn.click();
-								Log.info("Exit button clicked");
+								System.out.println("Exit button clicked");
 							}
 						} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 							assertionOnRefundFailedScreen(usrData);
 							seDoneBtn.click();
-							Log.info("Done button clicked");
+							System.out.println("Done button clicked");
 						} else if (usrData.get("MPIN").equalsIgnoreCase("Retry")) {
 							assertionOnRefundFailedScreen(usrData);
 							seRetryBtn.click();
 							waitUntilElementIsVisible(initiateRefundScreen);
 							aadhaarNum.click();
 							aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
-							Log.info("Aadhaar Number entered");
+							System.out.println("Aadhaar Number entered");
 							Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
 							fingerprintScan.click();
-							Log.info("Scan fingerprint button clicked");
+							System.out.println("Scan fingerprint button clicked");
 							waitUntilElementIsVisible(fingerprintGreen);
 							Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
 							waitUntilElementIsVisible(proceedBtn);
 							proceedBtn.click();
 							waitUntilElementIsVisible(MPINScreen);
-							Log.info("MPIN screen displayed");
+							System.out.println("MPIN screen displayed");
 							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-							Log.info(usrData.get("MPIN") + " entered");
+							System.out.println(usrData.get("MPIN") + " entered");
 							mpinSubmitButton.click();
-							Log.info("MPIN button clicked");
+							System.out.println("MPIN button clicked");
 							waitUntilElementIsVisible(processingScreen);
-							Log.info("Processing screen displayed");
+							System.out.println("Processing screen displayed");
 							waitUntilElementIsVisible(refundTxnScreen);
-							Log.info("Txn screen displayed");
+							System.out.println("Txn screen displayed");
 							assertionOnRefundSuccessScreen(usrData);
-							Log.info("Refund successful");
+							System.out.println("Refund successful");
 							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-							Log.info("Done button clicked");
+							System.out.println("Done button clicked");
 							commonUtils.refreshBalance();
 							verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialWalletBalance);
 						}
 					}
 				} else if (usrData.get("AADHAAR").equalsIgnoreCase("Exit")) {
 					exitBtn.click();
-					Log.info("Exit button clicked");
+					System.out.println("Exit button clicked");
 				}
 			}
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -359,11 +358,11 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		waitUntilElementIsVisible(product);
 		product.click();
-		Log.info("Status Enquiry drop down clicked");
+		System.out.println("Status Enquiry drop down clicked");
 
 		waitUntilElementIsVisible(bankingProduct);
 		bankingProduct.click();
-		Log.info("Banking selected");
+		System.out.println("Banking selected");
 		waitUntilElementIsVisible(txnId);
 
 		if (usrData.get("STATUS").equalsIgnoreCase("Refund")
@@ -375,7 +374,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 			txnId.click();
 			txnId.clear();
 			txnId.sendKeys(txnID);
-			Log.info("Txn ID entered");
+			System.out.println("Txn ID entered");
 		} else {
 			txnId.click();
 			txnId.clear();
@@ -384,7 +383,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 
 		waitUntilElementIsVisible(statusEnquirySubmitButton);
 		statusEnquirySubmitButton.click();
-		Log.info("Submit button clicked");
+		System.out.println("Submit button clicked");
 		commonUtils.waitForSpinner();
 	}
 
@@ -396,7 +395,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successRefundSMS, dbUtils.sms());
-			Log.info(successRefundSMS);
+			System.out.println(successRefundSMS);
 		}
 	}
 
@@ -451,8 +450,8 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 	public void fcmMethod(String heading, String content) {
 		Assert.assertEquals(fcmHeading.getText(), heading);
 		Assert.assertEquals(fcmContent.getText(), content);
-		Log.info(fcmHeading.getText());
-		Log.info(fcmContent.getText());
+		System.out.println(fcmHeading.getText());
+		System.out.println(fcmContent.getText());
 	}
 
 	public void reportsData(Map<String, String> usrData) throws ClassNotFoundException {
@@ -540,12 +539,12 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 	public void assertionOnRefundSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(aepsTxnScreenMessage.getText(), "Cash refunded to customer successfully");
-		Log.info(aepsTxnScreenMessage.getText());
+		System.out.println(aepsTxnScreenMessage.getText());
 		double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 		Assert.assertEquals(replaceSymbols(aepsTxnScreenTxnAmount.getText()), df.format(amount));
-		Log.info("Refund Amount: " + replaceSymbols(aepsTxnScreenTxnAmount.getText()));
+		System.out.println("Refund Amount: " + replaceSymbols(aepsTxnScreenTxnAmount.getText()));
 		Assert.assertEquals(replaceSymbols(aepsTxnScreenTxnAmount.getText()), df.format(amount));
-		Log.info("Cash to be Refunded: " + replaceSymbols(aepsTxnScreenTxnAmount.getText()));
+		System.out.println("Cash to be Refunded: " + replaceSymbols(aepsTxnScreenTxnAmount.getText()));
 	}
 
 	// Verify details on failure screen
@@ -553,13 +552,13 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (usrData.get("MPIN").equalsIgnoreCase("Invalid") || usrData.get("MPIN").equalsIgnoreCase("Retry")) {
 			Assert.assertEquals(aepsTxnScreenFailureReason.getText(), "Authentication Failed Invalid MPIN");
-			Log.info(aepsTxnScreenFailureReason.getText());
+			System.out.println(aepsTxnScreenFailureReason.getText());
 		} else {
 			Assert.assertEquals(aepsTxnScreenFailureReason.getText(), "Failed to perform transaction(M3)");
-			Log.info(aepsTxnScreenFailureReason.getText());
+			System.out.println(aepsTxnScreenFailureReason.getText());
 			double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 			Assert.assertEquals(replaceSymbols(aepsTxnScreenRefundAmount.getText()), df.format(amount));
-			Log.info("Refund Amount: " + replaceSymbols(aepsTxnScreenRefundAmount.getText()));
+			System.out.println("Refund Amount: " + replaceSymbols(aepsTxnScreenRefundAmount.getText()));
 		}
 	}
 
@@ -573,7 +572,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 		double newWalletBal = initialWalletBalance + amount + charges - comm + tds;
 		String newWalletBalance = df.format(newWalletBal);
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
-		Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+		System.out.println("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
 	}
 
 	// Get Partner name

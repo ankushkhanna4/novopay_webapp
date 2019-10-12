@@ -375,7 +375,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String getBeneNameFromBank(String key, String beneName) {
 		Ini ini;
 		try {
@@ -540,7 +540,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String getWalletFromIni(String type, String wallet) {
 		Ini ini;
 		try {
@@ -556,7 +556,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String getValueFromIni(String key) {
 		Ini ini;
 		try {

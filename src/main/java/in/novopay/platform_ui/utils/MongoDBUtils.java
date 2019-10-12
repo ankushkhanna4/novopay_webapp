@@ -3,6 +3,9 @@ package in.novopay.platform_ui.utils;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.log4j.BasicConfigurator;
 import org.bson.Document;
 import com.mongodb.BasicDBObject;
@@ -26,10 +29,12 @@ public class MongoDBUtils extends JavaUtils {
 
 		BasicConfigurator.configure();
 
+		Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
+		mongoLogger.setLevel(Level.OFF); // e.g. or Log.WARNING, etc.
+		
 		// Mongodb initialization parameters.
-		String auth_user = getValueFromIni(mongoDbUsername),
-				auth_pwd = getValueFromIni(mongoDbPassword), dbUrl = getValueFromIni("mongoDbUrl"),
-				encoded_pwd = "";
+		String auth_user = getValueFromIni(mongoDbUsername), auth_pwd = getValueFromIni(mongoDbPassword),
+				dbUrl = getValueFromIni("mongoDbUrl"), encoded_pwd = "";
 
 		try {
 			encoded_pwd = URLEncoder.encode(auth_pwd, "UTF-8");
@@ -83,7 +88,7 @@ public class MongoDBUtils extends JavaUtils {
 		}
 		return arr.get(0);
 	}
-	
+
 	public String getAddMobNum() {
 
 		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "fullerton_semi_static_data");
@@ -99,7 +104,7 @@ public class MongoDBUtils extends JavaUtils {
 		}
 		return arr.get(0);
 	}
-	
+
 	public String billpayInputParams(String billerName) {
 
 		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
@@ -128,7 +133,7 @@ public class MongoDBUtils extends JavaUtils {
 		BasicDBObject payStatus = new BasicDBObject("paymentStatus", status);
 		BasicDBObject offMobNumber = new BasicDBObject("collectionOfficerMobileNumber", officerMobNum);
 		BasicDBObject addMobNumber = new BasicDBObject("additionalMobileNumber", addMobNum);
-		
+
 		// Performing an update operation on the collection.
 		coll.updateOne(new BasicDBObject(), new BasicDBObject("$set", employeeId));
 		coll.updateOne(new BasicDBObject(), new BasicDBObject("$set", dueDate));
@@ -139,14 +144,30 @@ public class MongoDBUtils extends JavaUtils {
 		coll.updateOne(new BasicDBObject(), new BasicDBObject("$set", addMobNumber));
 		System.out.println("Records updated");
 	}
-	
+
 	public void updateBillpayVendor(String biller, String vendor) {
 
 		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
 
 		BasicDBObject billVendor = new BasicDBObject("vendor", vendor);
-		
-		coll.updateOne(new BasicDBObject("name",biller), new BasicDBObject("$set", billVendor));
+
+		coll.updateOne(new BasicDBObject("name", biller), new BasicDBObject("$set", billVendor));
 		System.out.println("Records updated");
+	}
+
+	public String getBillPayTxnStatus(String refNum) {
+
+		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "transaction_audit");
+
+		// Performing a read operation on the collection.
+		FindIterable<Document> fi = coll.find(new BasicDBObject("novopayReferenceNumber", refNum));
+		MongoCursor<Document> cursor = fi.iterator();
+		ArrayList<String> arr = new ArrayList<String>();
+		String str;
+		while (cursor.hasNext()) {
+			str = (String) cursor.next().get("transactionStatus");
+			arr.add(str);
+		}
+		return arr.get(0);
 	}
 }

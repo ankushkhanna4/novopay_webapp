@@ -15,7 +15,6 @@ import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
 
 public class SettlementPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
@@ -233,7 +232,7 @@ public class SettlementPage extends BasePage {
 			commonUtils.selectFeatureFromMenu1(manageWalletButton, pageTitle);
 
 			waitUntilElementIsClickableAndClickTheElement(cashoutTab);
-			Log.info("Cashout tab clicked");
+			System.out.println("Cashout tab clicked");
 
 			commonUtils.waitForSpinner();
 
@@ -241,37 +240,37 @@ public class SettlementPage extends BasePage {
 				waitUntilElementIsVisible(blockedMessage);
 				Assert.assertEquals(blockedMessage.getText(),
 						"Not allowed as settlement is blocked. Please contact customer support.");
-				Log.info(blockedMessage.getText());
+				System.out.println(blockedMessage.getText());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")
 					|| usrData.get("MODE").equalsIgnoreCase("Rejected")) {
 				waitUntilElementIsVisible(blockedMessage);
 				Assert.assertEquals(blockedMessage.getText(),
 						"Settlement not allowed as your settlement details have either been rejected or "
 								+ "pending for verification. Please contact customer support for further assistance.");
-				Log.info(blockedMessage.getText());
+				System.out.println(blockedMessage.getText());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
 				waitUntilElementIsVisible(cashoutBalanceField);
 				waitUntilElementIsClickableAndClickTheElement(toDropDown);
-				Log.info("Drop down clicked");
+				System.out.println("Drop down clicked");
 
 				bankAccountDropDownValue.click();
-				Log.info(usrData.get("TODROPDOWN") + " selected");
+				System.out.println(usrData.get("TODROPDOWN") + " selected");
 
 				waitUntilElementIsClickableAndClickTheElement(amountField);
 				amountField.sendKeys(usrData.get("AMOUNT"));
-				Log.info("Amount entered");
+				System.out.println("Amount entered");
 
 				// Field level validation in Amount field
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
 					waitUntilElementIsVisible(amountErrorMsg);
 					Assert.assertEquals(amountErrorMsg.getText().substring(0, 49),
 							"Amount entered exceeds your cashout balance limit");
-					Log.info(amountErrorMsg.getText());
+					System.out.println(amountErrorMsg.getText());
 					dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "1000000");
 				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
 					waitUntilElementIsVisible(amountErrorMsg);
 					Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹10.00");
-					Log.info(amountErrorMsg.getText());
+					System.out.println(amountErrorMsg.getText());
 				}
 
 				if (!(usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("SKIP")
@@ -284,22 +283,22 @@ public class SettlementPage extends BasePage {
 					waitUntilElementIsClickableAndClickTheElement(button);
 					if (buttonName.equalsIgnoreCase("Clear")) {
 						Thread.sleep(2000);
-						Log.info("Clear button clicked");
+						System.out.println("Clear button clicked");
 					} else if (buttonName.equalsIgnoreCase("Submit")) {
-						Log.info("Submit button clicked");
+						System.out.println("Submit button clicked");
 					}
 				}
 
 				if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Submit")) {
 					waitUntilElementIsVisible(MPINScreen);
-					Log.info("MPIN screen displayed");
+					System.out.println("MPIN screen displayed");
 					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 						enterMPIN.sendKeys("9999");
 					}
-					Log.info("MPIN entered");
+					System.out.println("MPIN entered");
 
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 						dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "0");
@@ -311,19 +310,19 @@ public class SettlementPage extends BasePage {
 							+ "')]";
 					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
 					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-					Log.info(mpinButtonName + " button clicked");
+					System.out.println(mpinButtonName + " button clicked");
 					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
 						commonUtils.waitForSpinner();
 					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 						if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 							waitUntilElementIsVisible(processingScreen);
-							Log.info("Processing screen displayed");
+							System.out.println("Processing screen displayed");
 							waitUntilElementIsVisible(processInBackgroundButton);
 							processInBackgroundButton.click();
-							Log.info("Process in Background button clicked");
+							System.out.println("Process in Background button clicked");
 						} else {
 							waitUntilElementIsVisible(settlementTxnScreen);
-							Log.info("Txn screen displayed");
+							System.out.println("Txn screen displayed");
 
 							// Verify the details on transaction screen
 							if (settlementTxnScreen.getText().equalsIgnoreCase("Success!")
@@ -334,7 +333,7 @@ public class SettlementPage extends BasePage {
 									assertionOnWarnScreen(usrData);
 								}
 								waitUntilElementIsClickableAndClickTheElement(doneButton);
-								Log.info("Done button clicked");
+								System.out.println("Done button clicked");
 								commonUtils.waitForSpinner();
 								verifyUpdatedBalanceAfterSuccessTxn(usrData);
 								assertionOnSMS(usrData);
@@ -345,47 +344,47 @@ public class SettlementPage extends BasePage {
 								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 									assertionOnFailedScreen(usrData);
 									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-										Log.info("Clicking exit button");
+										System.out.println("Clicking exit button");
 									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 										retryButton.click();
 										Thread.sleep(1000);
 										waitUntilElementIsVisible(MPINScreen);
-										Log.info("MPIN screen displayed");
+										System.out.println("MPIN screen displayed");
 										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-										Log.info("MPIN entered");
+										System.out.println("MPIN entered");
 										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-										Log.info("Submit button clicked");
+										System.out.println("Submit button clicked");
 										commonUtils.waitForSpinner();
 										waitUntilElementIsVisible(settlementTxnScreen);
-										Log.info("Txn screen displayed");
+										System.out.println("Txn screen displayed");
 										assertionOnFailedScreen(usrData);
 									}
 									waitUntilElementIsClickableAndClickTheElement(exitButton);
-									Log.info("Exit button clicked");
+									System.out.println("Exit button clicked");
 								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 									waitUntilElementIsVisible(settlementTxnFailScreenMessage);
-									Log.info(settlementTxnFailScreenMessage.getText());
+									System.out.println(settlementTxnFailScreenMessage.getText());
 									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
 										exitButton.click();
-										Log.info("Exit button clicked");
+										System.out.println("Exit button clicked");
 									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 										retryButton.click();
 										Thread.sleep(1000);
 										waitUntilElementIsVisible(MPINScreen);
-										Log.info("MPIN screen displayed");
+										System.out.println("MPIN screen displayed");
 										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 										enterMPIN.click();
 										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-										Log.info("MPIN entered");
+										System.out.println("MPIN entered");
 										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-										Log.info("Submit button clicked");
+										System.out.println("Submit button clicked");
 										commonUtils.waitForSpinner();
 										waitUntilElementIsVisible(settlementTxnScreen);
-										Log.info("Txn screen displayed");
+										System.out.println("Txn screen displayed");
 										assertionOnSuccessScreen(usrData);
 										waitUntilElementIsClickableAndClickTheElement(doneButton);
-										Log.info("Done button clicked");
+										System.out.println("Done button clicked");
 										commonUtils.waitForSpinner();
 										verifyUpdatedBalanceAfterSuccessTxn(usrData);
 									}
@@ -408,7 +407,7 @@ public class SettlementPage extends BasePage {
 		Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -422,14 +421,14 @@ public class SettlementPage extends BasePage {
 		} else if (usrData.get("TYPE").equalsIgnoreCase("IMPS")) {
 			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request successful.");
 		}
-		Log.info(settlementTxnScreenMessage.getText());
+		System.out.println(settlementTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenRequestedAmount.getText()),
 				usrData.get("AMOUNT") + ".00");
-		Log.info("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
+		System.out.println("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
 		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()),
 				dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER")));
-		Log.info("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
+		System.out.println("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
 		double amount = Double.parseDouble(usrData.get("AMOUNT"));
@@ -437,7 +436,7 @@ public class SettlementPage extends BasePage {
 		double totalAmount = amount - charges;
 		String cashToBeCollected = df.format(totalAmount);
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenTotalAmount.getText()), cashToBeCollected);
-		Log.info("Amount Transferred: " + replaceSymbols(settlementTxnScreenTotalAmount.getText()));
+		System.out.println("Amount Transferred: " + replaceSymbols(settlementTxnScreenTotalAmount.getText()));
 	}
 
 	// Assertion after success screen is displayed
@@ -448,7 +447,7 @@ public class SettlementPage extends BasePage {
 		String newCashoutWalletBalance = df.format(newCashoutWalletBal);
 		waitUntilElementIsVisible(toDropDown);
 		Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newCashoutWalletBalance);
-		Log.info("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+		System.out.println("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
 		getWalletBalanceFromIni("cashout", newCashoutWalletBalance);
 	}
 
@@ -456,14 +455,14 @@ public class SettlementPage extends BasePage {
 	public void assertionOnWarnScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request deemed successful.");
-		Log.info(settlementTxnScreenMessage.getText());
+		System.out.println(settlementTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenRequestedAmount.getText()),
 				usrData.get("AMOUNT") + ".00");
-		Log.info("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
+		System.out.println("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
 		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()),
 				dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER")));
-		Log.info("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
+		System.out.println("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
 		double amount = Double.parseDouble(usrData.get("AMOUNT"));
@@ -471,7 +470,7 @@ public class SettlementPage extends BasePage {
 		double totalAmount = amount - charges;
 		String cashToBeCollected = df.format(totalAmount);
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenTotalAmount.getText()), cashToBeCollected);
-		Log.info("Amount Transferred: " + replaceSymbols(settlementTxnScreenTotalAmount.getText()));
+		System.out.println("Amount Transferred: " + replaceSymbols(settlementTxnScreenTotalAmount.getText()));
 	}
 
 	// Verify details on failed screen
@@ -488,24 +487,24 @@ public class SettlementPage extends BasePage {
 		} else {
 			Assert.assertEquals(settlementTxnFailScreenMessage.getText(), "Transaction has failed. Try again later!");
 		}
-		Log.info(settlementTxnFailScreenMessage.getText());
+		System.out.println(settlementTxnFailScreenMessage.getText());
 	}
 
 	// Verify details on applicable charges screen
 	public void assertionOnApplicableCharges(Map<String, String> usrData) throws ClassNotFoundException {
-		Log.info("Verifying charges");
+		System.out.println("Verifying charges");
 		Assert.assertEquals(replaceSymbols(applicableTxnAmount.getText()), usrData.get("AMOUNT") + ".00");
-		Log.info("Transaction Amount: " + replaceSymbols(applicableTxnAmount.getText()));
+		System.out.println("Transaction Amount: " + replaceSymbols(applicableTxnAmount.getText()));
 		String chrges = dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"));
 		Assert.assertEquals(replaceSymbols(applicableCharges.getText()), chrges);
-		Log.info("Charges: " + replaceSymbols(applicableCharges.getText()));
+		System.out.println("Charges: " + replaceSymbols(applicableCharges.getText()));
 
 		double amount = Double.parseDouble(usrData.get("AMOUNT"));
 		double charges = Double.parseDouble(chrges);
 		double totalAmount = amount - charges;
 		String cashToBeCollected = df.format(totalAmount);
 		Assert.assertEquals(replaceSymbols(applicableTotalAmount.getText()), cashToBeCollected);
-		Log.info("Cash to be Collected: " + replaceSymbols(applicableTotalAmount.getText()));
+		System.out.println("Cash to be Collected: " + replaceSymbols(applicableTotalAmount.getText()));
 	}
 
 	// SMS assertion
@@ -526,13 +525,13 @@ public class SettlementPage extends BasePage {
 
 		if (usrData.get("ASSERTION").equalsIgnoreCase("SMS IMPS Success")) {
 			Assert.assertEquals(SMSsuccessIMPS, dbUtils.sms());
-			Log.info(SMSsuccessIMPS);
+			System.out.println(SMSsuccessIMPS);
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("SMS IMPS Pending")) {
 			Assert.assertEquals(SMSpendingIMPS, dbUtils.sms());
-			Log.info(SMSpendingIMPS);
+			System.out.println(SMSpendingIMPS);
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("SMS NEFT Success")) {
 			Assert.assertEquals(SMSsuccessNEFT, dbUtils.sms());
-			Log.info(SMSsuccessNEFT);
+			System.out.println(SMSsuccessNEFT);
 		}
 	}
 
@@ -578,15 +577,15 @@ public class SettlementPage extends BasePage {
 		} else {
 			Assert.assertEquals(fcmContent.getText(), content);
 		}
-		Log.info(fcmHeading.getText());
-		Log.info(fcmContent.getText());
+		System.out.println(fcmHeading.getText());
+		System.out.println(fcmContent.getText());
 	}
 
 	public void fcmMethod2(String heading, String content) {
 		Assert.assertEquals(fcmHeading2.getText(), heading);
 		Assert.assertEquals(fcmContent2.getText(), content);
-		Log.info(fcmHeading2.getText());
-		Log.info(fcmContent2.getText());
+		System.out.println(fcmHeading2.getText());
+		System.out.println(fcmContent2.getText());
 	}
 
 	// Get Partner name

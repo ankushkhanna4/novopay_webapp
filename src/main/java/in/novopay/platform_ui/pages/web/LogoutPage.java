@@ -7,7 +7,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import in.novopay.platform_ui.utils.BasePage;
-import in.novopay.platform_ui.utils.Log;
 
 public class LogoutPage extends BasePage {
 
@@ -25,8 +24,8 @@ public class LogoutPage extends BasePage {
 	public void logout(Map<String, String> dataMap) throws AWTException {
 
 		waitUntilElementIsClickableAndClickTheElement(logout);
-		Log.info("logging out");
+		System.out.println("logging out");
 		waitUntilElementIsVisible(mobNum);
-		Log.info("Logged out successfully");
+		System.out.println("Logged out successfully");
 	}
 }

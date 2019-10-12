@@ -15,7 +15,6 @@ import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
 
 public class CapitalFirstConsumerPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
@@ -133,25 +132,25 @@ public class CapitalFirstConsumerPage extends BasePage {
 
 			// Click on capital first icon
 			waitUntilElementIsClickableAndClickTheElement(capitalFirstIcon);
-			Log.info("Capital First icon clicked");
+			System.out.println("Capital First icon clicked");
 
 			// Click on depositor mobile number field
 			waitUntilElementIsClickableAndClickTheElement(depositorMobNum);
 			depositorMobNum.clear();
 			depositorMobNum.sendKeys(usrData.get("MOBILENUMBER"));
-			Log.info("Depositor mobile number entered");
+			System.out.println("Depositor mobile number entered");
 
 			// Click on depositor mobile number field
 			waitUntilElementIsClickableAndClickTheElement(depositorName);
 			depositorName.clear();
 			depositorName.sendKeys(usrData.get("NAME"));
-			Log.info("Depositor name entered");
+			System.out.println("Depositor name entered");
 
 			// Click on batch id field
 			waitUntilElementIsClickableAndClickTheElement(batchId);
 			batchId.clear();
 			batchId.sendKeys(usrData.get("LOANID"));
-			Log.info("Loan Id entered");
+			System.out.println("Loan Id entered");
 			cmsDetailsFromIni("StoreCfBatchId", usrData.get("LOANID"));
 
 			if (usrData.get("GETAMOUNT").equalsIgnoreCase("YES")) {
@@ -161,13 +160,13 @@ public class CapitalFirstConsumerPage extends BasePage {
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Record exists")) {
 					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Record already exists");
-					Log.info(toasterMsg.getText());
+					System.out.println(toasterMsg.getText());
 				} else {
 					commonUtils.waitForSpinner();
 					// Store fetched amount
 					waitUntilElementIsVisible(fetchedAmount);
 					String amount = fetchedAmount.getAttribute("value");
-					Log.info("Amount is " + amount);
+					System.out.println("Amount is " + amount);
 					cmsDetailsFromIni("StoreCfAmount", amount);
 				}
 			} else if (usrData.get("GETAMOUNT").equalsIgnoreCase("Clear")) {
@@ -187,21 +186,21 @@ public class CapitalFirstConsumerPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(cfSubmitButton);
 
 				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
-					Log.info("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+					System.out.println("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 				} else {
 					commonUtils.chooseWalletScreen(usrData);
 				}
 
 				if (!getWalletFromIni("GetWallet", "").equalsIgnoreCase("-")) {
 					waitUntilElementIsVisible(MPINScreen);
-					Log.info("MPIN screen displayed");
+					System.out.println("MPIN screen displayed");
 					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 						enterMPIN.sendKeys("9999");
 					}
-					Log.info("MPIN entered");
+					System.out.println("MPIN entered");
 
 					String mpinButtonName = usrData.get("MPINSCREENBUTTON");
 					String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
@@ -209,14 +208,14 @@ public class CapitalFirstConsumerPage extends BasePage {
 							+ "')]";
 					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
 					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-					Log.info(mpinButtonName + " button clicked");
+					System.out.println(mpinButtonName + " button clicked");
 					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-						Log.info("Cancel button clicked");
+						System.out.println("Cancel button clicked");
 					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 						commonUtils.processingScreen();
 
 						waitUntilElementIsVisible(cmsTxnScreen);
-						Log.info("Txn screen displayed");
+						System.out.println("Txn screen displayed");
 
 						// Update retailer wallet balance to 1000000 for scenario where amount > wallet
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
@@ -229,7 +228,7 @@ public class CapitalFirstConsumerPage extends BasePage {
 							assertionOnSMS(usrData);
 
 							waitUntilElementIsClickableAndClickTheElement(doneButton);
-							Log.info("Done button clicked");
+							System.out.println("Done button clicked");
 							if (usrData.get("ASSERTION").contains("FCM")) {
 								assertionOnFCM(usrData);
 							}
@@ -240,49 +239,49 @@ public class CapitalFirstConsumerPage extends BasePage {
 								assertionOnFailedScreen(usrData);
 								assertionOnSMS(usrData);
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-									Log.info("Clicking exit button");
+									System.out.println("Clicking exit button");
 								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 									retryButton.click();
 									Thread.sleep(1000);
 									waitUntilElementIsVisible(MPINScreen);
-									Log.info("MPIN screen displayed");
+									System.out.println("MPIN screen displayed");
 									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									Log.info("MPIN entered");
+									System.out.println("MPIN entered");
 									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									Log.info("Submit button clicked");
+									System.out.println("Submit button clicked");
 									commonUtils.processingScreen();
 									waitUntilElementIsVisible(cmsTxnScreen);
-									Log.info("Txn screen displayed");
+									System.out.println("Txn screen displayed");
 									assertionOnFailedScreen(usrData);
 								}
 								waitUntilElementIsClickableAndClickTheElement(exitButton);
-								Log.info("Exit button clicked");
+								System.out.println("Exit button clicked");
 								if (usrData.get("ASSERTION").contains("FCM")) {
 									assertionOnFCM(usrData);
 								}
 							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
 								waitUntilElementIsVisible(cmsTxnScreenMessage);
-								Log.info(cmsTxnScreenMessage.getText());
+								System.out.println(cmsTxnScreenMessage.getText());
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
 									exitButton.click();
-									Log.info("Exit button clicked");
+									System.out.println("Exit button clicked");
 								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 									retryButton.click();
 									Thread.sleep(1000);
 									waitUntilElementIsVisible(MPINScreen);
-									Log.info("MPIN screen displayed");
+									System.out.println("MPIN screen displayed");
 									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									Log.info("MPIN entered");
+									System.out.println("MPIN entered");
 									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									Log.info("Submit button clicked");
+									System.out.println("Submit button clicked");
 									commonUtils.processingScreen();
 									waitUntilElementIsVisible(cmsTxnScreen);
-									Log.info("Txn screen displayed");
+									System.out.println("Txn screen displayed");
 									assertionOnSuccessScreen(usrData);
 									doneButton.click();
-									Log.info("Done button clicked");
+									System.out.println("Done button clicked");
 									commonUtils.refreshBalance();
 								}
 							}
@@ -291,12 +290,12 @@ public class CapitalFirstConsumerPage extends BasePage {
 				}
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
 				clearButton.click();
-				Log.info("Clear button clicked");
+				System.out.println("Clear button clicked");
 			}
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -305,7 +304,7 @@ public class CapitalFirstConsumerPage extends BasePage {
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Capital First success.");
-		Log.info(cmsTxnScreenMessage.getText());
+		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
 	// Verify details on failed screen
@@ -319,7 +318,7 @@ public class CapitalFirstConsumerPage extends BasePage {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(),
 					"Record already exists. Transaction reversed successfully.");
 		}
-		Log.info(cmsTxnScreenMessage.getText());
+		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
 	// SMS assertion
@@ -333,10 +332,10 @@ public class CapitalFirstConsumerPage extends BasePage {
 		Thread.sleep(5000);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successSMS, dbUtils.sms());
-			Log.info(successSMS);
+			System.out.println(successSMS);
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Fail SMS")) {
 			Assert.assertEquals(failSMS, dbUtils.sms());
-			Log.info(successSMS);
+			System.out.println(successSMS);
 		}
 	}
 
@@ -365,8 +364,8 @@ public class CapitalFirstConsumerPage extends BasePage {
 	public void fcmMethod(String heading, String content) {
 		Assert.assertEquals(fcmHeading1.getText(), heading);
 		Assert.assertEquals(fcmContent1.getText(), content);
-		Log.info(fcmHeading1.getText());
-		Log.info(fcmContent1.getText());
+		System.out.println(fcmHeading1.getText());
+		System.out.println(fcmContent1.getText());
 	}
 
 	// Assertion after success or orange screen is displayed
@@ -388,10 +387,10 @@ public class CapitalFirstConsumerPage extends BasePage {
 		String newWalletBalance = df.format(newWalletBal);
 		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
 			Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
-			Log.info("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+			System.out.println("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
 		} else {
 			Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
-			Log.info("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+			System.out.println("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
 		}
 	}
 

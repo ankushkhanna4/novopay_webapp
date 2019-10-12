@@ -14,8 +14,6 @@ import java.util.Map;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -187,18 +185,18 @@ public class YBLStatusEnquiryPage extends BasePage {
 					Thread.sleep(2000);
 					clickElement(menu);
 					scrollElementDown(scrollBar, reports);
-					Log.info("Reports option clicked");
+					System.out.println("Reports option clicked");
 					waitUntilElementIsVisible(reportsPage);
 					clickElement(menu);
 
 					if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
 						waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
 						pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
-						Log.info("Customer mobile number entered");
+						System.out.println("Customer mobile number entered");
 					} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
 						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
 						pageTxnId.sendKeys(txnID);
-						Log.info("Txn ID entered");
+						System.out.println("Txn ID entered");
 					} else {
 						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
 						pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
@@ -206,7 +204,7 @@ public class YBLStatusEnquiryPage extends BasePage {
 
 					waitUntilElementIsVisible(pageSubmitButton);
 					pageSubmitButton.click();
-					Log.info("Submit button clicked");
+					System.out.println("Submit button clicked");
 					Thread.sleep(3000);
 					commonUtils.waitForSpinner();
 				}
@@ -216,7 +214,7 @@ public class YBLStatusEnquiryPage extends BasePage {
 				} else {
 					reportsData(usrData);
 					selectTxn();
-					Log.info("Status enquiry of " + usrData.get("STATUS") + " Transaction");
+					System.out.println("Status enquiry of " + usrData.get("STATUS") + " Transaction");
 					Thread.sleep(1000);
 					waitUntilElementIsVisible(seTxnTitle);
 					assertionOnTxnScreen(usrData);
@@ -239,30 +237,30 @@ public class YBLStatusEnquiryPage extends BasePage {
 						custOTP.click();
 						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-							Log.info("Refund OTP entered");
+							System.out.println("Refund OTP entered");
 							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(seTxnTitle);
 							seDoneBtn.click();
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(pageTxnId);
-							Log.info("Refund successful");
+							System.out.println("Refund successful");
 						} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 								|| usrData.get("OTP").equalsIgnoreCase("Retry")) {
 							custOTP.sendKeys("111111");
-							Log.info("Refund OTP entered");
+							System.out.println("Refund OTP entered");
 							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(seTxnTitle);
 							Assert.assertEquals("OTP does not match", failSeTxnMsg.getText());
-							Log.info(failSeTxnMsg.getText());
+							System.out.println(failSeTxnMsg.getText());
 							if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
 								seRetryBtn.click();
 								commonUtils.waitForSpinner();
 								waitUntilElementIsVisible(custOTPScreen);
 								waitUntilElementIsClickableAndClickTheElement(custOTP);
 								custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-								Log.info("Refund OTP entered");
+								System.out.println("Refund OTP entered");
 								waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 								commonUtils.waitForSpinner();
 								waitUntilElementIsVisible(seTxnTitle);
@@ -270,7 +268,7 @@ public class YBLStatusEnquiryPage extends BasePage {
 								waitUntilElementIsClickableAndClickTheElement(seDoneBtn);
 								commonUtils.waitForSpinner();
 								waitUntilElementIsVisible(pageTxnId);
-								Log.info("Refund successful");
+								System.out.println("Refund successful");
 							} else {
 								waitUntilElementIsClickableAndClickTheElement(seExitBtn);
 							}
@@ -281,14 +279,14 @@ public class YBLStatusEnquiryPage extends BasePage {
 							waitUntilElementIsVisible(custOTPScreen);
 							waitUntilElementIsClickableAndClickTheElement(custOTP);
 							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-							Log.info("Refund OTP entered");
+							System.out.println("Refund OTP entered");
 							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(seTxnTitle);
 							seDoneBtn.click();
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(pageTxnId);
-							Log.info("Refund successful");
+							System.out.println("Refund successful");
 						}
 					}
 				}
@@ -296,7 +294,7 @@ public class YBLStatusEnquiryPage extends BasePage {
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -304,7 +302,7 @@ public class YBLStatusEnquiryPage extends BasePage {
 	public void selectTxn() throws ClassNotFoundException {
 		waitUntilElementIsVisible(firstTxnInList);
 		firstTxnInList.click();
-		Log.info("Transaction selected");
+		System.out.println("Transaction selected");
 		commonUtils.waitForSpinner();
 	}
 
@@ -312,23 +310,23 @@ public class YBLStatusEnquiryPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		waitUntilElementIsVisible(product);
 		product.click();
-		Log.info("Status Enquiry drop down clicked");
+		System.out.println("Status Enquiry drop down clicked");
 
 		waitUntilElementIsVisible(moneyTransferProduct);
 		moneyTransferProduct.click();
-		Log.info("Money Transfer selected");
+		System.out.println("Money Transfer selected");
 		waitUntilElementIsVisible(seCustMobNum);
 
 		if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
 			seCustMobNum.click();
 			seCustMobNum.clear();
 			seCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
-			Log.info("Customer mobile number entered");
+			System.out.println("Customer mobile number entered");
 		} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
 			enterSetxnId.click();
 			enterSetxnId.clear();
 			enterSetxnId.sendKeys(txnID);
-			Log.info("Txn ID entered");
+			System.out.println("Txn ID entered");
 		} else {
 			enterSetxnId.click();
 			enterSetxnId.clear();
@@ -337,10 +335,10 @@ public class YBLStatusEnquiryPage extends BasePage {
 
 		waitUntilElementIsVisible(statusEnquirySubmitButton);
 		statusEnquirySubmitButton.click();
-		Log.info("Submit button clicked");
+		System.out.println("Submit button clicked");
 		commonUtils.waitForSpinner();
 		waitUntilElementIsVisible(reportPage);
-		Log.info("Report page displayed");
+		System.out.println("Report page displayed");
 	}
 
 	public void reportsData(Map<String, String> usrData) throws ClassNotFoundException {
@@ -375,7 +373,7 @@ public class YBLStatusEnquiryPage extends BasePage {
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
 			Assert.assertEquals(statusData.getText(), "TXN_FAIL");
 		}
-		Log.info(statusData.getText());
+		System.out.println(statusData.getText());
 
 		List<String> listFromUI = new ArrayList<String>();
 		for (String[] array : dataFromUI) {
@@ -423,7 +421,7 @@ public class YBLStatusEnquiryPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (usrData.get("STATUS").equalsIgnoreCase("Success") || usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
 			Assert.assertEquals(seTxnSuccessMessage.getText(), "Funds transferred successfully");
-			Log.info(seTxnSuccessMessage.getText());
+			System.out.println(seTxnSuccessMessage.getText());
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
 				|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")
 				|| usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
@@ -439,22 +437,22 @@ public class YBLStatusEnquiryPage extends BasePage {
 		if (usrData.get("STATUS").equalsIgnoreCase("Success") || usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
 			Assert.assertEquals(replaceSymbols(seTxnScreenTxnAmount.getText()),
 					txnDetailsFromIni("GetTxfAmount", "") + ".00");
-			Log.info("Transferred Amount: " + replaceSymbols(seTxnScreenTxnAmount.getText()));
+			System.out.println("Transferred Amount: " + replaceSymbols(seTxnScreenTxnAmount.getText()));
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")) {
 			Assert.assertEquals(replaceSymbols(seTxnScreenRefundedAmount.getText()),
 					txnDetailsFromIni("GetFailAmount", "") + ".00");
-			Log.info("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
+			System.out.println("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
 		} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
 			Assert.assertEquals(replaceSymbols(seTxnScreenFailedAmount.getText()),
 					txnDetailsFromIni("GetTxfAmount", "") + ".00");
-			Log.info("Failed Amount: " + replaceSymbols(seTxnScreenFailedAmount.getText()));
+			System.out.println("Failed Amount: " + replaceSymbols(seTxnScreenFailedAmount.getText()));
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
 			Assert.assertEquals(replaceSymbols(seTxnScreenRefundedAmount.getText()),
 					txnDetailsFromIni("GetTxfAmount", "") + ".00");
-			Log.info("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
+			System.out.println("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
 		}
 		Assert.assertEquals(replaceSymbols(seTxnScreenCharges.getText()), txnDetailsFromIni("GetCharges", ""));
-		Log.info("Charges: " + replaceSymbols(seTxnScreenCharges.getText()));
+		System.out.println("Charges: " + replaceSymbols(seTxnScreenCharges.getText()));
 	}
 
 	// FCM assertion
@@ -485,8 +483,8 @@ public class YBLStatusEnquiryPage extends BasePage {
 	public void fcmMethod(String heading, String content) {
 		Assert.assertEquals(fcmHeading.getText(), heading);
 		Assert.assertEquals(fcmContent.getText(), content);
-		Log.info(fcmHeading.getText());
-		Log.info(fcmContent.getText());
+		System.out.println(fcmHeading.getText());
+		System.out.println(fcmContent.getText());
 	}
 
 	// Get Partner name

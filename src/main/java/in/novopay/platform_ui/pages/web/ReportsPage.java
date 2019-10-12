@@ -18,7 +18,6 @@ import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
 
 public class ReportsPage extends BasePage {
 	CommonUtils commonUtils = new CommonUtils(wdriver);
@@ -87,9 +86,9 @@ public class ReportsPage extends BasePage {
 		try {
 			clickElement(menu);
 			scrollElementDown(scrollBar, reports);
-			Log.info("Reports option clicked");
+			System.out.println("Reports option clicked");
 			waitUntilElementIsVisible(reportsPage);
-			Log.info("Reports page displayed");
+			System.out.println("Reports page displayed");
 			waitUntilElementIsVisible(reportsDropdown);
 			clickElement(menu);
 
@@ -103,32 +102,32 @@ public class ReportsPage extends BasePage {
 			}
 
 			waitUntilElementIsClickableAndClickTheElement(reportsDropdown);
-			Log.info("Drop down clicked");
+			System.out.println("Drop down clicked");
 			waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
 			dropDownSearch.sendKeys(usrData.get("REPORTTYPE"));
-			Log.info("Typing " + usrData.get("REPORTTYPE"));
+			System.out.println("Typing " + usrData.get("REPORTTYPE"));
 
 			String reportXpath = "//li[contains(text(),'" + usrData.get("REPORTTYPE") + "')]";
 			WebElement reportDropDown = wdriver.findElement(By.xpath(reportXpath));
 			reportDropDown.click();
-			Log.info(usrData.get("REPORTTYPE") + " drop down selected");
+			System.out.println(usrData.get("REPORTTYPE") + " drop down selected");
 			if (usrData.get("REPORTTYPE").equalsIgnoreCase("Money Transfer - Timeout")
 					|| (usrData.get("REPORTTYPE").equalsIgnoreCase("Refund Report")
 							|| (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")))) {
 				if (usrData.get("STATUS").equalsIgnoreCase("withdrwal")) {
 					Select wallet = new Select(walletType);
 					wallet.selectByVisibleText("Cashout Wallet");
-					Log.info("Cashout wallet selected");
+					System.out.println("Cashout wallet selected");
 				} else {
-					Log.info("Main wallet remain selected");
+					System.out.println("Main wallet remain selected");
 				}
 				waitUntilElementIsVisible(startDate);
 				startDate.sendKeys(currentDate());
-				Log.info(currentDate() + " entered");
+				System.out.println(currentDate() + " entered");
 				endDate.sendKeys(todayDate());
-				Log.info(todayDate() + " entered");
+				System.out.println(todayDate() + " entered");
 				submit.click();
-				Log.info("Submit button clicked");
+				System.out.println("Submit button clicked");
 				Thread.sleep(3000);
 			}
 			commonUtils.waitForSpinner();
@@ -140,14 +139,14 @@ public class ReportsPage extends BasePage {
 				waitUntilElementIsVisible(txnDateColumn);
 			}
 			if (body.getText().equalsIgnoreCase("No Record Found")) {
-				Log.info(body.getText());
+				System.out.println(body.getText());
 			} else {
 				reportsData(usrData);
 			}
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -155,7 +154,7 @@ public class ReportsPage extends BasePage {
 	public void reportsData(Map<String, String> usrData) throws ClassNotFoundException {
 		List<WebElement> rowsXpath = wdriver.findElements(By.xpath("//tbody/tr"));
 		int rowCount = rowsXpath.size();
-		Log.info("Total no. of rows are " + rowCount);
+		System.out.println("Total no. of rows are " + rowCount);
 
 		if (!usrData.get("STATUS").equalsIgnoreCase("ALL")) {
 			rowCount = 1;
@@ -163,7 +162,7 @@ public class ReportsPage extends BasePage {
 
 		List<WebElement> columnsXpath = wdriver.findElements(By.xpath("//thead/tr/th"));
 		int columnCount = columnsXpath.size();
-		Log.info("Total no. of columns are " + columnCount);
+		System.out.println("Total no. of columns are " + columnCount);
 
 		String[][] dataFromUI = new String[rowCount][columnCount];
 		for (int i = 0; i < rowCount; i++) {

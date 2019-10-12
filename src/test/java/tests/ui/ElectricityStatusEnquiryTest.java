@@ -16,11 +16,8 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import in.novopay.platform_ui.pages.web.ElectricityStatusEnquiryPage;
-import in.novopay.platform_ui.pages.web.RBLStatusEnquiryPage;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.JavaUtils;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
 
 public class ElectricityStatusEnquiryTest {
 	String featureName = "Electricity Status Enquiry page";

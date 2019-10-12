@@ -12,7 +12,6 @@ import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
 
 public class LoginPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
@@ -85,7 +84,7 @@ public class LoginPage extends BasePage {
 
 	public void login(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 
-		Log.info("Retailer WebApp 2.0 Login page displayed");
+		System.out.println("Retailer WebApp 2.0 Login page displayed");
 
 		try {
 			String mobNumFromSheet = "";
@@ -96,14 +95,14 @@ public class LoginPage extends BasePage {
 			}
 			waitUntilElementIsClickableAndClickTheElement(mobNum);
 			mobNum.clear();
-			Log.info("entering mobile number");
+			System.out.println("entering mobile number");
 			mobNum.sendKeys(mobNumFromSheet);
 			if (usrData.get("FORGOTPIN").equalsIgnoreCase("NO")) {
 				waitUntilElementIsClickableAndClickTheElement(mPin);
 				mPin.clear();
-				Log.info("entering MPIN");
+				System.out.println("entering MPIN");
 				mPin.sendKeys(usrData.get("MPIN"));
-				Log.info("clicking on LOGIN button");
+				System.out.println("clicking on LOGIN button");
 				waitUntilElementIsClickableAndClickTheElement(login);
 
 				if (mobNumFromSheet.startsWith("RBL") || mobNumFromSheet.startsWith("AXIS")
@@ -117,7 +116,7 @@ public class LoginPage extends BasePage {
 					String txnOtp = "";
 					Thread.sleep(1000);
 					waitUntilElementIsClickableAndClickTheElement(otp);
-					Log.info("entering OTP");
+					System.out.println("entering OTP");
 					if (usrData.get("OTP").equalsIgnoreCase("Yes")) {
 						txnOtp = getAuthfromIni("LoginOTP");
 					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
@@ -127,12 +126,12 @@ public class LoginPage extends BasePage {
 						txnOtp = usrData.get("OTP");
 					}
 					otp.sendKeys(txnOtp);
-					Log.info("clicking on PROCEED button");
+					System.out.println("clicking on PROCEED button");
 					waitUntilElementIsClickableAndClickTheElement(proceedOTP);
 					if (txnOtp.equals("342360")) {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(hambergerMenu);
-						Log.info("Page displayed");
+						System.out.println("Page displayed");
 						/*
 						 * if (usrData.get("NEWPIN").equalsIgnoreCase("1111")) {
 						 * dbUtils.updateMPIN(getLoginMobileFromIni(mobNumFromSheet)); }
@@ -140,68 +139,68 @@ public class LoginPage extends BasePage {
 					} else if (txnOtp.equals("")) {
 						waitUntilElementIsVisible(otpErrorMsg);
 						Assert.assertEquals(otpErrorMsg.getText(), "Required Field");
-						Log.info(otpErrorMsg.getText());
+						System.out.println(otpErrorMsg.getText());
 						waitUntilElementIsVisible(goBackToLogin);
 						goBackToLogin.click();
 					} else if (otpValidation(txnOtp).equalsIgnoreCase("invalid")) {
 						waitUntilElementIsVisible(otpErrorMsg);
 						if (txnOtp.length() < 4) {
 							Assert.assertEquals(otpErrorMsg.getText(), "Minimum length should be 4 digits");
-							Log.info(otpErrorMsg.getText());
+							System.out.println(otpErrorMsg.getText());
 						} else {
 							Assert.assertEquals(otpErrorMsg.getText(), "Invalid OTP");
-							Log.info(otpErrorMsg.getText());
+							System.out.println(otpErrorMsg.getText());
 						}
 						waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 					} else if (otpValidation(txnOtp).equalsIgnoreCase("valid")
 							&& !usrData.get("OTP").equals("342360")) {
 						waitUntilElementIsVisible(toasterMsg);
 						Assert.assertEquals(toasterMsg.getText(), "OTP does not match");
-						Log.info(toasterMsg.getText());
+						System.out.println(toasterMsg.getText());
 						commonUtils.waitForSpinner();
 						waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 					}
 				} else if (mobNumFromSheet.equals("") && usrData.get("MPIN").equals("")) {
 					waitUntilElementIsVisible(mobNumErrorMsg);
 					Assert.assertEquals(mobNumErrorMsg.getText(), "Required Field");
-					Log.info(mobNumErrorMsg.getText());
+					System.out.println(mobNumErrorMsg.getText());
 					waitUntilElementIsVisible(passwordErrorMsg);
 					Assert.assertEquals(passwordErrorMsg.getText(), "Required Field");
-					Log.info(passwordErrorMsg.getText());
+					System.out.println(passwordErrorMsg.getText());
 				} else if (mobNumValidation(mobNumFromSheet).equalsIgnoreCase("invalid")) {
 					waitUntilElementIsVisible(mobNumErrorMsg);
 					Assert.assertEquals(mobNumErrorMsg.getText(), "Invalid mobile number");
-					Log.info(mobNumErrorMsg.getText());
+					System.out.println(mobNumErrorMsg.getText());
 				} else if (mpinValidation(usrData.get("MPIN")).equals("invalid")) {
 					waitUntilElementIsVisible(passwordErrorMsg);
 					if (usrData.get("MPIN").length() < 4) {
 						Assert.assertEquals(passwordErrorMsg.getText(), "Length should be 4 digits");
-						Log.info(passwordErrorMsg.getText());
+						System.out.println(passwordErrorMsg.getText());
 					} else {
 						Assert.assertEquals(passwordErrorMsg.getText(), "Invalid MPIN");
-						Log.info(passwordErrorMsg.getText());
+						System.out.println(passwordErrorMsg.getText());
 					}
 				} else if (!usrData.get("MPIN").equals("1111")) {
 					commonUtils.waitForSpinner();
 					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Invalid credentials");
-					Log.info(toasterMsg.getText());
+					System.out.println(toasterMsg.getText());
 				} else if (checkMobNumExistence(mobNumFromSheet).equalsIgnoreCase("does not exist")) {
 					commonUtils.waitForSpinner();
 					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Invalid credentials");
-					Log.info(toasterMsg.getText());
+					System.out.println(toasterMsg.getText());
 				}
 			} else if (usrData.get("FORGOTPIN").equalsIgnoreCase("YES")) {
 				waitUntilElementIsVisible(forgotPin);
-				Log.info("clicking Forgot Pin");
+				System.out.println("clicking Forgot Pin");
 				clickInvisibleElement(forgotPin);
 				commonUtils.waitForSpinner();
 				waitUntilElementIsClickableAndClickTheElement(panNumber);
 				panNumber.clear();
-				Log.info("entering PAN number");
+				System.out.println("entering PAN number");
 				panNumber.sendKeys(usrData.get("PAN"));
-				Log.info("clicking on PROCEED button");
+				System.out.println("clicking on PROCEED button");
 				waitUntilElementIsClickableAndClickTheElement(proceedPan);
 				if (panValidation(usrData.get("PAN")).equalsIgnoreCase("valid")) {
 					if (usrData.get("PAN")
@@ -209,26 +208,26 @@ public class LoginPage extends BasePage {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsClickableAndClickTheElement(otp);
 						otp.clear();
-						Log.info("entering OTP");
+						System.out.println("entering OTP");
 						otp.sendKeys(getAuthfromIni("LoginOTP"));
-						Log.info("clicking on PROCEED button");
+						System.out.println("clicking on PROCEED button");
 						waitUntilElementIsClickableAndClickTheElement(proceedOTP);
 						waitUntilElementIsClickableAndClickTheElement(newpin);
-						Log.info("entering New PIN");
+						System.out.println("entering New PIN");
 						newpin.sendKeys(usrData.get("NEWPIN"));
 						waitUntilElementIsClickableAndClickTheElement(reenterpin);
-						Log.info("Re-entering PIN");
+						System.out.println("Re-entering PIN");
 						reenterpin.sendKeys(usrData.get("REENTERPIN"));
-						Log.info("clicking on FINISH button");
+						System.out.println("clicking on FINISH button");
 						waitUntilElementIsClickableAndClickTheElement(finish);
 						waitUntilElementIsVisible(toasterMsg);
 						if (usrData.get("NEWPIN").equals(usrData.get("REENTERPIN"))) {
-							Log.info(toasterMsg.getText());
+							System.out.println(toasterMsg.getText());
 							toastCloseButton.click();
 							waitUntilElementIsVisible(mobNum);
 						} else {
 							Assert.assertEquals(toasterMsg.getText(), "New MPIN and Re-entered MPIN does not match.");
-							Log.info(toasterMsg.getText());
+							System.out.println(toasterMsg.getText());
 							toastCloseButton.click();
 							waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 						}
@@ -236,7 +235,7 @@ public class LoginPage extends BasePage {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(toasterMsg);
 						Assert.assertEquals(toasterMsg.getText(), "incorrect POI value entered.");
-						Log.info(toasterMsg.getText());
+						System.out.println(toasterMsg.getText());
 						waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 					}
 				} else if (panValidation(usrData.get("PAN")).equalsIgnoreCase("invalid")) {
@@ -246,7 +245,7 @@ public class LoginPage extends BasePage {
 					} else {
 						Assert.assertEquals(panErrorMsg.getText(), "Invalid Pan");
 					}
-					Log.info(panErrorMsg.getText());
+					System.out.println(panErrorMsg.getText());
 					waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 				}
 			}
@@ -254,7 +253,7 @@ public class LoginPage extends BasePage {
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}

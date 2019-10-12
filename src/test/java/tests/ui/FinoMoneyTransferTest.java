@@ -18,8 +18,6 @@ import org.testng.annotations.Test;
 import in.novopay.platform_ui.pages.web.FinoMoneyTransferPage;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.JavaUtils;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
 
 public class FinoMoneyTransferTest {
 	String featureName = "Fino Money Transfer page";

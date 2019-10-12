@@ -19,8 +19,6 @@ import in.novopay.platform_ui.pages.web.FinoStatusEnquiryPage;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.JavaUtils;
 import in.novopay.platform_ui.utils.ServerUtils;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
 
 public class FinoStatusEnquiryTest {
 	String featureName = "Fino Status Enquiry page";

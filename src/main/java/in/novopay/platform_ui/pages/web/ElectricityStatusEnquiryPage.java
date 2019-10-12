@@ -4,17 +4,12 @@ import java.awt.AWTException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
-import in.novopay.platform_ui.utils.Log;
+import in.novopay.platform_ui.utils.MongoDBUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -26,6 +21,7 @@ import org.testng.Assert;
 public class ElectricityStatusEnquiryPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
 	CommonUtils commonUtils = new CommonUtils(wdriver);
+	MongoDBUtils mongoDbUtils = new MongoDBUtils();
 	DecimalFormat df = new DecimalFormat("#.00");
 
 	@FindBy(xpath = "//h1[contains(text(),'Status Enquiry')]")
@@ -64,29 +60,35 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//h4[contains(text(),'!')]")
 	WebElement seTxnTitle;
 
-	@FindBy(xpath = "//h4[contains(text(),'!')]/parent::div/following-sibling::div//span")
-	WebElement seTxnSuccessMessage;
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Biller Name')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenBillerName;
 
-	@FindBy(xpath = "//h4[contains(text(),'!')]/parent::div/following-sibling::div//span/following-sibling::span")
-	WebElement seTxnTimeoutMessage;
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Account ID')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenAccountID;
 
-	@FindBy(xpath = "//h4[contains(text(),'!')]/parent::div/following-sibling::div/div")
-	WebElement seTxnRefundedMessage;
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Consumer Number')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenConsumerNumber;
 
-	@FindBy(xpath = "//strong[contains(text(),'Bill Amount:')]/parent::div/following-sibling::div")
-	WebElement seTxnScreenTxnAmount;
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Bill Number')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenBillNumber;
 
-	@FindBy(xpath = "//strong[contains(text(),'Charges:')]/parent::div/following-sibling::div")
-	WebElement seTxnScreenCharges;
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenCustomerName;
 
-	@FindBy(xpath = "//strong[contains(text(),'Refunded Amount:')]/parent::div/following-sibling::div")
-	WebElement seTxnScreenRefundedAmount;
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Bill Amount')]/parent::div/following-sibling::div/span")
+	WebElement txnScreenBillAmount;
 
-	@FindBy(xpath = "//strong[contains(text(),'Failed Amount:')]/parent::div/following-sibling::div")
-	WebElement seTxnScreenFailedAmount;
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Charges')]/parent::div/following-sibling::div/span")
+	WebElement txnScreenCharges;
 
-	@FindBy(xpath = "//div/button[contains(text(),'Done')]")
-	WebElement seDoneBtn;
+	@FindBy(xpath = "//div[contains(@class,'billpayreport-modal')]//strong[contains(text(),'Txn ID')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenTxnId;
+
+	@FindBy(xpath = "//div/button[contains(text(),'Ok')]")
+	WebElement seOkBtn;
+
+	@FindBy(xpath = "//div/button[contains(text(),'Print')]")
+	WebElement sePrintBtn;
 
 	@FindBy(xpath = "//div/button[contains(text(),'Retry')]")
 	WebElement seRetryBtn;
@@ -145,14 +147,14 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
 
-	@FindBy(xpath = "//*[@id='reportsDropDown']//span[contains(@class,'select2-selection')]")
+	@FindBy(xpath = "//span[contains(text(),' - Status Enquiry')]")
 	WebElement reportsDropdown;
 
-	@FindBy(xpath = "//li[1][contains(@class,'notifications')]//strong")
-	WebElement fcmHeading;
+	@FindBy(xpath = "//*[@type='search']")
+	WebElement dropDownSearch;
 
-	@FindBy(xpath = "//li[1][contains(@class,'notifications')]/span[2]")
-	WebElement fcmContent;
+	@FindBy(xpath = "//li[contains(text(),'Bill Payment - Status Enquiry')]")
+	WebElement billpaymentDropdown;
 
 	String txnID = txnDetailsFromIni("GetTxnRefNo", "");
 
@@ -165,127 +167,132 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 	public void electricityStatusEnquiry(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
-			if (usrData.get("ASSERTION").contains("FCM")) {
+			if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
+				statusEnquirySection(usrData);
 				clickElement(menu);
 				clickElement(menu);
-				assertionOnRefundFCM(usrData);
-			} else {
-				if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
-					statusEnquirySection(usrData);
-					clickElement(menu);
-					clickElement(menu);
-					Thread.sleep(2000);
-				} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
-					clickElement(menu);
-					scrollElementDown(scrollBar, reports);
-					Log.info("Reports option clicked");
-					waitUntilElementIsClickableAndClickTheElement(reportsPage);
+				Thread.sleep(2000);
+			} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
+				clickElement(menu);
+				scrollElementDown(scrollBar, reports);
+				System.out.println("Reports option clicked");
+				waitUntilElementIsVisible(reportsPage);
+				clickElement(menu);
+				Thread.sleep(1000);
+				waitUntilElementIsClickableAndClickTheElement(reportsDropdown);
+				System.out.println("Drop down clicked");
+				waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
+				dropDownSearch.sendKeys("Bill Payment - Status Enquiry");
+				System.out.println("Typing Bill Payment - Status Enquiry");
+				waitUntilElementIsClickableAndClickTheElement(billpaymentDropdown);
+				System.out.println("Bill Payment - Status Enquiry drop down selected");
 
-					if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
-						waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
-						pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
-						Log.info("Customer mobile number entered");
-					} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
-						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
-						pageTxnId.sendKeys(txnID);
-						Log.info("Txn ID entered");
-					} else {
-						waitUntilElementIsClickableAndClickTheElement(pageTxnId);
-						pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
-					}
-
-					waitUntilElementIsClickableAndClickTheElement(pageSubmitButton);
-					Log.info("Submit button clicked");
-					Thread.sleep(3000);
-					commonUtils.waitForSpinner();
-				}
-				if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
-					waitUntilElementIsVisible(toasterMsg);
-					Assert.assertEquals("No transaction history for this transaction id", toasterMsg.getText());
+				if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
+					waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
+					pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
+					System.out.println("Customer mobile number entered");
+				} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
+					waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+					pageTxnId.clear();
+					pageTxnId.sendKeys(txnID);
+					System.out.println("Txn ID entered");
 				} else {
-					reportsData(usrData);
-					commonUtils.selectTxn();
-					Log.info("Status enquiry of " + usrData.get("STATUS") + " Transaction");
+					waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+					pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
+				}
+
+				waitUntilElementIsClickableAndClickTheElement(pageSubmitButton);
+				System.out.println("Submit button clicked");
+				Thread.sleep(3000);
+				commonUtils.waitForSpinner();
+			}
+			if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
+				waitUntilElementIsVisible(toasterMsg);
+				Assert.assertEquals("No transaction history for this transaction id", toasterMsg.getText());
+			} else {
+				reportsData(usrData);
+				commonUtils.selectTxn();
+				System.out.println("Status enquiry of " + usrData.get("STATUS") + " Transaction");
+				Thread.sleep(1000);
+				waitUntilElementIsVisible(seTxnTitle);
+				assertionOnStatusEnquiryScreen(usrData);
+				if (usrData.get("STATUS").equalsIgnoreCase("Success")
+						|| (usrData.get("STATUS").equalsIgnoreCase("Failed")
+								|| usrData.get("STATUS").contains("Pending")
+								|| usrData.get("STATUS").contains("Refunded"))) {
+					seOkBtn.click();
+					if (usrData.get("ASSERTION").equalsIgnoreCase("SMS")) {
+						assertionOnSMS();
+					}
+				} else if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
 					Thread.sleep(1000);
-					waitUntilElementIsVisible(seTxnTitle);
-					assertionOnTxnScreen(usrData);
-					if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
-						seDoneBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
-							|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
-						seDoneBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
-						seDoneBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
-						closeRefundBtn.click();
-					} else if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
-						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
-						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(confirmRefund);
-						Thread.sleep(1000);
-						waitUntilElementIsVisible(custOTPScreen);
-						custOTP.click();
-						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-							Log.info("Refund OTP entered");
-							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+					waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
+					System.out.println("Initiate Refund button clicked");
+					Thread.sleep(1000);
+					waitUntilElementIsVisible(custOTPScreen);
+					waitUntilElementIsClickableAndClickTheElement(custOTP);
+					System.out.println("OTP field clicked");
+					if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
+						custOTP.sendKeys(getAuthfromIni(otpFromIni()));
+						System.out.println("Refund OTP entered");
+						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(seTxnTitle);
+						assertionOnRefundScreen(usrData);
+						seOkBtn.click();
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(pageTxnId);
+						System.out.println("Refund successful");
+					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
+							|| usrData.get("OTP").equalsIgnoreCase("Retry")) {
+						custOTP.sendKeys("111111");
+						System.out.println("Refund OTP entered");
+						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(seTxnTitle);
+						Assert.assertEquals("OTP does not match", failSeTxnMsg.getText());
+						System.out.println(failSeTxnMsg.getText());
+						if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
+							seRetryBtn.click();
 							commonUtils.waitForSpinner();
-							waitUntilElementIsVisible(seTxnTitle);
-							waitUntilElementIsClickableAndClickTheElement(seDoneBtn);
-							commonUtils.waitForSpinner();
-							waitUntilElementIsVisible(pageTxnId);
-							Log.info("Refund successful");
-						} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
-								|| usrData.get("OTP").equalsIgnoreCase("Retry")) {
-							custOTP.sendKeys("111111");
-							Log.info("Refund OTP entered");
-							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
-							commonUtils.waitForSpinner();
-							waitUntilElementIsVisible(seTxnTitle);
-							Assert.assertEquals("Invalid Verification Code", failSeTxnMsg.getText());
-							Log.info(failSeTxnMsg.getText());
-							if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
-								seRetryBtn.click();
-								commonUtils.waitForSpinner();
-								waitUntilElementIsVisible(custOTPScreen);
-								custOTP.click();
-								custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-								Log.info("Refund OTP entered");
-								waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
-								commonUtils.waitForSpinner();
-								waitUntilElementIsVisible(seTxnTitle);
-								assertionOnTxnScreen(usrData);
-								seDoneBtn.click();
-								commonUtils.waitForSpinner();
-								waitUntilElementIsVisible(pageTxnId);
-								Log.info("Refund successful");
-							} else {
-								seExitBtn.click();
-							}
-						} else if (usrData.get("OTP").equalsIgnoreCase("Cancel")) {
-							otpCancelBtn.click();
-						} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-							waitUntilElementIsClickableAndClickTheElement(otpResendBtn);
 							waitUntilElementIsVisible(custOTPScreen);
 							custOTP.click();
 							custOTP.sendKeys(getAuthfromIni(otpFromIni()));
-							Log.info("Refund OTP entered");
+							System.out.println("Refund OTP entered");
 							waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(seTxnTitle);
-							seDoneBtn.click();
+							assertionOnRefundScreen(usrData);
+							seOkBtn.click();
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(pageTxnId);
-							Log.info("Refund successful");
+							System.out.println("Refund successful");
+						} else {
+							seExitBtn.click();
 						}
+					} else if (usrData.get("OTP").equalsIgnoreCase("Cancel")) {
+						otpCancelBtn.click();
+					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
+						waitUntilElementIsClickableAndClickTheElement(otpResendBtn);
+						waitUntilElementIsVisible(custOTPScreen);
+						custOTP.click();
+						custOTP.sendKeys(getAuthfromIni(otpFromIni()));
+						System.out.println("Refund OTP entered");
+						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(seTxnTitle);
+						assertionOnRefundScreen(usrData);
+						seOkBtn.click();
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(pageTxnId);
+						System.out.println("Refund successful");
 					}
 				}
 			}
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
-			Log.info("Test Case Failed");
+			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
 	}
@@ -293,140 +300,88 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 	public void statusEnquirySection(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		waitUntilElementIsClickableAndClickTheElement(product);
-		Log.info("Status Enquiry drop down clicked");
+		System.out.println("Status Enquiry drop down clicked");
 
 		waitUntilElementIsClickableAndClickTheElement(billPaymentProduct);
-		Log.info("Bill Payment selected");
+		System.out.println("Bill Payment selected");
 
 		if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
 			waitUntilElementIsClickableAndClickTheElement(seCustMobNum);
 			seCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
-			Log.info("Customer mobile number entered");
+			System.out.println("Customer mobile number entered");
 		} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
 			waitUntilElementIsClickableAndClickTheElement(enterSetxnId);
 			enterSetxnId.sendKeys(txnID);
-			Log.info("Txn ID entered");
+			System.out.println("Txn ID entered");
 		} else {
 			waitUntilElementIsClickableAndClickTheElement(enterSetxnId);
 			enterSetxnId.sendKeys(usrData.get("TXNDETAILS"));
 		}
 
 		waitUntilElementIsClickableAndClickTheElement(statusEnquirySubmitButton);
-		Log.info("Submit button clicked");
+		System.out.println("Submit button clicked");
 		commonUtils.waitForSpinner();
 		waitUntilElementIsVisible(reportPage);
-		Log.info("Report page displayed");
+		System.out.println("Report page displayed");
 	}
 
 	public void reportsData(Map<String, String> usrData) throws ClassNotFoundException {
-		String[][] dataFromUI = new String[1][5];
-		for (int i = 0; i < 1; i++) {
-			for (int j = 0; j < 5; j++) {
-				String dataXpath = "//tbody/tr[" + (i + 1) + "]/td[" + (j + 1) + "]";
-				waitUntilElementIsVisible(wdriver.findElement(By.xpath(dataXpath)));
-				WebElement data = wdriver.findElement(By.xpath(dataXpath));
-				dataFromUI[i][j] = data.getText();
-			}
-		}
 		String statusXpath = "//tbody/tr[1]/td[6]";
 		WebElement statusData = wdriver.findElement(By.xpath(statusXpath));
+		Assert.assertEquals(statusData.getText(),
+				mongoDbUtils.getBillPayTxnStatus(txnDetailsFromIni("GetTxnRefNo", "")));
 		if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
 			Assert.assertEquals(statusData.getText(), "SUCCESS");
-		} else if (usrData.get("STATUS").equalsIgnoreCase("Pending")) {
+		} else if (usrData.get("STATUS").contains("Pending") || usrData.get("STATUS").equalsIgnoreCase("Refund")) {
 			Assert.assertEquals(statusData.getText(), "PENDING");
-		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
+		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")
+				|| usrData.get("STATUS").equalsIgnoreCase("Refunded")) {
 			Assert.assertEquals(statusData.getText(), "FAILED");
 		}
-		Log.info(statusData.getText());
-
-		List<String> listFromUI = new ArrayList<String>();
-		for (String[] array : dataFromUI) {
-			listFromUI.addAll(Arrays.asList(array));
-		}
-
-		List<String[]> list = new ArrayList<String[]>();
-		List<String[]> mtStatusEnquiry = dbUtils.mtStatusEnquiry(txnID);
-		list = mtStatusEnquiry;
-
-		List<String> listFromDB = new ArrayList<String>();
-		for (String[] data : list) {
-			for (String s : data) {
-				listFromDB.add(s);
-			}
-		}
-
-		HashMap<String, String> map = new HashMap<String, String>();
-		Iterator<String> iUI = listFromUI.iterator();
-		Iterator<String> iDB = listFromDB.iterator();
-		while (iUI.hasNext() && iDB.hasNext()) {
-			map.put(iUI.next(), iDB.next());
-		}
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			Assert.assertEquals(entry.getKey(), entry.getValue());
-		}
-		for (String u : listFromUI) {
-			System.out.print(u + " | ");
-		}
-		System.out.println();
+		System.out.println(statusData.getText());
 	}
 
 	// Verify details on txn screen
-	public void assertionOnTxnScreen(Map<String, String> usrData)
+	public void assertionOnStatusEnquiryScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
-			Assert.assertEquals(replaceSymbols(seTxnScreenTxnAmount.getText()),
-					txnDetailsFromIni("GetTxfAmount", "") + ".00");
-			Log.info("Transferred Amount: " + replaceSymbols(seTxnScreenTxnAmount.getText()));
-		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
-			Assert.assertEquals(replaceSymbols(seTxnScreenRefundedAmount.getText()),
-					txnDetailsFromIni("GetFailAmount", "") + ".00");
-			Log.info("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
+		if (usrData.get("STATUS").contains("Success")) {
+			Assert.assertEquals(seTxnTitle.getText(), "Success!");
+		} else if (usrData.get("STATUS").contains("Failed") || (usrData.get("STATUS").equalsIgnoreCase("Refund"))
+				|| usrData.get("STATUS").equalsIgnoreCase("Refunded")) {
+			Assert.assertEquals(seTxnTitle.getText(), "Failed!");
+		} else if (usrData.get("STATUS").equalsIgnoreCase("Pending")) {
+			Assert.assertEquals(seTxnTitle.getText(), "Pending!");
 		}
-		Assert.assertEquals(replaceSymbols(seTxnScreenCharges.getText()), txnDetailsFromIni("GetCharges", ""));
-		Log.info("Charges: " + replaceSymbols(seTxnScreenCharges.getText()));
+		System.out.println("Title: " + seTxnTitle.getText());
+
+		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), txnDetailsFromIni("GetTxfAmount", ""));
+		System.out.println("Bill Amount: " + txnDetailsFromIni("GetTxfAmount", ""));
 	}
 
-	// FCM assertion
-	public void assertionOnRefundFCM(Map<String, String> usrData) throws ClassNotFoundException {
-		double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
-		double charges = Double.parseDouble(txnDetailsFromIni("GetCharges", ""));
-		double totalAmount = amount + charges;
+	// Verify details on txn screen
+	public void assertionOnRefundScreen(Map<String, String> usrData)
+			throws ClassNotFoundException, ParseException, InterruptedException {
+		Assert.assertEquals(seTxnTitle.getText(), "Success!");
+		System.out.println("Title: " + seTxnTitle.getText());
 
-		String successFCMHeading = "Refund : SUCCESS";
-		String failFCMHeading = "Refund : FAIL";
-
-		String successFCMContent = "Customer Mobile: " + getCustomerDetailsFromIni("ExistingNum")
-				+ " Money Transfer with cash payment: Rs." + df.format(amount) + " and Charges:Rs." + df.format(charges)
-				+ ", Total: Rs." + df.format(totalAmount)
-				+ " has been refunded to Agent Wallet.Transaction Reference No. " + dbUtils.paymentRefCode(partner());
-		String failFCMContent = "Customer Mobile: " + getCustomerDetailsFromIni("ExistingNum")
-				+ " Invalid Verification Code.";
-
-		switch (usrData.get("ASSERTION")) {
-		case "Success FCM":
-			fcmMethod(successFCMHeading, successFCMContent);
-			break;
-		case "Failed FCM":
-			fcmMethod(failFCMHeading, failFCMContent);
-			break;
-		}
+		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), txnDetailsFromIni("GetTxfAmount", ""));
+		System.out.println("Bill Amount: " + txnDetailsFromIni("GetTxfAmount", ""));
 	}
 
-	public void fcmMethod(String heading, String content) {
-		Assert.assertEquals(fcmHeading.getText(), heading);
-		Assert.assertEquals(fcmContent.getText(), content);
-		Log.info(fcmHeading.getText());
-		Log.info(fcmContent.getText());
-	}
-
-	// Get Partner name
-	public String partner() {
-		return "RBL";
+	// SMS assertion
+	public void assertionOnSMS() throws ClassNotFoundException, InterruptedException {
+		String pendingToFailedSMS = "Dear User, Payment of Rs. "
+				+ txnDetailsFromIni("GetTxfAmount", "").substring(0, txnDetailsFromIni("GetTxfAmount", "").length() - 3)
+				+ " against Bangalore Electricity Supply Company  has failed with Txn ID " + txnID
+				+ ". Please use this Verification Code " + getAuthfromIni(otpFromIni()) + " to avail refund";
+		Thread.sleep(5000);
+		Assert.assertEquals(pendingToFailedSMS, dbUtils.sms());
+		System.out.println(pendingToFailedSMS);
 	}
 
 	// Get otp from Ini file
 	public String otpFromIni() {
-		return partner().toUpperCase() + "OTP";
+		return "LoginOTP";
 	}
 
 }
