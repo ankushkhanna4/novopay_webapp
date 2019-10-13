@@ -1136,7 +1136,7 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public List<String[]> accountStatementCMS(String mobNum, String partner) throws ClassNotFoundException {
+	public List<String[]> accountStatementCMS(String mobNum) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 
@@ -1189,6 +1189,45 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			System.out.println(query);
+			int nCol = rs.getMetaData().getColumnCount();
+			List<String[]> list = new ArrayList<String[]>();
+			while (rs.next()) {
+				String[] row = new String[nCol];
+				for (int iCol = 1; iCol <= nCol; iCol++) {
+					Object obj = rs.getObject(iCol);
+					row[iCol - 1] = (obj == null) ? "NA" : obj.toString();
+				}
+				list.add(row);
+			}
+			return list;
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+		}
+		return null;
+	}
+
+	public List<String[]> accountStatementBP(String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npActor"));
+
+			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') "
+					+ "txn_time, 'NA' ref_no, 'NA' msisdn, `comment`, CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
+					+ "amount, (SELECT CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) charge FROM "
+					+ "wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id FROM "
+					+ "wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM master.organization_attribute "
+					+ "WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND orgnization_id = (SELECT organization FROM master.user "
+					+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "' ORDER BY id DESC LIMIT 1)))) ORDER BY id DESC LIMIT 1) charge, 'NA' comm, 'NA' tds "
+					+ "FROM wallet.`m_savings_account_transaction` WHERE `savings_account_id` = (SELECT id "
+					+ "FROM wallet.`m_savings_account` WHERE account_no = (SELECT attr_value FROM "
+					+ "master.organization_attribute WHERE attr_key = 'WALLET_ACCOUNT_NUMBER' AND "
+					+ "orgnization_id = (SELECT organization FROM master.user WHERE id = (SELECT user_id "
+					+ "FROM master.user_attribute WHERE attr_value = '8884999352' ORDER BY id DESC LIMIT 1)))) "
+					+ "ORDER BY id DESC LIMIT 1 OFFSET 1";
+
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
 			int nCol = rs.getMetaData().getColumnCount();
 			List<String[]> list = new ArrayList<String[]>();
 			while (rs.next()) {

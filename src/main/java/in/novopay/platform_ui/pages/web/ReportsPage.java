@@ -250,8 +250,12 @@ public class ReportsPage extends BasePage {
 			list = accountStatementAEPS;
 		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
 				&& usrData.get("STATUS").contains("CMS")) {
-			List<String[]> accountStatementCMS = dbUtils.accountStatementCMS(mobileNumFromIni(), usrData.get("STATUS"));
+			List<String[]> accountStatementCMS = dbUtils.accountStatementCMS(mobileNumFromIni());
 			list = accountStatementCMS;
+		} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")
+				&& usrData.get("STATUS").contains("Electricity")) {
+			List<String[]> accountStatementBP = dbUtils.accountStatementBP(mobileNumFromIni());
+			list = accountStatementBP;
 		}
 		List<String> listFromDB = new ArrayList<String>();
 		for (String[] data : list) {
