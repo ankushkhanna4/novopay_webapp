@@ -253,6 +253,7 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 						Assert.assertEquals("OTP does not match", failSeTxnMsg.getText());
 						System.out.println(failSeTxnMsg.getText());
 						if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
+							Thread.sleep(2000);
 							seRetryBtn.click();
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(custOTPScreen);
