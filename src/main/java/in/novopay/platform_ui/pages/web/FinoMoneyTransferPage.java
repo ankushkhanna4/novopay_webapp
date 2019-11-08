@@ -401,9 +401,9 @@ public class FinoMoneyTransferPage extends BasePage {
 				waitUntilElementIsClickableForFinoAndClickTheElement(beneName);
 				beneName.sendKeys(getBeneNameFromIni(usrData.get("BENENAME")));
 				System.out.println("Bene name '" + usrData.get("BENENAME") + "' entered");
-				waitUntilElementIsClickableForFinoAndClickTheElement(beneMobNum);
-				beneMobNum.sendKeys(getBeneNumberFromIni(usrData.get("BENENUMBER")));
-				System.out.println("Bene mobile number '" + getBeneNumberFromIni("GetNum") + "' entered");
+//				waitUntilElementIsClickableForFinoAndClickTheElement(beneMobNum);
+//				beneMobNum.sendKeys(getBeneNumberFromIni(usrData.get("BENENUMBER")));
+//				System.out.println("Bene mobile number '" + getBeneNumberFromIni("GetNum") + "' entered");
 				waitUntilElementIsClickableForFinoAndClickTheElement(beneACNum);
 				beneACNum.sendKeys(getAccountNumberFromIni(usrData.get("BENEACNUM")));
 				System.out.println("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
@@ -692,15 +692,15 @@ public class FinoMoneyTransferPage extends BasePage {
 			custMobNum.sendKeys(Keys.TAB);
 			custName.sendKeys(getCustomerDetailsFromIni("NewName"));
 			System.out.println("Customer name " + custName.getText() + " entered");
-			custName.sendKeys(Keys.TAB);
-			dob.sendKeys(usrData.get("DOB"));
-			System.out.println("Date of birth entered");
-			if (usrData.get("GENDER").equalsIgnoreCase("MALE")) {
-				clickElement(genderMale);
-			} else if (usrData.get("GENDER").equalsIgnoreCase("FEMALE")) {
-				clickElement(genderFemale);
-			}
-			System.out.println("Gender selected");
+//			custName.sendKeys(Keys.TAB);
+//			dob.sendKeys(usrData.get("DOB"));
+//			System.out.println("Date of birth entered");
+//			if (usrData.get("GENDER").equalsIgnoreCase("MALE")) {
+//				clickElement(genderMale);
+//			} else if (usrData.get("GENDER").equalsIgnoreCase("FEMALE")) {
+//				clickElement(genderFemale);
+//			}
+//			System.out.println("Gender selected");
 		} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
 			System.out.println("Existing customer mobile number entered");
 			commonUtils.waitForSpinner();

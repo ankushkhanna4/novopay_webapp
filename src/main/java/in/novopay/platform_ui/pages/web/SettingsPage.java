@@ -329,7 +329,7 @@ public class SettingsPage extends BasePage {
 							accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
 							System.out.println("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 						}
-						uploadFile(uploadFile);
+						commonUtils.uploadFile(uploadFile);
 						System.out.println("Image selected");
 
 						String buttonName = usrData.get("SETTINGSBUTTON");
@@ -478,16 +478,6 @@ public class SettingsPage extends BasePage {
 		Assert.assertEquals(settingsTxnScreenMessage.getText(),
 				"Please change settlement mode to 'Do Not Settle' before updating bank details");
 		System.out.println(settingsTxnScreenMessage.getText());
-	}
-
-	public void uploadFile(WebElement cancelledCheque) throws InterruptedException, IOException {
-		System.out.println("selecting cancelled cheque image");
-		Thread.sleep(2000);
-		waitUntilElementIsClickableAndClickTheElement(cancelledCheque);
-		Thread.sleep(500);
-		String uploadFile = "./test-data/UploadFile.exe";
-		Runtime.getRuntime().exec(uploadFile);
-		Thread.sleep(500);
 	}
 
 	// FCM assertion

@@ -127,9 +127,6 @@ public class FlowMapper {
 					wdriver.navigate().refresh();
 					throw e.getCause();
 				}
-//				finally {
-//					dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
-//				}
 			}
 		}
 	}

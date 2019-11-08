@@ -235,9 +235,6 @@ public class RBLStatusEnquiryPage extends BasePage {
 				Thread.sleep(1000);
 				waitUntilElementIsVisible(seTxnTitle);
 				assertionOnTxnScreen(usrData);
-				if (usrData.get("ASSERTION").equalsIgnoreCase("Print")) {
-					sePrintBtn.click();
-				}
 				if (usrData.get("STATUS").equalsIgnoreCase("Success")
 						|| usrData.get("STATUS").equalsIgnoreCase("Queued to Success")) {
 					seDoneBtn.click();
@@ -318,6 +315,8 @@ public class RBLStatusEnquiryPage extends BasePage {
 						commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
 						assertionOnRefundFCM(usrData);
 					}
+				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Print")) {
+					sePrintBtn.click();
 				}
 			}
 		} catch (Exception e) {

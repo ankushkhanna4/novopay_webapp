@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecuteResultHandler;
@@ -104,6 +105,7 @@ public class JavaUtils extends LoadableComponent {
 			if (env.equalsIgnoreCase("QA1")) {
 				ini.put("Common", "env", "qa1");
 				ini.put("Common", "webAppUrl", "https://qa1-retailer.novopay.in/");
+				ini.put("Common", "financeOpsUrl", "https://qa1-finance-portal.novopay.in");
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.7:3306/");
 				ini.put("Common", "mongoDbUrl", "192.168.150.7:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "nodecms");
@@ -117,6 +119,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.password", "qazxsw123");
 				configProperties.put("env", "qa1");
 				configProperties.put("webAppUrl", "https://qa1-retailer.novopay.in/");
+				configProperties.put("financeOpsUrl", "https://qa1-finance-portal.novopay.in");
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.7:3306/");
 				configProperties.put("mongoDbUrl", "192.168.150.7:37017/");
 				configProperties.put("mongoDbUserNameCms", "nodecms");
@@ -130,7 +133,8 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.password", "qazxsw123");
 			} else if (env.equalsIgnoreCase("QA2")) {
 				ini.put("Common", "env", "qa2");
-				ini.put("Common", "webAppUrl", "https://retailer.novopay.in/");
+				ini.put("Common", "webAppUrl", "https://qa2-retailer.novopay.in/");
+				ini.put("Common", "financeOpsUrl", "https://qa2-finance-portal.novopay.in");
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.24:3306/");
 				ini.put("Common", "mongoDbUrl", "192.168.150.24:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "nodecms");
@@ -144,6 +148,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.password", "qazxsw123");
 				configProperties.put("env", "qa2");
 				configProperties.put("webAppUrl", "https://qa2-retailer.novopay.in/");
+				configProperties.put("financeOpsUrl", "https://qa2-finance-portal.novopay.in");
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.24:3306/");
 				configProperties.put("mongoDbUrl", "192.168.150.24:37017/");
 				configProperties.put("mongoDbUserNameCms", "nodecms");
@@ -158,6 +163,7 @@ public class JavaUtils extends LoadableComponent {
 			} else if (env.equalsIgnoreCase("PP")) {
 				ini.put("Common", "env", "pre-prod");
 				ini.put("Common", "webAppUrl", "https://preretailer.novopay.in/");
+				ini.put("Common", "financeOpsUrl", "https://preprod-finance-portal.novopay.in");
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.2:3306/");
 				ini.put("Common", "mongoDbUrl", "192.168.150.2:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "akhanna");
@@ -171,6 +177,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.password", "akhanna123$");
 				configProperties.put("env", "pre-prod");
 				configProperties.put("webAppUrl", "https://preretailer.novopay.in/");
+				configProperties.put("financeOpsUrl", "https://preprod-finance-portal.novopay.in");
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.2:3306/");
 				configProperties.put("mongoDbUrl", "192.168.150.2:37017/");
 				configProperties.put("mongoDbUserNameCms", "akhanna");
@@ -403,6 +410,69 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("BeneData", "BankName", name);
 				ini.store();
 				return ini.get("BeneData", "BankName");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getEmailIdFromIni(String name) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (name.equalsIgnoreCase("Random")) {
+				ini.put("SelfLoadRequestData", "EmailId", generateRandomEmailId());
+				ini.store();
+				return ini.get("SelfLoadRequestData", "EmailId");
+			} else if (name.equalsIgnoreCase("GetEmailId")) {
+				return ini.get("SelfLoadRequestData", "EmailId");
+			} else {
+				ini.put("SelfLoadRequestData", "EmailId", name);
+				ini.store();
+				return ini.get("SelfLoadRequestData", "EmailId");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getTermNumberFromIni(String name) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (name.equalsIgnoreCase("Random")) {
+				ini.put("SelfLoadRequestData", "Term", generateRandomTermNumber());
+				ini.store();
+				return ini.get("SelfLoadRequestData", "Term");
+			} else if (name.equalsIgnoreCase("GetTerm")) {
+				return ini.get("SelfLoadRequestData", "Term");
+			} else {
+				ini.put("SelfLoadRequestData", "Term", name);
+				ini.store();
+				return ini.get("SelfLoadRequestData", "Term");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getTxnNumberFromIni(String name) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (name.equalsIgnoreCase("Random")) {
+				ini.put("SelfLoadRequestData", "Txn", generateRandomTxnNumber());
+				ini.store();
+				return ini.get("SelfLoadRequestData", "Txn");
+			} else if (name.equalsIgnoreCase("GetTxn")) {
+				return ini.get("SelfLoadRequestData", "Txn");
+			} else {
+				ini.put("SelfLoadRequestData", "Txn", name);
+				ini.store();
+				return ini.get("SelfLoadRequestData", "Txn");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -973,10 +1043,15 @@ public class JavaUtils extends LoadableComponent {
 	}
 
 	public String getTodaysDate(String format) {
-
 		Format formatter = new SimpleDateFormat(format);
 		String todaysDate = formatter.format(new Date());
 		return todaysDate;
+	}
+
+	public String getTodaysDateOfMonth() {
+		int day = Calendar.getInstance(TimeZone.getTimeZone("India")).get(Calendar.DAY_OF_MONTH);
+		String dayOfMonth = String.valueOf(day);
+		return dayOfMonth;
 	}
 
 	public String generateRandomNumber(int number) {
@@ -1470,6 +1545,52 @@ public class JavaUtils extends LoadableComponent {
 		}
 		String saltStr = salt.toString();
 		return saltStr;
+	}
+
+	public String generateRandomEmailId() {
+		String SALTCHARS = "abcdefghijklmnopqrstuvwxyz";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 8) { // length of the random string
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr + "@gmail.com";
+	}
+	
+	public String generateRandomTermNumber() {
+		String SALTCHARS = "abcdefghijklmnopqrstuvwxyz";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 10) { // length of the random string
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+	}
+	
+	public String generateRandomTxnNumber() {
+		String SALTCHARS = "1234567890";
+		StringBuilder salt = new StringBuilder();
+		Random rnd = new Random();
+		while (salt.length() < 4) { // length of the random string
+			int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+			salt.append(SALTCHARS.charAt(index));
+		}
+		String saltStr = salt.toString();
+		return saltStr;
+	}
+	
+	public String generateRandomReferenceNumber() {
+		Random rand = new Random();
+		int maxF = 9, minF = 1;
+		int firstDigit = rand.nextInt((maxF - minF) + 1) + minF;
+		int maxR = 999999999, minR = 100000000;
+		int restDigits = rand.nextInt((maxR - minR) + 1) + minR;
+		String refNum = Integer.toString(firstDigit) + Integer.toString(restDigits);
+		return refNum;
 	}
 
 	public String currentDate() {

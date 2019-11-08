@@ -1,5 +1,6 @@
 package in.novopay.platform_ui.utils;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.openqa.selenium.WebDriver;
@@ -75,7 +76,7 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
 	WebElement chooseWalletProceedButton;
-	
+
 	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Cancel')]")
 	WebElement chooseWalletCancelButton;
 
@@ -115,7 +116,7 @@ public class CommonUtils extends BasePage {
 	public void selectFeatureFromMenu1(WebElement feature, WebElement pageTitle) throws InterruptedException {
 		clickElement(menu);
 		scrollElementDown(scrollBar, feature);
-		System.out.println("Money Transfer option clicked");
+		System.out.println(feature.getText() + " option clicked");
 		waitUntilElementIsVisible(pageTitle);
 		System.out.println(pageTitle.getText() + " page displayed");
 		clickElement(menu);
@@ -125,7 +126,19 @@ public class CommonUtils extends BasePage {
 		clickElement(menu);
 		refreshBalance();
 		scrollElementDown(scrollBar, feature);
-		System.out.println("Money Transfer option clicked");
+		System.out.println(feature.getText() + " option clicked");
+		waitUntilElementIsVisible(pageTitle);
+		System.out.println(pageTitle.getText() + " page displayed");
+		clickElement(menu);
+	}
+
+	public void selectFeatureFromMenu3(WebElement feature1, WebElement feature2, WebElement pageTitle)
+			throws InterruptedException {
+		clickElement(menu);
+		scrollElementDown(scrollBar, feature1);
+		System.out.println(feature1.getText() + " option clicked");
+		scrollElementDown(scrollBar, feature2);
+		System.out.println(feature2.getText() + " option clicked");
 		waitUntilElementIsVisible(pageTitle);
 		System.out.println(pageTitle.getText() + " page displayed");
 		clickElement(menu);
@@ -275,5 +288,15 @@ public class CommonUtils extends BasePage {
 		} catch (Exception e) {
 			System.out.println("Processing screen skipped");
 		}
+	}
+
+	public void uploadFile(WebElement image) throws InterruptedException, IOException {
+		System.out.println("selecting an image");
+		Thread.sleep(2000);
+		waitUntilElementIsClickableAndClickTheElement(image);
+		Thread.sleep(2000);
+		String uploadFile = "./test-data/UploadFile.exe";
+		Runtime.getRuntime().exec(uploadFile);
+		Thread.sleep(500);
 	}
 }

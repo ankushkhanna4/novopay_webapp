@@ -1397,8 +1397,8 @@ public class DBUtils extends JavaUtils {
 	public String aepsStatusEnquiryDate(String txnRefNo) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT DATE_FORMAT(updated_date, '%d/%m') txn_date FROM np_aepstxn.aeps_transactions WHERE novopay_txn_ref = '"
-					+ txnRefNo + "'";
+			String query = "SELECT DATE_FORMAT(updated_date, '%d/%m') txn_date FROM np_aepstxn.aeps_transactions "
+					+ "WHERE novopay_txn_ref = '" + txnRefNo + "'";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -1414,7 +1414,9 @@ public class DBUtils extends JavaUtils {
 	public String deleteAEPSTxn() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("rblSimulator"));
-			String query = "DELETE FROM `limit_charges`.`entity_consumed_limits` WHERE entity_id = '0fa44628d16028a273781693d392256e502e66ccd6b6a102def50fd729457855bcb8a44fcde70ddd3d4afeeff82d1e9a6348d2de7fe5ed5b9eee3a386cdcf2e0';";
+			String query = "DELETE FROM `limit_charges`.`entity_consumed_limits` WHERE "
+					+ "entity_id = '0fa44628d16028a273781693d392256e502e66ccd6b6a102def50fd729457855bcb8a44fcde70d"
+					+ "dd3d4afeeff82d1e9a6348d2de7fe5ed5b9eee3a386cdcf2e0';";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
@@ -1428,7 +1430,8 @@ public class DBUtils extends JavaUtils {
 	public String aepsTxnDate() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
-			String query = "SELECT DATE_FORMAT(updated_date, '%d-%b-%Y %h:%i %p') FROM `np_aepstxn`.`aeps_transactions` ORDER BY id DESC LIMIT 1";
+			String query = "SELECT DATE_FORMAT(updated_date, '%d-%b-%Y %h:%i %p') FROM `np_aepstxn`.`aeps_transactions` "
+					+ "ORDER BY id DESC LIMIT 1";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -1525,8 +1528,9 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("master"));
 			String query = "UPDATE master.`org_stlmnt_info` SET settlement_mode = '" + mode + "', `status` = '" + status
 					+ "', `enabled` = '" + enabled + "', blocking_remarks = '" + remarks
-					+ "' WHERE `organization_id` = (SELECT organization FROM master.user WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_key = 'MSISDN' AND attr_value = '"
-					+ mobNum + "') AND `status` = 'ACTIVE') ORDER BY id DESC LIMIT 1;";
+					+ "' WHERE `organization_id` = (SELECT organization FROM master.user WHERE id IN (SELECT user_id "
+					+ "FROM master.user_attribute WHERE attr_key = 'MSISDN' AND attr_value = '" + mobNum
+					+ "') AND `status` = 'ACTIVE') ORDER BY id DESC LIMIT 1;";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Updating org_stlmnt_info table as per mode " + mode + " and status " + status);
@@ -1715,5 +1719,40 @@ public class DBUtils extends JavaUtils {
 			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
 			sqe.printStackTrace();
 		}
+	}
+
+	public String requestIdFromTopUpRequest(String email) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("limitCharges"));
+			String query = "SELECT request_id FROM `np_ops`.`wallet_topup_request` WHERE email = '" + email + "';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+
+	public String createdDateTimeFromTopUpRequest(String email) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("limitCharges"));
+			String query = "SELECT DATE_FORMAT(created_on, '%H:%i %d/%m/%y') FROM `np_ops`.`wallet_topup_request` WHERE email = '"
+					+ email + "';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
 	}
 }

@@ -401,9 +401,9 @@ public class RBLMoneyTransferPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(beneName);
 				beneName.sendKeys(getBeneNameFromIni(usrData.get("BENENAME")));
 				System.out.println("Bene name '" + usrData.get("BENENAME") + "' entered");
-				waitUntilElementIsClickableAndClickTheElement(beneMobNum);
-				beneMobNum.sendKeys(getBeneNumberFromIni(usrData.get("BENENUMBER")));
-				System.out.println("Bene mobile number '" + getBeneNumberFromIni("GetNum") + "' entered");
+//				waitUntilElementIsClickableAndClickTheElement(beneMobNum);
+//				beneMobNum.sendKeys(getBeneNumberFromIni(usrData.get("BENENUMBER")));
+//				System.out.println("Bene mobile number '" + getBeneNumberFromIni("GetNum") + "' entered");
 				waitUntilElementIsClickableAndClickTheElement(beneACNum);
 				beneACNum.sendKeys(getAccountNumberFromIni(usrData.get("BENEACNUM")));
 				System.out.println("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
@@ -744,7 +744,7 @@ public class RBLMoneyTransferPage extends BasePage {
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Dont Update Bene")) {
 			Assert.assertEquals(beneName.getAttribute("value"), usrData.get("BENENAME"));
 			System.out.println("Bene name remains " + beneName.getAttribute("value"));
-		} else {
+		} else if (usrData.get("ASSERTION").contains("Icon + Name")) {
 			Assert.assertEquals(beneName.getAttribute("value"), getBeneNameFromBank("GetBeneName", ""));
 			System.out.println("Bene name got replaced by " + beneName.getAttribute("value"));
 		}

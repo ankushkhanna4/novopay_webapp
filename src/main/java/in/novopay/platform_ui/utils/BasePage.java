@@ -33,7 +33,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.ITestResult;
-import org.testng.Reporter;
 
 public class BasePage extends JavaUtils {
 
@@ -72,12 +71,55 @@ public class BasePage extends JavaUtils {
 	}
 
 	/**
+	 * Open new tab
+	 * 
+	 * @return
+	 * @throws InterruptedException
+	 */
+	public void openNewTab(String urlApp, String urlName) throws InterruptedException {
+
+		String url = "";
+
+		if (urlApp.equalsIgnoreCase("Queuing")) {
+			url = urlName;
+			System.out.println("Hitting Queuing url");
+		} else if (urlApp.equalsIgnoreCase("FinOps Portal")) {
+			url = configProperties.get("finOpsUrl");
+			System.out.println("Hitting FinOps Portal url");
+		}
+
+		((JavascriptExecutor) wdriver).executeScript("window.open()"); // open new tab
+		ArrayList<String> tabs = new ArrayList<String>(wdriver.getWindowHandles());
+		Thread.sleep(1000);
+		wdriver.switchTo().window(tabs.get(1)); // switch to new tab
+		wdriver.get(url); // hit url
+	}
+
+	/**
+	 * Close the tab
+	 */
+	public void closeTab() {
+
+		wdriver.close();
+		System.out.println("Tab is closed");
+	}
+
+	/**
 	 * Close the web browser
 	 */
 	public void closeBrowser() {
 
 		wdriver.quit();
-		Reporter.log("Shutdown the Web Application");
+		System.out.println("Web Application is closed");
+	}
+
+	/**
+	 * Switch the tab to previous one
+	 */
+	public void switchTab() {
+		ArrayList<String> tabs = new ArrayList<String>(wdriver.getWindowHandles());
+		wdriver.switchTo().window(tabs.get(0)); // switch to previous window
+		System.out.println("Tab is switched to previous one");
 	}
 
 	/**
@@ -299,7 +341,7 @@ public class BasePage extends JavaUtils {
 		WebDriverWait wait = new WebDriverWait(wdriver, 90);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
-	
+
 	/**
 	 * Wait until web element is invisible
 	 */
@@ -325,7 +367,7 @@ public class BasePage extends JavaUtils {
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 		clickElement(element);
 	}
-	
+
 	/**
 	 * Wait until web element is clickable
 	 */
@@ -341,7 +383,7 @@ public class BasePage extends JavaUtils {
 		WebDriverWait wait = new WebDriverWait(wdriver, 90);
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 	}
-	
+
 	/**
 	 * Click on invisible web element for web
 	 */

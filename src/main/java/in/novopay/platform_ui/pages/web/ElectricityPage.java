@@ -371,9 +371,7 @@ public class ElectricityPage extends BasePage {
 					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
 					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
 					System.out.println(mpinButtonName + " button clicked");
-					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-						System.out.println("Cancel button clicked");
-					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
+					if (mpinButtonName.equalsIgnoreCase("Submit")) {
 						commonUtils.waitForSpinner();
 
 						waitUntilElementIsVisible(elecTxnScreen);
