@@ -128,8 +128,8 @@ public class FOPWalletLoadPage extends BasePage {
 		 */
 
 		List<String[]> list = new ArrayList<String[]>();
-		List<String[]> mtStatusEnquiry = dbUtils.mtStatusEnquiry(txnID);
-		list = mtStatusEnquiry;
+//		List<String[]> mtStatusEnquiry = dbUtils.mtStatusEnquiry(txnID);
+//		list = mtStatusEnquiry;
 
 		List<String> listFromDB = new ArrayList<String>();
 		for (String[] data : list) {

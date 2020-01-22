@@ -45,7 +45,7 @@ public class CapitalFirstAgentPage extends BasePage {
 	@FindBy(xpath = "//h1[contains(text(),'Cash Management Services (CMS)')]")
 	WebElement pageTitle;
 
-	@FindBy(xpath = "//span[contains(text(),'Capital First Agent')]/parent::li")
+	@FindBy(xpath = "//span[contains(text(),'Capital First Agent')]")
 	WebElement capitalFirstIcon;
 
 	@FindBy(id = "capital-first-money-transfer-mobile-number")

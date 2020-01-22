@@ -599,6 +599,36 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
+	public String rechargeDataFromIni(String key, String value) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (key.equalsIgnoreCase("StoreMobNum")) {
+				ini.put("RechargeData", "MobNum", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetMobNum")) {
+				return ini.get("RechargeData", "MobNum");
+			} else if (key.equalsIgnoreCase("StoreCustomerId")) {
+				ini.put("RechargeData", "CustomerId", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetCustomerId")) {
+				return ini.get("RechargeData", "CustomerId");
+			} else if (key.equalsIgnoreCase("StoreDatacardNum")) {
+				ini.put("RechargeData", "DatacardNum", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetDatacardNum")) {
+				return ini.get("RechargeData", "DatacardNum");
+			} else if (key.equalsIgnoreCase("StoreAmount")) {
+				ini.put("RechargeData", "Amount", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetAmount")) {
+				return ini.get("RechargeData", "Amount");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public String getAuthfromIni(String type) {
 		Ini ini;

@@ -552,7 +552,7 @@ public class ElectricityPage extends BasePage {
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 		String successSMS = "Thank you for payment of INR " + txnDetailsFromIni("GetTxfAmount", "") + " against "
 				+ usrData.get("BILLERNAME") + ", Account ID - " + usrData.get("ACCOUNTID") + ", Txn Ref ID "
-				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.billPaymentDate() + ".";
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + ".";
 		Assert.assertEquals(successSMS, dbUtils.sms());
 		System.out.println(successSMS);
 	}
@@ -601,7 +601,7 @@ public class ElectricityPage extends BasePage {
 		String successSummaryFCMHeading = "Bill Payment";
 		String successSummaryFCMContent = "Bill payment of ₹ " + txnDetailsFromIni("GetTxfAmount", "") + " against "
 				+ usrData.get("BILLERNAME") + ", " + usrData.get("ACCOUNTID") + ", Txn Ref ID "
-				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.billPaymentDate() + " is successful.";
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + " is successful.";
 		Assert.assertEquals(fcmHeading1.getText(), successSummaryFCMHeading);
 		Assert.assertEquals(fcmContent1.getText(), successSummaryFCMContent);
 		System.out.println(fcmHeading1.getText());

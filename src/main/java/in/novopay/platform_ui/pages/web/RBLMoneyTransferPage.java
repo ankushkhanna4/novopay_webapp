@@ -1043,8 +1043,8 @@ public class RBLMoneyTransferPage extends BasePage {
 		double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 		double charges = Double.parseDouble(txnDetailsFromIni("GetCharges", ""));
 		double totalAmount = amount + charges;
-		double commission = commonUtils.commissionAndTDS("comm", 20.0, 4.0, 40.0);
-		double tds = commonUtils.commissionAndTDS("tds", 20.0, 4.0, 40.0);
+		double commission = commonUtils.commissionAndTDS("comm", 16.0, 3.0, 40.0);
+		double tds = commonUtils.commissionAndTDS("tds", 16.0, 3.0, 40.0);
 		double newWalletBal = 0.00;
 		newWalletBal = initialWalletBalance - totalAmount + commission - tds;
 		txnDetailsFromIni("StoreComm", String.valueOf(commission));

@@ -45,7 +45,7 @@ public class SwiggyPage extends BasePage {
 	@FindBy(xpath = "//h1[contains(text(),'Cash Management Services (CMS)')]")
 	WebElement pageTitle;
 
-	@FindBy(xpath = "//span[contains(text(),'Swiggy')]/parent::li")
+	@FindBy(xpath = "//span[contains(text(),'Swiggy')]")
 	WebElement swiggyIcon;
 
 	@FindBy(id = "money-transfer-mobile-number")

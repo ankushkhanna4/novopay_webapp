@@ -221,6 +221,82 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
+	public String getRechargeChargesAndComm(String chargeType, String vendor, String type, String operator) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("limitCharges"));
+			String code = "", codePrefix = "";
+			if (chargeType.equalsIgnoreCase("charges")) {
+				codePrefix = "CHARGE_DISPLAY";
+			} else if (chargeType.equalsIgnoreCase("comm")) {
+				codePrefix = "COMM_RET";
+			}
+			if (vendor.equalsIgnoreCase("Gorecharge")) {
+				switch (type) {
+				case "Prepaid":
+					switch (operator) {
+					case "AIRTEL":
+						code = "GORECHARGE_BILLPAY_PREPAID_AIRTEL_" + codePrefix;
+						break;
+					case "BSNL":
+						code = "GORECHARGE_BILLPAY_PREPAID_BSNL_" + codePrefix;
+						break;
+					}
+					break;
+				case "Postpaid":
+					code = "GORECHARGE_BILLPAY_POSTPAID_AIRTEL_" + codePrefix;
+					break;
+				case "DTH":
+					code = "GORECHARGE_BILLPAY_DTH_AIRTEL_" + codePrefix;
+					break;
+				case "Datacard":
+					code = "GORECHARGE_BILLPAY_DATACARD_AIRTEL_" + codePrefix;
+					break;
+				}
+			} else if (vendor.equalsIgnoreCase("Multilink")) {
+				switch (type) {
+				case "Prepaid":
+					switch (operator) {
+					case "AIRTEL":
+						code = "MULTILINK_BILLPAY_PREPAID_RA_" + codePrefix;
+						break;
+					case "Tata DOCOMO":
+						code = "MULTILINK_BILLPAY_PREPAID_RD_" + codePrefix;
+						break;	
+					}
+					break;
+				case "Postpaid":
+					code = "MULTILINK_BILLPAY_POSTPAID_RA_" + codePrefix;
+					break;
+				case "DTH":
+					code = "MULTILINK_BILLPAY_DTH_DA_" + codePrefix;
+					break;
+				case "Datacard":
+					code = "MULTILINK_BILLPAY_DATACARD_RA_" + codePrefix;
+					break;
+				}
+			}
+			String chargeQuery = "SELECT ROUND(`base_charge`/100,2) FROM `limit_charges`.`charge_category_slabs` "
+					+ "WHERE `category_code`='" + code + "'";
+			String commQuery = "SELECT ROUND(`percentage`/100,2) FROM `limit_charges`.`charge_category_slabs` "
+					+ "WHERE `category_code`='" + code + "'";
+			stmt = conn.createStatement();
+			ResultSet rs = null;
+			if (chargeType.equalsIgnoreCase("charges")) {
+				rs = stmt.executeQuery(chargeQuery);
+			} else if (chargeType.equalsIgnoreCase("comm")) {
+				rs = stmt.executeQuery(commQuery);
+			}
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+
 	public String getRemittanceComm(String amount, String category, String partner) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("limitCharges"));
@@ -1505,7 +1581,7 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public String billPaymentDate() throws ClassNotFoundException {
+	public String doTransferDate() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
 			String query = "SELECT DATE_FORMAT(created_on, '%d-%m-%Y %H:%i') FROM service_repo.service_data_audit "

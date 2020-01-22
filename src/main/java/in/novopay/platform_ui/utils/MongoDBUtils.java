@@ -152,7 +152,7 @@ public class MongoDBUtils extends JavaUtils {
 		BasicDBObject billVendor = new BasicDBObject("vendor", vendor);
 
 		coll.updateOne(new BasicDBObject("name", biller), new BasicDBObject("$set", billVendor));
-		System.out.println("Records updated");
+		System.out.println("Record updated to " + billVendor);
 	}
 
 	public String getBillPayTxnStatus(String refNum) {
@@ -169,5 +169,15 @@ public class MongoDBUtils extends JavaUtils {
 			arr.add(str);
 		}
 		return arr.get(0);
+	}
+	
+	public void updateRechargeVendor(String operator, String vendor) {
+
+		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
+
+		BasicDBObject rechargeVendor = new BasicDBObject("vendor", vendor.toUpperCase());
+
+		coll.updateMany(new BasicDBObject("name", operator), new BasicDBObject("$set", rechargeVendor));
+		System.out.println("Record updated to " + rechargeVendor);
 	}
 }

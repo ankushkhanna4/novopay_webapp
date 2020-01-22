@@ -47,7 +47,7 @@ public class FullertonPage extends BasePage {
 	@FindBy(xpath = "//h1[contains(text(),'Cash Management Services (CMS)')]")
 	WebElement pageTitle;
 
-	@FindBy(xpath = "//span[contains(text(),'Fullerton')]/parent::li")
+	@FindBy(xpath = "//span[contains(text(),'Fullerton')]")
 	WebElement fullertonIcon;
 
 	@FindBy(id = "money-transfer-emp-id")

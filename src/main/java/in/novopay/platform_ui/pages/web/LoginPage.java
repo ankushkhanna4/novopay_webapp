@@ -105,10 +105,6 @@ public class LoginPage extends BasePage {
 				System.out.println("clicking on LOGIN button");
 				waitUntilElementIsClickableAndClickTheElement(login);
 
-				if (mobNumFromSheet.startsWith("RBL") || mobNumFromSheet.startsWith("AXIS")
-						|| mobNumFromSheet.startsWith("FINO") || mobNumFromSheet.startsWith("YBL")) {
-					mobNumFromSheet = getLoginMobileFromIni(mobNumFromSheet);
-				}
 				if (mobNumValidation(mobNumFromSheet).equalsIgnoreCase("valid")
 						&& checkMobNumExistence(mobNumFromSheet).equalsIgnoreCase("exists")
 						&& (usrData.get("MPIN").equals("1111") || usrData.get("MPIN").equals("2222"))) {

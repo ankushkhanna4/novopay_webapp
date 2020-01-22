@@ -150,6 +150,12 @@ public class CommonUtils extends BasePage {
 		System.out.println("Please wait...");
 	}
 
+	// Wait for screen to complete loading
+	public void waitForLoader() {
+		waitUntilElementIsInvisible("//i[contains(@class,'processing-loader')]");
+		System.out.println("Please wait...");
+	}
+
 	// To refresh the wallet balance
 	public void refreshBalance() throws InterruptedException {
 		waitUntilElementIsClickableAndClickTheElement(refreshButton);
