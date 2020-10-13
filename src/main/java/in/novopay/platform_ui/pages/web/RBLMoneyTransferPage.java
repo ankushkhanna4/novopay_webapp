@@ -223,6 +223,9 @@ public class RBLMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(text(),'Transferred Amount:')]/parent::div/following-sibling::div")
 	WebElement remittanceTxnScreenTxnAmount;
 
+	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(text(),'Transaction Amount:')]/parent::div/following-sibling::div")
+	WebElement remittanceWarnScreenTxnAmount;
+
 	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(text(),'Charges:')]/parent::div/following-sibling::div")
 	WebElement remittanceTxnScreenCharges;
 
@@ -337,6 +340,12 @@ public class RBLMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//li[3][contains(@class,'notifications')]/span[2]")
 	WebElement fcmContent3;
 
+	@FindBy(xpath = "//span[contains(text(),'Report')]")
+	WebElement reports;
+
+	@FindBy(xpath = "//label[contains(text(),'Select Report to View')]")
+	WebElement reportsPage;
+
 	// Load all objects
 	public RBLMoneyTransferPage(WebDriver wdriver) {
 		super(wdriver);
@@ -348,14 +357,14 @@ public class RBLMoneyTransferPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
-			getPartner(partner());
+			commonUtils.waitForSpinner();
 
-			String moneyTransferXpath = "//a[@href='/newportal/" + partner().toLowerCase()
-					+ "-transfer']/span[contains(text(),'Money Transfer')]";
+			String moneyTransferXpath = "//a[@href='/newportal/np-money-transfer']/span[contains(text(),'Money Transfer')]";
 			WebElement moneyTransfer = wdriver.findElement(By.xpath(moneyTransferXpath));
 
 			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
 				commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle);
+				Thread.sleep(4000);
 			}
 
 			// Update wallet balance as per the scenarios
@@ -528,8 +537,8 @@ public class RBLMoneyTransferPage extends BasePage {
 					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
 						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-							// waitUntilElementIsVisible(toasterMsg));
-							// System.out.println(toasterMsg.getText());
+							waitUntilElementIsVisible(toasterMsg);
+							System.out.println(toasterMsg.getText());
 						} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 							waitUntilElementIsVisible(addBeneFailedScreen);
 							System.out.println(addBeneFailedMessage.getText());
@@ -548,8 +557,8 @@ public class RBLMoneyTransferPage extends BasePage {
 								waitUntilElementIsClickableAndClickTheElement(confirmOTP);
 								System.out.println("Confirm button clicked");
 								commonUtils.waitForSpinner();
-								// waitUntilElementIsVisible(toasterMsg));
-								// System.out.println(toasterMsg.getText());
+								waitUntilElementIsVisible(toasterMsg);
+								System.out.println(toasterMsg.getText());
 							}
 						}
 					}
@@ -709,8 +718,7 @@ public class RBLMoneyTransferPage extends BasePage {
 				clickElement(genderFemale);
 			}
 			System.out.println("Gender selected");
-		} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")
-				|| usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("GetBeneNum")) { // when customer is existing
+		} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
 			System.out.println("Existing customer mobile number entered");
 			commonUtils.waitForSpinner();
 			limitCheck(usrData); // check limit remaining
@@ -789,8 +797,8 @@ public class RBLMoneyTransferPage extends BasePage {
 		commonUtils.waitForSpinner();
 		if (buttonName.equalsIgnoreCase("Confirm")) {
 			if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-				// waitUntilElementIsVisible(toasterMsg));
-				// System.out.println(toasterMsg.getText());
+				waitUntilElementIsVisible(toasterMsg);
+				System.out.println(toasterMsg.getText());
 			} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 				waitUntilElementIsVisible(deleteBeneFailedScreen);
 				System.out.println(deleteBeneFailedMessage.getText());
@@ -808,8 +816,8 @@ public class RBLMoneyTransferPage extends BasePage {
 					waitUntilElementIsClickableAndClickTheElement(deleteBeneConfirmOTP);
 					System.out.println("Confirm button clicked");
 					commonUtils.waitForSpinner();
-					// waitUntilElementIsVisible(toasterMsg));
-					// System.out.println(toasterMsg.getText());
+					waitUntilElementIsVisible(toasterMsg);
+					System.out.println(toasterMsg.getText());
 				}
 			}
 		}
@@ -892,21 +900,24 @@ public class RBLMoneyTransferPage extends BasePage {
 
 				// Verify the details on transaction screen
 				if (remittanceTxnScreen.getText().equalsIgnoreCase("Success!")) {
-					if (remittanceTxnScreenType.getAttribute("class").contains("completed")) {
-						assertionOnSuccessScreen(usrData);
-						if (usrData.get("ASSERTION").equalsIgnoreCase("EnableQueuingCheck")) {
-							Assert.assertNull(dbUtils.verifyIfQueuingIsEnabled(partner()));
-							System.out.println("Queuing auto-enabled");
-						}
-					} else if (remittanceTxnScreenType.getAttribute("class").contains("ongoing")) {
-						assertionOnWarnScreen(usrData);
-						if (usrData.get("ASSERTION").equalsIgnoreCase("DisableQueuingCheck")) {
-							Thread.sleep(90000);
-							Assert.assertEquals("Auto disabled, based on " + dbUtils.getPaymentRefCode(partner()),
-									dbUtils.verifyIfQueuingIsDisabled(usrData, partner()));
-							System.out.println("Queuing auto-disabled");
-						}
+//					if (remittanceTxnScreenType.getAttribute("class").contains("completed")) {
+					assertionOnSuccessScreen(usrData);
+					if (usrData.get("ASSERTION").equalsIgnoreCase("EnableQueuingCheck")) {
+						Assert.assertNull(dbUtils.verifyIfQueuingIsEnabled(partner()));
+						System.out.println("Queuing auto-enabled");
 					}
+				} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Pending!")
+						|| remittanceTxnScreen.getText().equalsIgnoreCase("Partial Success!")) {
+//						if (remittanceTxnScreenType.getAttribute("class").contains("ongoing")) {
+					assertionOnWarnScreen(usrData);
+					if (usrData.get("ASSERTION").equalsIgnoreCase("DisableQueuingCheck")) {
+						Thread.sleep(90000);
+						Assert.assertEquals("Auto disabled, based on " + dbUtils.getPaymentRefCode(partner()),
+								dbUtils.verifyIfQueuingIsDisabled(usrData, partner()));
+						System.out.println("Queuing auto-disabled");
+					}
+				}
+				if (!remittanceTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 					assertionOnSMS(usrData);
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Check Limit")) {
 						limitCheck(usrData); // check limit remaining
@@ -975,6 +986,7 @@ public class RBLMoneyTransferPage extends BasePage {
 							remittanceTxnScreenRetryButton.click();
 							System.out.println("Retry button clicked");
 							commonUtils.waitForSpinner();
+							Thread.sleep(1000);
 							waitUntilElementIsVisible(MPINScreen);
 							System.out.println("MPIN screen displayed");
 							Thread.sleep(1000);
@@ -986,7 +998,11 @@ public class RBLMoneyTransferPage extends BasePage {
 							commonUtils.processingScreen();
 							waitUntilElementIsVisible(remittanceTxnScreen);
 							System.out.println("Txn screen displayed");
-							assertionOnSuccessScreen(usrData);
+							try {
+								assertionOnSuccessScreen(usrData);
+							} catch (AssertionError e) {
+								assertionOnWarnScreen(usrData);
+							}
 							remittanceTxnScreenDoneButton.click();
 							System.out.println("Done button clicked");
 							if (usrData.get("ASSERTION").contains("FCM")) {
@@ -1043,8 +1059,8 @@ public class RBLMoneyTransferPage extends BasePage {
 		double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 		double charges = Double.parseDouble(txnDetailsFromIni("GetCharges", ""));
 		double totalAmount = amount + charges;
-		double commission = commonUtils.commissionAndTDS("comm", 16.0, 3.0, 40.0);
-		double tds = commonUtils.commissionAndTDS("tds", 16.0, 3.0, 40.0);
+		double commission = commonUtils.commissionAndTDS("comm", 25, 3.5, 0.4);
+		double tds = commonUtils.commissionAndTDS("tds", 25, 3.5, 0.4);
 		double newWalletBal = 0.00;
 		newWalletBal = initialWalletBalance - totalAmount + commission - tds;
 		txnDetailsFromIni("StoreComm", String.valueOf(commission));
@@ -1061,7 +1077,7 @@ public class RBLMoneyTransferPage extends BasePage {
 	// Verify details on failed screen
 	public void assertionOnFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(remittanceTxnScreenMessage.getText(), "Funds transfer failed");
+		Assert.assertEquals(remittanceTxnScreenMessage.getText(), "Funds Transfer Failed");
 		System.out.println(remittanceTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(remittanceTxnScreenFailedAmount.getText()), usrData.get("AMOUNT") + ".00");
 		System.out.println("Failed Amount: " + replaceSymbols(remittanceTxnScreenFailedAmount.getText()));
@@ -1088,19 +1104,24 @@ public class RBLMoneyTransferPage extends BasePage {
 		if (dbUtils.verifyIfQueuingIsEnabled(partner()) == null
 				&& dbUtils.verifyIfTxnIsQueued(partner()).equalsIgnoreCase("Queued")) {
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
-					"Transactions have been accepted for processing, Beneficiary Bank switch down, please check the status after some time");
+					"Status of the Pending Transaction will be updated within 24-48 hours");
 			txnDetailsFromIni("StoreTxnRefNo", dbUtils.paymentRefCode(partner()));
+		} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Partial Success!")) {
+			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
+					"Funds Transfer Partially Successful. Re-initiate failed transactions after sometime.");
+			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
+			System.out.println("Failed Amount: " + replaceSymbols(remittanceTxnScreenFailedAmount.getText()));
 		} else {
-			Assert.assertEquals(remittanceTxnScreenMessage.getText(), "Funds transferred successfully");
+			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
+					"Status of the Pending Transaction will be updated within 24-48 hours");
 			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
 		}
 		System.out.println(remittanceTxnScreenMessage.getText());
 
-		String txfAmount = replaceSymbols(remittanceTxnScreenTxnAmount.getText());
+		String txfAmount = replaceSymbols(remittanceWarnScreenTxnAmount.getText());
 		System.out.println("Transferred Amount: " + txfAmount);
 
 		txnDetailsFromIni("StoreTxfAmount", txfAmount);
-		System.out.println("Failed Amount: " + replaceSymbols(remittanceTxnScreenFailedAmount.getText()));
 		String chrges = dbUtils.getRemittanceCharges(txfAmount, dbUtils.getChargeCategory(mobileNumFromIni()),
 				partner());
 		Assert.assertEquals(replaceSymbols(remittanceTxnScreenCharges.getText()), chrges);
@@ -1205,13 +1226,20 @@ public class RBLMoneyTransferPage extends BasePage {
 					WebElement status91Element = wdriver.findElement(By.xpath(status91ElementXpath));
 
 					if (!status91Element.getText().contains("(91)")) {
-						String statusElementXpath = "//table/tbody[" + i + "]/tr/div/div[" + j + "]/label/i";
-						WebElement statusElement = wdriver.findElement(By.xpath(statusElementXpath));
+						String statusElementXpath = "//table/tbody[" + i + "]/tr/div/div[" + j + "]/label";
+						WebElement statusElement;
+						try {
+							statusElement = wdriver.findElement(By.xpath(statusElementXpath + "/i"));
+						} catch (Exception e) {
+							statusElement = wdriver.findElement(By.xpath(statusElementXpath + "/img"));
+						}
 
 						if (statusElement.getAttribute("class").contains("success")) {
 							System.out.print("✔");
 						} else if (statusElement.getAttribute("class").contains("fail")) {
 							System.out.print("✖");
+						} else {
+							System.out.println("!");
 						}
 					} else if (status91Element.getText().contains("(91)")) {
 						System.out.print("(91)");
@@ -1327,8 +1355,6 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	// FCM assertion
 	public void assertionOnFCM(Map<String, String> usrData) throws ClassNotFoundException {
-		String successSummaryFCMHeading = "Cash To Account: Success";
-		String failSummaryFCMHeading = "Cash To Account: Failed";
 		String successFCMHeading = "Cash To Account : SUCCESS";
 		String failFCMHeading = "Cash To Account : FAIL";
 		String beneSuccessFCMHeading = "Beneficiary Validation:SUCCESS";
@@ -1339,10 +1365,6 @@ public class RBLMoneyTransferPage extends BasePage {
 		String balance = df.format(commonUtils.getInitialBalance("retailer"));
 		double beneAmount = Double.parseDouble(dbUtils.getBeneAmount(partner().toUpperCase()));
 		String beneAmt = df.format(beneAmount);
-		String successSummaryFCMContent = "Cash to account request has been processed. Rs " + usrData.get("AMOUNT")
-				+ ".00 transferred successfully.";
-		String failSummaryFCMContent = "Cash to account request has been processed. However, Rs "
-				+ usrData.get("AMOUNT") + ".00 transfer failed.";
 		String successFCMContent = "Customer: " + getCustomerDetailsFromIni("ExistingNum") + " Money Transfer of ₹"
 				+ usrData.get("AMOUNT") + ".00" + " has been accepted for IFSC:" + usrData.get("BENEIFSC") + ", A/C:"
 				+ getAccountNumberFromIni("GetNum") + ", charges ₹" + txnDetailsFromIni("GetCharges", "")
@@ -1367,31 +1389,13 @@ public class RBLMoneyTransferPage extends BasePage {
 
 		switch (usrData.get("ASSERTION")) {
 		case "Success FCM":
-			try {
-				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
-				fcmMethod2(successFCMHeading, successFCMContent);
-			} catch (AssertionError e) {
-				fcmMethod1(successFCMHeading, successFCMContent);
-				fcmMethod2(successSummaryFCMHeading, successSummaryFCMContent);
-			}
+			fcmMethod1(successFCMHeading, successFCMContent);
 			break;
 		case "Failed FCM":
-			try {
-				fcmMethod1(failSummaryFCMHeading, failSummaryFCMContent);
-				fcmMethod2(failFCMHeading, failFCMContent);
-			} catch (AssertionError e) {
-				fcmMethod1(failFCMHeading, failFCMContent);
-				fcmMethod2(failSummaryFCMHeading, failSummaryFCMContent);
-			}
+			fcmMethod1(failFCMHeading, failFCMContent);
 			break;
 		case "Queued FCM":
-			try {
-				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
-				fcmMethod2(successFCMHeading, queuedTxnFCMContent);
-			} catch (AssertionError e) {
-				fcmMethod2(successFCMHeading, queuedTxnFCMContent);
-				fcmMethod1(successSummaryFCMHeading, successSummaryFCMContent);
-			}
+			fcmMethod1(successFCMHeading, queuedTxnFCMContent);
 			break;
 		case "BeneSuccess FCM":
 			fcmMethod1(beneSuccessFCMHeading, beneSuccessFCMContent);
@@ -1408,10 +1412,6 @@ public class RBLMoneyTransferPage extends BasePage {
 				Assert.assertEquals(fcmContent2.getText(), queuingEnableFCMContent);
 				System.out.println(fcmHeading2.getText());
 				System.out.println(fcmContent2.getText());
-			} else if (fcmHeading3.getText().equals(queuingEnableFCMHeading)) {
-				Assert.assertEquals(fcmContent3.getText(), queuingEnableFCMContent);
-				System.out.println(fcmHeading3.getText());
-				System.out.println(fcmContent3.getText());
 			}
 			break;
 		case "DisableQueuing FCM":
@@ -1432,13 +1432,6 @@ public class RBLMoneyTransferPage extends BasePage {
 		Assert.assertEquals(fcmContent2.getText(), content);
 		System.out.println(fcmHeading2.getText());
 		System.out.println(fcmContent2.getText());
-	}
-
-	public void fcmMethod3(String heading, String content) {
-		Assert.assertEquals(fcmHeading3.getText(), heading);
-		Assert.assertEquals(fcmContent3.getText(), content);
-		System.out.println(fcmHeading3.getText());
-		System.out.println(fcmContent3.getText());
 	}
 
 	// Get Partner name

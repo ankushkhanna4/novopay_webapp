@@ -321,8 +321,20 @@ public class SettlementPage extends BasePage {
 							processInBackgroundButton.click();
 							System.out.println("Process in Background button clicked");
 						} else {
-							waitUntilElementIsVisible(settlementTxnScreen);
-							System.out.println("Txn screen displayed");
+							try {
+								waitUntilElementIsVisible(settlementTxnScreen);
+								System.out.println("Txn screen displayed");
+							} catch (Exception e) {
+								System.out.println("30 sec wait time elapsed");
+								try {
+									waitUntilElementIsVisible(settlementTxnScreen);
+									System.out.println("Txn screen displayed");
+								} catch (Exception f) {
+									System.out.println("60 sec wait time elapsed");
+									waitUntilElementIsVisible(settlementTxnScreen);
+									System.out.println("Txn screen displayed");
+								}
+							}
 
 							// Verify the details on transaction screen
 							if (settlementTxnScreen.getText().equalsIgnoreCase("Success!")
@@ -454,7 +466,14 @@ public class SettlementPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnWarnScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request deemed successful.");
+		try {
+			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request deemed successful.");
+		} catch (AssertionError e) {
+			Assert.assertEquals(
+					settlementTxnScreenMessage.getText().substring(0, 32)
+							+ settlementTxnScreenMessage.getText().substring(33),
+					"Your Bank does not support IMPS." + "Transaction will be settled through NEFT in 2-3 hours.");
+		}
 		System.out.println(settlementTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenRequestedAmount.getText()),
 				usrData.get("AMOUNT") + ".00");
@@ -524,13 +543,13 @@ public class SettlementPage extends BasePage {
 				+ ", available Withdrawable balance: INR " + getWalletBalanceFromIni("GetCashout", "");
 
 		if (usrData.get("ASSERTION").equalsIgnoreCase("SMS IMPS Success")) {
-			Assert.assertEquals(SMSsuccessIMPS, dbUtils.sms());
+			Assert.assertEquals(dbUtils.sms(), SMSsuccessIMPS);
 			System.out.println(SMSsuccessIMPS);
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("SMS IMPS Pending")) {
-			Assert.assertEquals(SMSpendingIMPS, dbUtils.sms());
+			Assert.assertEquals(dbUtils.sms(), SMSpendingIMPS);
 			System.out.println(SMSpendingIMPS);
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("SMS NEFT Success")) {
-			Assert.assertEquals(SMSsuccessNEFT, dbUtils.sms());
+			Assert.assertEquals(dbUtils.sms(), SMSsuccessNEFT);
 			System.out.println(SMSsuccessNEFT);
 		}
 	}

@@ -84,6 +84,12 @@ public class SelfLoadRequestPage extends BasePage {
 	@FindBy(id = "self-load-request-txn-number")
 	WebElement txnNumber;
 
+	@FindBy(xpath = "//*[@id='self-load-request-branch-name']//span[@role='combobox']")
+	WebElement branch;
+
+	@FindBy(xpath = "//*[@type='search']")
+	WebElement dropDownSearch;
+
 	@FindBy(id = "self-load-request-amount-ip")
 	WebElement amount;
 
@@ -179,13 +185,28 @@ public class SelfLoadRequestPage extends BasePage {
 					waitUntilElementIsClickableAndClickTheElement(cdmRadioButton);
 					System.out.println("CDM radio button clicked");
 
-					waitUntilElementIsClickableAndClickTheElement(termNumber);
-					termNumber.sendKeys(getTermNumberFromIni(usrData.get("TERM")));
-					System.out.println("Term number entered");
+					if (usrData.get("ACCOUNT").contains("AXIS")) {
+						waitUntilElementIsClickableAndClickTheElement(termNumber);
+						termNumber.sendKeys(getTermNumberFromIni(usrData.get("TERM")));
+						System.out.println("Term number entered");
+					} else if (usrData.get("ACCOUNT").contains("Federal")) {
+						waitUntilElementIsClickableAndClickTheElement(branch);
+						System.out.println("Drop down clicked");
+						waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
+						dropDownSearch.sendKeys(usrData.get("TERM"));
+						System.out.println("Typing " + usrData.get("TERM"));
 
-					waitUntilElementIsClickableAndClickTheElement(txnNumber);
-					txnNumber.sendKeys(getTxnNumberFromIni(usrData.get("TXNNUM")));
-					System.out.println("Txn number entered");
+						String reportXpath = "//li[text()='" + usrData.get("TERM") + "']";
+						WebElement reportDropDown = wdriver.findElement(By.xpath(reportXpath));
+						reportDropDown.click();
+						System.out.println(usrData.get("TERM") + " drop down selected");
+					}
+
+					if (usrData.get("ACCOUNT").contains("AXIS") || usrData.get("ACCOUNT").contains("Federal")) {
+						waitUntilElementIsClickableAndClickTheElement(txnNumber);
+						txnNumber.sendKeys(getTxnNumberFromIni(usrData.get("TXNNUM")));
+						System.out.println("Txn number entered");
+					}
 
 				} else if (usrData.get("OPTIONS").equalsIgnoreCase("BD")) {
 					waitUntilElementIsClickableAndClickTheElement(bankRadioButton);
@@ -198,7 +219,13 @@ public class SelfLoadRequestPage extends BasePage {
 				System.out.println("Amount entered");
 
 				waitUntilElementIsClickableAndClickTheElement(date);
-				date.sendKeys(getTodaysDateOfMonth());
+				String dayMonth = "";
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Future Date")) {
+					dayMonth = getTodaysDateOfMonth(1) + getTodaysMonth();
+				} else {
+					dayMonth = getTodaysDateOfMonth(0) + getTodaysMonth();
+				}
+				date.sendKeys(dayMonth);
 				System.out.println("DATE entered");
 
 				commonUtils.uploadFile(uploadFile);
@@ -208,7 +235,9 @@ public class SelfLoadRequestPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(submitButton);
 				System.out.println("Submit button clicked");
 
-				if (usrData.get("REQUESTBUTTON").equalsIgnoreCase("Submit")) {
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Future Date")) {
+
+				} else if (usrData.get("REQUESTBUTTON").equalsIgnoreCase("Submit")) {
 					if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 						waitUntilElementIsVisible(processingScreen);
 						System.out.println("Processing screen displayed");

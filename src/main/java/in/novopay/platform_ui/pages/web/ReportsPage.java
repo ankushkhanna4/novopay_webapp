@@ -135,9 +135,8 @@ public class ReportsPage extends BasePage {
 				waitUntilElementIsVisible(bankNameColumn);
 			} else if (usrData.get("REPORTTYPE").equalsIgnoreCase("Account Statement")) {
 				waitUntilElementIsVisible(txndateColumn);
-			} else {
-				waitUntilElementIsVisible(txnDateColumn);
 			}
+			Thread.sleep(2000);
 			if (body.getText().equalsIgnoreCase("No Record Found")) {
 				System.out.println(body.getText());
 			} else {

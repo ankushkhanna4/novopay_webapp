@@ -50,7 +50,7 @@ public class FOPWalletLoadTest {
 		wFOPWalletLoadPage = new FOPWalletLoadPage(wdriver);
 		wFOPWalletLoadPage.fOPWalletLoadPage(usrData);
 		mBasePage.closeTab();
-		mBasePage.switchTab();
+		mBasePage.switchTab(0);
 	}
 
 	@AfterClass

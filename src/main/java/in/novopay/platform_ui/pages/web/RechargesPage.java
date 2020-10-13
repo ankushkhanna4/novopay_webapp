@@ -316,7 +316,7 @@ public class RechargesPage extends BasePage {
 
 				waitUntilElementIsClickableAndClickTheElement(planAmount);
 				System.out.println("Plan Amount selected");
-				
+
 				if (usrData.get("ASSERTION").contains(" and Edit")) {
 					waitUntilElementIsClickableAndClickTheElement(mobileAmount);
 					mobileAmount.clear();
@@ -465,7 +465,7 @@ public class RechargesPage extends BasePage {
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (rechTxnScreen.getText().equalsIgnoreCase("Success!")) {
-			Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction completed successfully.");
+			Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction Completed Successfully.");
 		} else if (rechTxnScreen.getText().equalsIgnoreCase("Pending!")) {
 			Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction is pending.");
 		}
@@ -538,10 +538,10 @@ public class RechargesPage extends BasePage {
 			rechargeType = "Mobile";
 			id = rechargeDataFromIni("GetMobNum", "");
 		}
-		String successSms = "Your " + mobiletype + " recharge of " + rechargeDataFromIni("GetAmount", "") + " to "
+		String successSms = "Your " + mobiletype + " recharge of " + rechargeDataFromIni("GetAmount", "") + ".00 to "
 				+ rechargeType + " " + id + " is successful. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "")
 				+ " on " + dbUtils.doTransferDate() + " via cash.";
-		String pendingSms = "Your " + mobiletype + " recharge of " + rechargeDataFromIni("GetAmount", "") + " to "
+		String pendingSms = "Your " + mobiletype + " recharge of " + rechargeDataFromIni("GetAmount", "") + ".00 to "
 				+ rechargeType + " " + id + " is pending. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on "
 				+ dbUtils.doTransferDate() + ". Please check the status after some time.";
 		if (usrData.get("ASSERTION").contains("Success")) {
@@ -599,20 +599,28 @@ public class RechargesPage extends BasePage {
 	}
 
 	public void assertionOnFCM(Map<String, String> usrData) throws ClassNotFoundException {
-		String type = "", status = "";
-		if (usrData.get("MOBILETYPE").equalsIgnoreCase("DTH")) {
-			type = "Dth";
-		} else {
-			type = usrData.get("MOBILETYPE");
-		}
+		String message = "", status = "";
 		if (usrData.get("ASSERTION").contains("Success")) {
 			status = "successful";
+			message = "";
 		} else if (usrData.get("ASSERTION").contains("Pending")) {
 			status = "pending";
+			message = ". Please do a status enquiry after some time.";
 		}
-		String fcmHeading = "Recharge";
-		String fcmContent = type + " recharge of Rs. " + rechargeDataFromIni("GetAmount", "") + " is " + status
-				+ ". Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate();
+		String fcmHeading = "Recharge", fcmContent = "";
+		if (usrData.get("MOBILETYPE").equalsIgnoreCase("DTH")) {
+			fcmContent = "Dth recharge of Rs. " + rechargeDataFromIni("GetAmount", "") + ".00 is " + status
+					+ ". Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate()
+					+ message;
+		} else if (usrData.get("MOBILETYPE").equalsIgnoreCase("Prepaid")) {
+			fcmContent = "Prepaid recharge of Rs. " + rechargeDataFromIni("GetAmount", "") + ".00 is " + status
+					+ ". Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate()
+					+ message;
+		} else {
+			fcmContent = usrData.get("MOBILETYPE") + " recharge of Rs. " + rechargeDataFromIni("GetAmount", "")
+					+ ".00 is " + status + ". Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on "
+					+ dbUtils.doTransferDate() + message;
+		}
 		Assert.assertEquals(fcmHeading1.getText(), fcmHeading);
 		Assert.assertEquals(fcmContent1.getText(), fcmContent);
 		System.out.println(fcmHeading1.getText());

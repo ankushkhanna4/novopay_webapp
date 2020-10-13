@@ -221,7 +221,8 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public String getRechargeChargesAndComm(String chargeType, String vendor, String type, String operator) throws ClassNotFoundException {
+	public String getRechargeChargesAndComm(String chargeType, String vendor, String type, String operator)
+			throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("limitCharges"));
 			String code = "", codePrefix = "";
@@ -261,7 +262,7 @@ public class DBUtils extends JavaUtils {
 						break;
 					case "Tata DOCOMO":
 						code = "MULTILINK_BILLPAY_PREPAID_RD_" + codePrefix;
-						break;	
+						break;
 					}
 					break;
 				case "Postpaid":
@@ -297,22 +298,16 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public String getRemittanceComm(String amount, String category, String partner) throws ClassNotFoundException {
+	public String getRemittanceComm(double amount, String code, int category) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("limitCharges"));
-			String code = "";
-			if (partner.equalsIgnoreCase("FINO")) {
-				code = "FINO_REMIT_IMPS_AGENT_COMM";
-			} else if (partner.equalsIgnoreCase("YBL")) {
-				code = "YBL_REMIT_IMPS_AGENT_COMM";
-			}
-			if (Integer.parseInt(category) == 4) {
+			if (category == 4) {
 				code = code + "_KRO";
 			}
 			String query = "SELECT IF(" + amount + "*`percentage`/10000>`min_charge`/100, ROUND(" + amount
 					+ "*`percentage`/10000,2), ROUND(`min_charge`/100,2)) comm FROM `limit_charges`.`charge_category_slabs` "
-					+ "WHERE `category_code`='" + code + "' AND " + amount
-					+ " BETWEEN `slab_from_amount`/100+1 AND `slab_to_amount`/100;";
+					+ "WHERE `category_code`='" + code + "_REMIT_IMPS_AGENT_COMM' AND " + amount
+					+ " BETWEEN `slab_from_amount`/100+1 AND `slab_to_amount`/100 AND `min_charge` > 0";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -439,6 +434,7 @@ public class DBUtils extends JavaUtils {
 					+ "' WHERE partner = '" + partner + "' AND error_code = '" + code + "';";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
+
 		} catch (SQLException sqe) {
 			System.out.println("Error connecting DB..!");
 			sqe.printStackTrace();
@@ -546,6 +542,21 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("rblSimulator"));
 			stmt = conn.createStatement();
 			stmt.execute(sql);
+			System.out.println(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void updateRemittanceOutwardStatus(String paymentRefCode, String status, String refundStatus)
+			throws ClassNotFoundException {
+		try {
+			String sql = "UPDATE `np_remittance`.`remittance_outward_table` SET `status` = '" + status
+					+ "', `refund_status` = '" + refundStatus + "' WHERE `payment_ref_code` = '" + paymentRefCode + "'";
+			conn = createConnection(configProperties.get("rblSimulator"));
+			stmt = conn.createStatement();
+			stmt.execute(sql);
+			System.out.println(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -721,10 +732,10 @@ public class DBUtils extends JavaUtils {
 					+ "WHERE `category_code` = 'LIMITS_REMITTER_" + partner + "_NO_KYC')-(SELECT IF((SELECT "
 					+ "SUM(txn_amount) FROM `limit_charges`.`entity_consumed_limits` "
 					+ "WHERE category = 'LIMITS_REMITTER_" + partner + "_NO_KYC' AND entity_id = '" + mobNum
-					+ "' AND is_reversed = '0' AND txn_date LIKE '2019-" + month
+					+ "' AND is_reversed = '0' AND txn_date LIKE '2020-" + month
 					+ "-%') IS NULL, 0, (SELECT SUM(txn_amount) FROM `limit_charges`.`entity_consumed_limits` "
 					+ "WHERE category = 'LIMITS_REMITTER_" + partner + "_NO_KYC' AND entity_id = '" + mobNum
-					+ "' AND is_reversed = '0' AND txn_date LIKE '2019-" + month + "-%')))";
+					+ "' AND is_reversed = '0' AND txn_date LIKE '2020-" + month + "-%')))";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			rs.next();
@@ -1092,10 +1103,10 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("npActor"));
 
 			String query = "SELECT DATE_FORMAT(created_date, '%d-%m-%Y') txn_date, DATE_FORMAT(created_date, '%H:%i') txn_time, "
-					+ "(SELECT SUBSTR(RIGHT(`comment`, 11),1,10) FROM wallet.`m_savings_account_transaction` "
-					+ "ORDER BY id DESC LIMIT 1 OFFSET 3) ref_no, (SELECT SUBSTR(RIGHT(`comment`, 22),1,10) "
+					+ "(SELECT SUBSTR(RIGHT(`comment`, 12),1,11) FROM wallet.`m_savings_account_transaction` "
+					+ "ORDER BY id DESC LIMIT 1 OFFSET 3) ref_no, (SELECT SUBSTR(RIGHT(`comment`, 23),1,10) "
 					+ "FROM wallet.`m_savings_account_transaction` ORDER BY id DESC LIMIT 1 OFFSET 3) msisdn, "
-					+ "(SELECT SUBSTR(`comment`,1,LENGTH(`comment`)-24) FROM wallet.`m_savings_account_transaction` "
+					+ "(SELECT SUBSTR(`comment`,1,LENGTH(`comment`)-25) FROM wallet.`m_savings_account_transaction` "
 					+ "ORDER BY id DESC LIMIT 1 OFFSET 3) description, "
 					+ "(SELECT CONCAT('-',SUBSTR(amount,1,LENGTH(`amount`)-4)) "
 					+ "FROM wallet.`m_savings_account_transaction` ORDER BY id DESC LIMIT 1 OFFSET 3) amount, "
@@ -1662,8 +1673,12 @@ public class DBUtils extends JavaUtils {
 			String insertQuery1 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
 					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
 					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
-					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'rbl'));";
+					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'novopay'));";
 			String insertQuery2 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
+					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
+					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
+					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'rbl'));";
+			String insertQuery3 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
 					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
 					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
 					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = '" + contract
@@ -1674,7 +1689,8 @@ public class DBUtils extends JavaUtils {
 			System.out.println("Deleting all contracts");
 			stmt.executeUpdate(insertQuery1);
 			stmt.executeUpdate(insertQuery2);
-			System.out.println("Inserting " + contract.toLowerCase() + " along with rbl");
+			stmt.executeUpdate(insertQuery3);
+			System.out.println("Inserting " + contract.toLowerCase() + " along with rbl and novopay");
 		} catch (SQLException sqe) {
 			System.out.println("Duplicate entry for " + contract);
 		}
@@ -1686,6 +1702,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 
 			List<String> org_code = new ArrayList<String>();
+			org_code.add("novopay");
 			org_code.add("rbl");
 			org_code.add("ybl");
 			org_code.add("paytm");
@@ -1696,6 +1713,10 @@ public class DBUtils extends JavaUtils {
 			org_code.add("wallet");
 			org_code.add("pg-wallet");
 			org_code.add("gold");
+			org_code.add("INS_CLINIK");
+			org_code.add("INS_ADITYA_BIRLA");
+			org_code.add("equitas");
+			org_code.add("INS_ZOPPER");
 
 			for (String code : org_code) {
 				String insertQuery = "INSERT INTO `contract` (`organization`, `partner_organization`) "
@@ -1767,13 +1788,13 @@ public class DBUtils extends JavaUtils {
 			conn = createConnection(configProperties.get("master"));
 			String query = "UPDATE master.organization_attribute SET attr_value = '" + partner
 					+ "' WHERE orgnization_id = (SELECT organization FROM master.user "
-					+ "WHERE id = (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-					+ "')) AND attr_key = 'WALLET_MANAGED_BY_BANK';";
+					+ "WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "') AND `status` = 'ACTIVE') AND attr_key = 'AEPS_PARTNER';";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Updating wallet managed by bank as " + partner);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error executing query");
 			sqe.printStackTrace();
 		}
 	}
@@ -1830,5 +1851,21 @@ public class DBUtils extends JavaUtils {
 
 		}
 		return null;
+	}
+
+	public void updateDmtPartner(String partner, String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "UPDATE master.organization_attribute SET attr_value = '" + partner
+					+ "' WHERE orgnization_id = (SELECT organization FROM master.user "
+					+ "WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "') AND `status` = 'ACTIVE') AND attr_key = 'DMT_PARTNER';";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating DMT Partner as " + partner);
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
 	}
 }

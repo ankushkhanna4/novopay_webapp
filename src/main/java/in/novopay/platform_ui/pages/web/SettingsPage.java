@@ -60,7 +60,7 @@ public class SettingsPage extends BasePage {
 	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
 	WebElement pageTitle2;
 	
-	@FindBy(xpath = "//a[@href='/newportal/rbl-transfer']/span[contains(text(),'Money Transfer')]")
+	@FindBy(xpath = "//a[@href='/newportal/np-money-transfer']/span[contains(text(),'Money Transfer')]")
 	WebElement moneyTransfer;
 	
 	@FindBy(xpath = "//span[contains(text(),'Capital First')]/parent::li")
@@ -197,6 +197,7 @@ public class SettingsPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
+			commonUtils.waitForSpinner();
 
 			// Updating org_stlmnt_info table as per test case
 			if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {

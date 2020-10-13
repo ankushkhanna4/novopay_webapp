@@ -59,6 +59,7 @@ public class BasePage extends JavaUtils {
 			System.setProperty("webdriver.chrome.driver", "./drivers/chromedriver.exe");
 			Map<String, Object> prefs = new HashMap<String, Object>();
 			prefs.put("profile.default_content_setting_values.notifications", 1);
+			prefs.put("profile.default_content_settings.geolocation", 1);
 			ChromeOptions options = new ChromeOptions();
 			options.setExperimentalOption("prefs", prefs);
 			wdriver = new ChromeDriver(options);
@@ -116,9 +117,9 @@ public class BasePage extends JavaUtils {
 	/**
 	 * Switch the tab to previous one
 	 */
-	public void switchTab() {
+	public void switchTab(int index) {
 		ArrayList<String> tabs = new ArrayList<String>(wdriver.getWindowHandles());
-		wdriver.switchTo().window(tabs.get(0)); // switch to previous window
+		wdriver.switchTo().window(tabs.get(index)); // switch to previous window
 		System.out.println("Tab is switched to previous one");
 	}
 
@@ -412,18 +413,18 @@ public class BasePage extends JavaUtils {
 	public void scrollElementDown(WebElement scrollbar, WebElement elementToClick) throws InterruptedException {
 //		Actions dragger = new Actions(wdriver);
 		int numberOfPixelsToDragTheScrollbarDown = 50;
-		while (true) {
+//		while (true) {
 			try {
 				// this causes a gradual drag of the scroll bar downwards, 10 units at a time
 //				dragger.moveToElement(scrollbar).clickAndHold().moveByOffset(0, numberOfPixelsToDragTheScrollbarDown)
 //						.release().perform();
 				waitUntilElementIsClickableAndClickTheElement(elementToClick);
-				break;
+//				break;
 			} catch (Exception e1) {
 				numberOfPixelsToDragTheScrollbarDown = numberOfPixelsToDragTheScrollbarDown + 10;
 			}
 		}
-	}
+//	}
 
 	// Scroll down the page
 	public void pageScrollDown() {

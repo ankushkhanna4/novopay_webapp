@@ -7,8 +7,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 
 public class LogoutPage extends BasePage {
+	CommonUtils commonUtils = new CommonUtils(wdriver);
 
 	public LogoutPage(WebDriver wdriver) {
 		super(wdriver);
@@ -23,6 +25,8 @@ public class LogoutPage extends BasePage {
 
 	public void logout(Map<String, String> dataMap) throws AWTException {
 
+		commonUtils.closeToast();
+		
 		waitUntilElementIsClickableAndClickTheElement(logout);
 		System.out.println("logging out");
 		waitUntilElementIsVisible(mobNum);

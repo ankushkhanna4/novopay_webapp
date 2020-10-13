@@ -105,7 +105,7 @@ public class JavaUtils extends LoadableComponent {
 			if (env.equalsIgnoreCase("QA1")) {
 				ini.put("Common", "env", "qa1");
 				ini.put("Common", "webAppUrl", "https://qa1-retailer.novopay.in/");
-				ini.put("Common", "financeOpsUrl", "https://qa1-finance-portal.novopay.in");
+				ini.put("Common", "finOpsUrl", "https://qa1-finance-portal.novopay.in");
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.7:3306/");
 				ini.put("Common", "mongoDbUrl", "192.168.150.7:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "nodecms");
@@ -119,7 +119,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.password", "qazxsw123");
 				configProperties.put("env", "qa1");
 				configProperties.put("webAppUrl", "https://qa1-retailer.novopay.in/");
-				configProperties.put("financeOpsUrl", "https://qa1-finance-portal.novopay.in");
+				configProperties.put("finOpsUrl", "https://qa1-finance-portal.novopay.in");
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.7:3306/");
 				configProperties.put("mongoDbUrl", "192.168.150.7:37017/");
 				configProperties.put("mongoDbUserNameCms", "nodecms");
@@ -134,7 +134,7 @@ public class JavaUtils extends LoadableComponent {
 			} else if (env.equalsIgnoreCase("QA2")) {
 				ini.put("Common", "env", "qa2");
 				ini.put("Common", "webAppUrl", "https://qa2-retailer.novopay.in/");
-				ini.put("Common", "financeOpsUrl", "https://qa2-finance-portal.novopay.in");
+				ini.put("Common", "finOpsUrl", "https://qa2-finance-portal.novopay.in");
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.24:3306/");
 				ini.put("Common", "mongoDbUrl", "192.168.150.24:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "nodecms");
@@ -148,7 +148,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.password", "qazxsw123");
 				configProperties.put("env", "qa2");
 				configProperties.put("webAppUrl", "https://qa2-retailer.novopay.in/");
-				configProperties.put("financeOpsUrl", "https://qa2-finance-portal.novopay.in");
+				configProperties.put("finOpsUrl", "https://qa2-finance-portal.novopay.in");
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.24:3306/");
 				configProperties.put("mongoDbUrl", "192.168.150.24:37017/");
 				configProperties.put("mongoDbUserNameCms", "nodecms");
@@ -163,7 +163,7 @@ public class JavaUtils extends LoadableComponent {
 			} else if (env.equalsIgnoreCase("PP")) {
 				ini.put("Common", "env", "pre-prod");
 				ini.put("Common", "webAppUrl", "https://preretailer.novopay.in/");
-				ini.put("Common", "financeOpsUrl", "https://preprod-finance-portal.novopay.in");
+				ini.put("Common", "finOpsUrl", "https://preprod-finance-portal.novopay.in");
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.2:3306/");
 				ini.put("Common", "mongoDbUrl", "192.168.150.2:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "akhanna");
@@ -177,7 +177,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.password", "akhanna123$");
 				configProperties.put("env", "pre-prod");
 				configProperties.put("webAppUrl", "https://preretailer.novopay.in/");
-				configProperties.put("financeOpsUrl", "https://preprod-finance-portal.novopay.in");
+				configProperties.put("finOpsUrl", "https://preprod-finance-portal.novopay.in");
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.2:3306/");
 				configProperties.put("mongoDbUrl", "192.168.150.2:37017/");
 				configProperties.put("mongoDbUserNameCms", "akhanna");
@@ -189,6 +189,35 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.port", "1024");
 				configProperties.put("server.username", "akhanna");
 				configProperties.put("server.password", "akhanna123$");
+			} else if (env.equalsIgnoreCase("QA1AWS")) {
+				ini.put("Common", "env", "aws-qa1");
+				ini.put("Common", "webAppUrl", "https://aws-qa1-retailer.novopay.in/");
+				ini.put("Common", "finOpsUrl", "https://aws-qa1-finance-portal.novopay.in");
+				ini.put("Common", "dbUrl", "jdbc:mysql://localhost:3306/");
+				ini.put("Common", "mongoDbUrl", "192.168.150.7:37017/");
+				ini.put("Common", "mongoDbUserNameCms", "nodecms");
+				ini.put("Common", "mongoDbPasswordCms", "Novopay#987");
+				ini.put("Common", "mongoDbUserNameBillpay", "akhanna");
+				ini.put("Common", "mongoDbPasswordBillpay", "akhanna123$");
+				ini.put("Common", "server.host.name", "qa1.novopay.in");
+				ini.put("Common", "server.host.ip", "192.168.150.7");
+				ini.put("Common", "server.host.port", "22");
+				ini.put("Common", "server.username", "akhanna");
+				ini.put("Common", "server.password", "qazxsw123");
+				configProperties.put("env", "aws-qa1");
+				configProperties.put("webAppUrl", "https://aws-qa1-retailer.novopay.in/");
+				configProperties.put("finOpsUrl", "https://aws-qa1-finance-portal.novopay.in");
+				configProperties.put("dbUrl", "jdbc:mysql://localhost:3306/");
+				configProperties.put("mongoDbUrl", "192.168.150.7:37017/");
+				configProperties.put("mongoDbUserNameCms", "nodecms");
+				configProperties.put("mongoDbPasswordCms", "Novopay#987");
+				configProperties.put("mongoDbUserNameBillpay", "akhanna");
+				configProperties.put("mongoDbPasswordBillpay", "akhanna123$");
+				configProperties.put("server.host.name", "qa1.novopay.in");
+				configProperties.put("server.host.ip", "192.168.150.7");
+				configProperties.put("server.host.port", "22");
+				configProperties.put("server.username", "akhanna");
+				configProperties.put("server.password", "qazxsw123");
 			}
 			ini.store();
 			BasePage.wdriver = null;
@@ -593,12 +622,23 @@ public class JavaUtils extends LoadableComponent {
 				ini.store();
 			} else if (key.equalsIgnoreCase("FtDueAmount")) {
 				return ini.get("CmsData", "FtDueAmount");
+			} else if (key.equalsIgnoreCase("StoreFinoCMSAmount")) {
+				ini.put("CmsData", "FinoCMSAmount", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("FinoCMSAmount")) {
+				return ini.get("CmsData", "FinoCMSAmount");
+			} else if (key.equalsIgnoreCase("StoreFinoCMSMobNum")) {
+				ini.put("CmsData", "FinoCMSMobNum", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("FinoCMSMobNum")) {
+				return ini.get("CmsData", "FinoCMSMobNum");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
 	public String rechargeDataFromIni(String key, String value) {
 		Ini ini;
 		try {
@@ -623,6 +663,37 @@ public class JavaUtils extends LoadableComponent {
 				ini.store();
 			} else if (key.equalsIgnoreCase("GetAmount")) {
 				return ini.get("RechargeData", "Amount");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String loadMoneyNowDataFromIni(String key, String value) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (key.equalsIgnoreCase("StoreAmount")) {
+				ini.put("LoadMoneyNowData", "Amount", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetAmount")) {
+				return ini.get("LoadMoneyNowData", "Amount");
+			} else if (key.equalsIgnoreCase("StoreMethod")) {
+				ini.put("LoadMoneyNowData", "Method", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetMethod")) {
+				return ini.get("LoadMoneyNowData", "Method");
+			} else if (key.equalsIgnoreCase("StoreOrderId")) {
+				ini.put("LoadMoneyNowData", "OrderId", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetOrderId")) {
+				return ini.get("LoadMoneyNowData", "OrderId");
+			}  else if (key.equalsIgnoreCase("StoreLoadAmount")) {
+				ini.put("LoadMoneyNowData", "LoadAmount", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetLoadAmount")) {
+				return ini.get("LoadMoneyNowData", "LoadAmount");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1078,10 +1149,26 @@ public class JavaUtils extends LoadableComponent {
 		return todaysDate;
 	}
 
-	public String getTodaysDateOfMonth() {
-		int day = Calendar.getInstance(TimeZone.getTimeZone("India")).get(Calendar.DAY_OF_MONTH);
-		String dayOfMonth = String.valueOf(day);
+	public String getTodaysDateOfMonth(int add) {
+		int day = Calendar.getInstance(TimeZone.getTimeZone("India")).get(Calendar.DAY_OF_MONTH) + add;
+		String dayOfMonth = "";
+		if (day < 10) {
+			dayOfMonth = String.valueOf("0" + day);
+		} else {
+			dayOfMonth = String.valueOf(day);
+		}
 		return dayOfMonth;
+	}
+	
+	public String getTodaysMonth() {
+		int month = Calendar.getInstance(TimeZone.getTimeZone("India")).get(Calendar.MONTH) + 1;
+		String currentMonth = "";
+		if (month < 10) {
+			currentMonth = String.valueOf("0" + month);
+		} else {
+			currentMonth = String.valueOf(month);
+		}
+		return currentMonth;
 	}
 
 	public String generateRandomNumber(int number) {
@@ -1634,7 +1721,7 @@ public class JavaUtils extends LoadableComponent {
 		LocalDate localDate = LocalDate.now();
 		return dtf.format(localDate);
 	}
-
+	
 	public void pressEnter() throws AWTException {
 		Robot robot = new Robot();
 		robot.keyPress(KeyEvent.VK_ENTER);

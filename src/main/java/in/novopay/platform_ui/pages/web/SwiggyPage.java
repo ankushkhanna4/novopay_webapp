@@ -291,8 +291,7 @@ public class SwiggyPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
-			Assert.assertEquals(cmsTxnScreenMessage.getText(),
-					"Deposit to Swiggy failed. Transaction reversed successfully.");
+			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Swiggy failed.");
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}

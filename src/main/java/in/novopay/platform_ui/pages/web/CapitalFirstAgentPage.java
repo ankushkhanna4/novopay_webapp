@@ -309,8 +309,7 @@ public class CapitalFirstAgentPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
-			Assert.assertEquals(cmsTxnScreenMessage.getText(),
-					"Deposit to Capital First failed. Transaction reversed successfully.");
+			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Capital First failed.");
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}

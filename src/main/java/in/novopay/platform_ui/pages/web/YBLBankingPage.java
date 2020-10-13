@@ -1200,7 +1200,7 @@ public class YBLBankingPage extends BasePage {
 	public void assertionOnBalanceEnquirySMS(Map<String, String> usrData) throws ClassNotFoundException {
 		String successSMS = "Balance in " + usrData.get("BANKNAME") + " a/c linked with Aadhaar  XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " as on " + dbUtils.aepsTxnDate()
-				+ " IST is Led Bal: INR 5944.85, Ava Bal: INR 5944.85, Ref No: " + txnDetailsFromIni("GetTxnRefNo", "");
+				+ " IST is Led Bal: INR 1576.26, Ava Bal: INR 1576.26, Ref No: " + txnDetailsFromIni("GetTxnRefNo", "");
 
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successSMS, dbUtils.sms());
@@ -1215,7 +1215,7 @@ public class YBLBankingPage extends BasePage {
 
 		String successFCMContent = "Balance in " + usrData.get("BANKNAME") + " a/c linked with Aadhaar XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " as on " + dbUtils.aepsTxnDate()
-				+ " IST is Led Bal: 5944.85, Ava Bal: 5944.85 Response code: (00) SUCCESS Reference No: "
+				+ " IST is Led Bal: 1576.26, Ava Bal: 1576.26 Response code: (00) SUCCESS Reference No: "
 				+ txnDetailsFromIni("GetTxnRefNo", "");
 		String failFCMContent = "Balance Enquiry for customer with Aadhaar XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " has failed : Failed to perform transaction(M3)";

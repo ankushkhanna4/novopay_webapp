@@ -81,15 +81,27 @@ public class LoginPage extends BasePage {
 
 	@FindBy(xpath = "//*[contains(text(),'RESEND OTP')]")
 	WebElement resendOTP;
+	
+	@FindBy(xpath = "//enable-location//button[contains(text(),'Ok')]")
+	WebElement location;
 
 	public void login(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 
 		System.out.println("Retailer WebApp 2.0 Login page displayed");
 
 		try {
+			location.click();
+			System.out.println("Location enabled");
+		} catch (Exception e) {
+			System.out.println("No location pop-up displayed");
+		}
+		try {
 			String mobNumFromSheet = "";
 			if (usrData.get("MOBILENUMBER").equalsIgnoreCase("RetailerMobNum")) {
 				mobNumFromSheet = getLoginMobileFromIni(mobNumFromSheet);
+				if (getPartner("GetPartner").equals("RBL") || getPartner("GetPartner").equalsIgnoreCase("FINO")) {
+					dbUtils.updateDmtPartner(getPartner("GetPartner"), mobNumFromSheet);
+				}
 			} else {
 				mobNumFromSheet = usrData.get("MOBILENUMBER");
 			}
@@ -116,7 +128,9 @@ public class LoginPage extends BasePage {
 					if (usrData.get("OTP").equalsIgnoreCase("Yes")) {
 						txnOtp = getAuthfromIni("LoginOTP");
 					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
+						System.out.println("waiting for Resend OTP button");
 						waitUntilElementIsClickableAndClickTheElement(resendOTP);
+						System.out.println("Resend OTP button clicked");
 						txnOtp = getAuthfromIni("LoginOTP");
 					} else {
 						txnOtp = usrData.get("OTP");

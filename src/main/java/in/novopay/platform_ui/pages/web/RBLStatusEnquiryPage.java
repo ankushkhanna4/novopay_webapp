@@ -38,7 +38,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
 	WebElement pageTitle2;
 
-	@FindBy(xpath = "//a[@href='/newportal/rbl-transfer']/span[contains(text(),'Money Transfer')]")
+	@FindBy(xpath = "//a[@href='/newportal/np-money-transfer']/span[contains(text(),'Money Transfer')]")
 	WebElement moneyTransfer;
 
 	@FindBy(id = "status-enquiry-txn-id")
@@ -180,7 +180,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 		try {
 			if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")
 					|| usrData.get("STATUS").equalsIgnoreCase("Refund")) {
-				updateTxnStatus("3");
+				dbUtils.updateRemittanceOutwardStatus(txnID, "FAIL", "NP_INITIATED");
 			} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
 				updateTxnStatus("1");
 			} else if (usrData.get("STATUS").equalsIgnoreCase("Queued to Success")
@@ -392,21 +392,20 @@ public class RBLStatusEnquiryPage extends BasePage {
 		WebElement statusData = wdriver.findElement(By.xpath(statusXpath));
 		if (usrData.get("STATUS").equalsIgnoreCase("Success")
 				|| usrData.get("STATUS").equalsIgnoreCase("Queued to Success")) {
-			Assert.assertEquals(statusData.getText(),
-					usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID") ? "TXN_SUCCESS" : "SUCCESS");
+			Assert.assertEquals(statusData.getText(), "SUCCESS");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")) {
-			Assert.assertEquals(statusData.getText(), "TXN_REVERSED");
+			Assert.assertEquals(statusData.getText(), "REVERSED");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
-			Assert.assertEquals(statusData.getText(), "91");
+			Assert.assertEquals(statusData.getText(), "PENDING");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
-			Assert.assertEquals(statusData.getText(), "TXN_REVERSAL_INITIATED");
+			Assert.assertEquals(statusData.getText(), "FAILED");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")
 				|| usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
-			Assert.assertEquals(statusData.getText(), "TXN_REVERSED");
+			Assert.assertEquals(statusData.getText(), "REVERSED");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Queued")) {
-			Assert.assertEquals(statusData.getText(), "TXN_INQUEUE");
+			Assert.assertEquals(statusData.getText(), "PENDING");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
-			Assert.assertEquals(statusData.getText(), "TXN_FAIL");
+			Assert.assertEquals(statusData.getText(), "REVERSED");
 		}
 		System.out.println(statusData.getText());
 
@@ -455,7 +454,8 @@ public class RBLStatusEnquiryPage extends BasePage {
 	public void assertionOnTxnScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (usrData.get("STATUS").equalsIgnoreCase("Success") || usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
-			Assert.assertEquals(seTxnSuccessMessage.getText(), "Funds transferred successfully");
+			Assert.assertEquals(seTxnSuccessMessage.getText(),
+					"Funds transferred successfully to " + getBeneNameFromIni("GetBeneName"));
 			System.out.println(seTxnSuccessMessage.getText());
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")
 				|| usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")
@@ -535,7 +535,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 
 	// Get otp from Ini file
 	public String otpFromIni() {
-		return partner().toUpperCase() + "OTP";
+		return partner().toUpperCase() + "RefundOTP";
 	}
 
 }

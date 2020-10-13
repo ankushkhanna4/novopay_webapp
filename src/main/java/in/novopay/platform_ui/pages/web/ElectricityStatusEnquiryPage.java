@@ -181,6 +181,7 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 				Thread.sleep(1000);
 				waitUntilElementIsClickableAndClickTheElement(reportsDropdown);
 				System.out.println("Drop down clicked");
+				Thread.sleep(1000);
 				waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
 				dropDownSearch.sendKeys("Bill Payment - Status Enquiry");
 				System.out.println("Typing Bill Payment - Status Enquiry");
@@ -220,6 +221,9 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 						|| (usrData.get("STATUS").equalsIgnoreCase("Failed")
 								|| usrData.get("STATUS").contains("Pending")
 								|| usrData.get("STATUS").contains("Refunded"))) {
+					if (usrData.get("ASSERTION").equalsIgnoreCase("Print")) {
+						sePrintBtn.click();
+					}
 					seOkBtn.click();
 					if (usrData.get("ASSERTION").equalsIgnoreCase("SMS")) {
 						assertionOnSMS();
@@ -328,6 +332,8 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 
 	public void reportsData(Map<String, String> usrData) throws ClassNotFoundException {
 		String statusXpath = "//tbody/tr[1]/td[6]";
+		commonUtils.waitForSpinner();
+		waitUntilElementIsClickable(wdriver.findElement(By.xpath(statusXpath)));
 		WebElement statusData = wdriver.findElement(By.xpath(statusXpath));
 		Assert.assertEquals(statusData.getText(),
 				mongoDbUtils.getBillPayTxnStatus(txnDetailsFromIni("GetTxnRefNo", "")));

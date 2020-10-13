@@ -337,7 +337,7 @@ public class FullertonPage extends BasePage {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(),
-					"Information about this employee is not present in our system. Transaction reversed successfully.");
+					"Information about this employee is not present in our system.");
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}

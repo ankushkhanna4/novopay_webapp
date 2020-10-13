@@ -315,8 +315,7 @@ public class CapitalFirstConsumerPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
-			Assert.assertEquals(cmsTxnScreenMessage.getText(),
-					"Record already exists. Transaction reversed successfully.");
+			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Record already exists.");
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}

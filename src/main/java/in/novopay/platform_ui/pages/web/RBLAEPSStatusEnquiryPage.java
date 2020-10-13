@@ -40,7 +40,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 
 	@FindBy(xpath = "//a[contains(@href,'banking')]/span[2][contains(text(),'Banking')]")
 	WebElement banking;
-	
+
 	@FindBy(id = "status-enquiry-txn-id")
 	WebElement txnId;
 
@@ -50,14 +50,11 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 	@FindBy(id = "searchByMobileNumber")
 	WebElement pageCustMobNum;
 
-	@FindBy(id = "bankingTxnID")
+	@FindBy(id = "searchByTxnID")
 	WebElement pageTxnId;
 
-	@FindBy(xpath = "//*[@id='banking-status-enquiry']//button")
+	@FindBy(xpath = "//*[@id='reports-list-status-enquiry']//button")
 	WebElement pageSubmitButton;
-
-	@FindBy(xpath = "//label[contains(text(),'Txn. ID')]")
-	WebElement aepsStatusEnquiryPage;
 
 	@FindBy(xpath = "//select2[contains(@id,'reportsDropDown')]")
 	WebElement reportPage;
@@ -131,7 +128,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
 
-	@FindBy(xpath = "//*[@id='reportsDropDown']//span[contains(@class,'select2-selection')]")
+	@FindBy(xpath = "//span[contains(text(),' - Status Enquiry')]")
 	WebElement reportsDropdown;
 
 	@FindBy(xpath = "//li[1][contains(@class,'notifications')]//strong")
@@ -197,6 +194,15 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//tbody/tr[1]/td[6]")
 	WebElement noTxnAvailable;
 
+	@FindBy(xpath = "//*[@class='slimScrollBar']")
+	WebElement scrollBar;
+
+	@FindBy(xpath = "//*[@type='search']")
+	WebElement dropDownSearch;
+
+	@FindBy(xpath = "//li[contains(text(),'Banking - Status Enquiry')]")
+	WebElement billpaymentDropdown;
+
 	String txnID = "", batchConfigSection = "rblaepsstatusenquiry";
 
 	public RBLAEPSStatusEnquiryPage(WebDriver wdriver) {
@@ -226,124 +232,167 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 
 			double initialWalletBalance = commonUtils.getInitialBalance("retailer"); // store main wallet balance
 
-			if (!usrData.get("STATUS").equalsIgnoreCase("REFUNDED")) {
-				statusEnquirySection(usrData);
-				Thread.sleep(1000);
-			}
-			waitUntilElementIsVisible(aepsStatusEnquiryPage);
-			System.out.println(reportsPage.getText() + " page displayed");
-			clickElement(menu);
-			clickElement(menu);
-			System.out.println("Status enquiry of " + usrData.get("STATUS") + " Transaction");
-			Thread.sleep(1000);
+//			if (!usrData.get("STATUS").equalsIgnoreCase("REFUNDED")) {
+//				statusEnquirySection(usrData);
+//				Thread.sleep(1000);
+//			}
 
-			waitUntilElementIsVisible(firstTxnInList);
-			if (usrData.get("ASSERTION").equalsIgnoreCase("11112222")) {
-				pageTxnId.click();
-				pageTxnId.sendKeys("11112222");
-				System.out.println("Txn ID entered");
+			if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
+				statusEnquirySection(usrData);
+				clickElement(menu);
+				clickElement(menu);
+				Thread.sleep(2000);
+			} else if (usrData.get("TYPE").equalsIgnoreCase("Page")) {
+				clickElement(menu);
+				clickElement(menu);
+				Thread.sleep(2000);
+				clickElement(menu);
+				scrollElementDown(scrollBar, reports);
+				System.out.println("Reports option clicked");
+				waitUntilElementIsVisible(reportsPage);
+				clickElement(menu);
+				Thread.sleep(1000);
+				waitUntilElementIsClickableAndClickTheElement(reportsDropdown);
+				System.out.println("Drop down clicked");
+				Thread.sleep(1000);
+				waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
+				dropDownSearch.sendKeys("Banking - Status Enquiry");
+				System.out.println("Typing Banking - Status Enquiry");
+				waitUntilElementIsClickableAndClickTheElement(billpaymentDropdown);
+				System.out.println("Banking - Status Enquiry drop down selected");
+
+				if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
+					waitUntilElementIsClickableAndClickTheElement(pageCustMobNum);
+					pageCustMobNum.clear();
+					pageCustMobNum.sendKeys(getCustomerDetailsFromIni("ExistingNum"));
+					System.out.println("Customer mobile number entered");
+				} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID")) {
+					waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+					pageTxnId.clear();
+					pageTxnId.sendKeys(txnID);
+					System.out.println("Txn ID entered");
+				} else {
+					waitUntilElementIsClickableAndClickTheElement(pageTxnId);
+					pageTxnId.clear();
+					pageTxnId.sendKeys(usrData.get("TXNDETAILS"));
+				}
+
+				waitUntilElementIsVisible(pageSubmitButton);
 				pageSubmitButton.click();
 				System.out.println("Submit button clicked");
+				Thread.sleep(3000);
 				commonUtils.waitForSpinner();
-				waitUntilElementIsVisible(firstTxnInList);
-				Assert.assertEquals(noTxnAvailable.getText(), "Transaction with RRN number 11112222 does not exist");
-				System.out.println(noTxnAvailable.getText());
-			} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
-				Assert.assertEquals(noTxnAvailable.getText(), "Transaction with RRN number 11112222 does not exist");
-				System.out.println(noTxnAvailable.getText());
-			} else {
-				reportsData(usrData);
-				if (usrData.get("ASSERTION").contains("FCM")) {
-					commonUtils.selectFeatureFromMenu1(banking, pageTitle2);
-					assertionOnStatusEnquiryFCM(usrData);
+
+//			waitUntilElementIsVisible(firstTxnInList);
+				if (usrData.get("ASSERTION").equalsIgnoreCase("11112222")) {
+					pageTxnId.click();
+					pageTxnId.sendKeys("11112222");
+					System.out.println("Txn ID entered");
+					pageSubmitButton.click();
+					System.out.println("Submit button clicked");
+					commonUtils.waitForSpinner();
+					waitUntilElementIsVisible(firstTxnInList);
+					Assert.assertEquals(noTxnAvailable.getText(),
+							"Transaction with RRN number 11112222 does not exist");
+					System.out.println(noTxnAvailable.getText());
+				} else if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
+					Assert.assertEquals(noTxnAvailable.getText(),
+							"Transaction with RRN number 11112222 does not exist");
+					System.out.println(noTxnAvailable.getText());
+				} else {
+					reportsData(usrData);
+					if (usrData.get("ASSERTION").contains("FCM")) {
+						commonUtils.selectFeatureFromMenu1(banking, pageTitle2);
+						assertionOnStatusEnquiryFCM(usrData);
+					}
 				}
-			}
-			if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
-				initiateRefundBtn.click();
-				waitUntilElementIsVisible(initiateRefundScreen);
-				if (usrData.get("AADHAAR").equalsIgnoreCase("Valid")) {
-					aadhaarNum.click();
-					aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
-					System.out.println("Aadhaar Number entered");
-					Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
-					fingerprintScan.click();
-					System.out.println("Scan fingerprint button clicked");
-					waitUntilElementIsVisible(fingerprintGreen);
-					Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
-					waitUntilElementIsVisible(proceedBtn);
-					proceedBtn.click();
-					waitUntilElementIsVisible(MPINScreen);
-					System.out.println("MPIN screen displayed");
-					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-					if (usrData.get("MPIN").equalsIgnoreCase("Cancel")) {
-						mpinCancelButton.click();
-					} else {
-						enterMPIN.click();
-						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+				if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
+					initiateRefundBtn.click();
+					waitUntilElementIsVisible(initiateRefundScreen);
+					if (usrData.get("AADHAAR").equalsIgnoreCase("Valid")) {
+						aadhaarNum.click();
+						aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
+						System.out.println("Aadhaar Number entered");
+						Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
+						fingerprintScan.click();
+						System.out.println("Scan fingerprint button clicked");
+						waitUntilElementIsVisible(fingerprintGreen);
+						Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
+						waitUntilElementIsVisible(proceedBtn);
+						proceedBtn.click();
+						waitUntilElementIsVisible(MPINScreen);
+						System.out.println("MPIN screen displayed");
+						waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+						if (usrData.get("MPIN").equalsIgnoreCase("Cancel")) {
+							mpinCancelButton.click();
 						} else {
-							enterMPIN.sendKeys("0000");
-						}
-						System.out.println(usrData.get("MPIN") + " entered");
-						mpinSubmitButton.click();
-						System.out.println("MPIN button clicked");
-						waitUntilElementIsVisible(refundTxnScreen);
-						System.out.println("Txn screen displayed");
-						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-							if (!usrData.get("KEY").equalsIgnoreCase("fail")) {
+							enterMPIN.click();
+							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+								enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+							} else {
+								enterMPIN.sendKeys("0000");
+							}
+							System.out.println(usrData.get("MPIN") + " entered");
+							mpinSubmitButton.click();
+							System.out.println("MPIN button clicked");
+							waitUntilElementIsVisible(refundTxnScreen);
+							System.out.println("Txn screen displayed");
+							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+								if (!usrData.get("KEY").equalsIgnoreCase("fail")) {
+									assertionOnRefundSuccessScreen(usrData);
+									System.out.println("Refund successful");
+									assertionOnRefundSMS(usrData);
+									waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
+									System.out.println("Done button clicked");
+									commonUtils.refreshBalance();
+									verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialWalletBalance);
+								} else {
+									assertionOnRefundFailedScreen(usrData);
+									System.out.println("Refund failed");
+									seExitBtn.click();
+									System.out.println("Exit button clicked");
+								}
+							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+								assertionOnRefundFailedScreen(usrData);
+								seDoneBtn.click();
+								System.out.println("Done button clicked");
+							} else if (usrData.get("MPIN").equalsIgnoreCase("Retry")) {
+								assertionOnRefundFailedScreen(usrData);
+								seRetryBtn.click();
+								waitUntilElementIsVisible(initiateRefundScreen);
+								aadhaarNum.click();
+								aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
+								System.out.println("Aadhaar Number entered");
+								Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
+								fingerprintScan.click();
+								System.out.println("Scan fingerprint button clicked");
+								waitUntilElementIsVisible(fingerprintGreen);
+								Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
+								waitUntilElementIsVisible(proceedBtn);
+								proceedBtn.click();
+								waitUntilElementIsVisible(MPINScreen);
+								System.out.println("MPIN screen displayed");
+								waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+								enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+								System.out.println(usrData.get("MPIN") + " entered");
+								mpinSubmitButton.click();
+								System.out.println("MPIN button clicked");
+								waitUntilElementIsVisible(processingScreen);
+								System.out.println("Processing screen displayed");
+								waitUntilElementIsVisible(refundTxnScreen);
+								System.out.println("Txn screen displayed");
 								assertionOnRefundSuccessScreen(usrData);
 								System.out.println("Refund successful");
-								assertionOnRefundSMS(usrData);
 								waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 								System.out.println("Done button clicked");
 								commonUtils.refreshBalance();
 								verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialWalletBalance);
-							} else {
-								assertionOnRefundFailedScreen(usrData);
-								System.out.println("Refund failed");
-								seExitBtn.click();
-								System.out.println("Exit button clicked");
 							}
-						} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							assertionOnRefundFailedScreen(usrData);
-							seDoneBtn.click();
-							System.out.println("Done button clicked");
-						} else if (usrData.get("MPIN").equalsIgnoreCase("Retry")) {
-							assertionOnRefundFailedScreen(usrData);
-							seRetryBtn.click();
-							waitUntilElementIsVisible(initiateRefundScreen);
-							aadhaarNum.click();
-							aadhaarNum.sendKeys(getAadhaarFromIni("GetAadhaarNum"));
-							System.out.println("Aadhaar Number entered");
-							Assert.assertEquals("Click to scan fingerprint", fingerprintUnscanned.getText());
-							fingerprintScan.click();
-							System.out.println("Scan fingerprint button clicked");
-							waitUntilElementIsVisible(fingerprintGreen);
-							Assert.assertEquals("Fingerprint scanned successfully!", fingerprintGreen.getText());
-							waitUntilElementIsVisible(proceedBtn);
-							proceedBtn.click();
-							waitUntilElementIsVisible(MPINScreen);
-							System.out.println("MPIN screen displayed");
-							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-							System.out.println(usrData.get("MPIN") + " entered");
-							mpinSubmitButton.click();
-							System.out.println("MPIN button clicked");
-							waitUntilElementIsVisible(processingScreen);
-							System.out.println("Processing screen displayed");
-							waitUntilElementIsVisible(refundTxnScreen);
-							System.out.println("Txn screen displayed");
-							assertionOnRefundSuccessScreen(usrData);
-							System.out.println("Refund successful");
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-							System.out.println("Done button clicked");
-							commonUtils.refreshBalance();
-							verifyUpdatedBalanceAfterRefundSuccessTxn(usrData, initialWalletBalance);
 						}
+					} else if (usrData.get("AADHAAR").equalsIgnoreCase("Exit")) {
+						exitBtn.click();
+						System.out.println("Exit button clicked");
 					}
-				} else if (usrData.get("AADHAAR").equalsIgnoreCase("Exit")) {
-					exitBtn.click();
-					System.out.println("Exit button clicked");
 				}
 			}
 		} catch (Exception e) {
@@ -471,8 +520,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 		}
 
 		if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
-			Assert.assertEquals(dataFromUI[0][5],
-					"transaction with RRN: " + txnDetailsFromIni("GetTxnRefNo", "") + " is successful");
+			Assert.assertEquals(dataFromUI[0][2], "SUCCESS");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
 			Assert.assertEquals(dataFromUI[0][5], "Status enquiry - txn has failed: Failed to perform transaction(M3)");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Deemed Success")) {
