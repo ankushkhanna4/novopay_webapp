@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 
 import in.novopay.platform_ui.utils.BasePage;
@@ -35,22 +36,46 @@ public class FOPWalletLoadPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(text(),'Finance')]")
 	WebElement finance;
-	
+
 	@FindBy(xpath = "//h1[contains(text(),'Wallet Load')]")
 	WebElement walletLoadTitle;
-	
+
 	@FindBy(xpath = "//div[contains(text(),'Wallet Load')]")
 	WebElement walletLoad;
+
+	@FindBy(xpath = "//a[contains(text(),'Pending with Bank Statement')]")
+	WebElement pendingBankStmntTab;
+
+	@FindBy(xpath = "//a[contains(text(),'Pending')]")
+	WebElement pendingTab;
+
+	@FindBy(xpath = "//a[contains(text(),'History')]")
+	WebElement historyTab;
+
+	@FindBy(xpath = "//select[@name='bankName']")
+	WebElement bankname;
+
+	@FindBy(xpath = "//select[@name='txnType']")
+	WebElement txnType;
+	
+	@FindBy(xpath = "//h5[contains(text(),'Bank Statements')]/parent::div/following-sibling::div//tr[@class='table-row']")
+	WebElement bankStatementRow;
+	
+	@FindBy(xpath = "//h5[contains(text(),'Requests')]/parent::div/following-sibling::div//tr[@class='table-row']")
+	WebElement requestRow;
+	
+	@FindBy(xpath = "//h5[contains(text(),'Bank')]/parent::div/following-sibling::div//tr[@class='table-row']/td[2]")
+	WebElement description;
 	
 	@FindBy(xpath = "//button[contains(text(),'Action')]")
 	WebElement actionButton;
-	
+
 	@FindBy(xpath = "//h4[contains(text(),'Wallet Load Action')]")
 	WebElement actionScreen;
-	
+
 	@FindBy(xpath = "//h4[contains(text(),'Wallet Load Action')]/parent::div/following-sibling::div//button[contains(text(),'Submit')]")
 	WebElement submitButton;
-	
+
 	@FindBy(xpath = "//div[@class='toast-message']/div")
 	WebElement toastMessage;
 
@@ -59,21 +84,48 @@ public class FOPWalletLoadPage extends BasePage {
 		try {
 			waitUntilElementIsVisible(welcomeTitle);
 			System.out.println("Welcome page displayed");
-			
+
 			commonUtils.selectFeatureFromMenu3(finance, walletLoad, walletLoadTitle);
 			commonUtils.waitForSpinner();
 
+			String desc = "CASH DEPOSIT-"+getTermNumberFromIni("GetTerm")+"/"+getTxnNumberFromIni("GetTxn")+"-Bengaluru";
+			
+			dbUtils.updateCdmWalletLoad();
+			dbUtils.insertCdmWalletLoadEntries(usrData.get("PARTNER"), getTermNumberFromIni("GetTerm"),
+					getTermNumberFromIni("GetTxn"), txnDetailsFromIni("GetTxfAmount", "")+"00", usrData.get("OPTIONS"), desc);
+
+			if (usrData.get("TAB").equalsIgnoreCase("Pending with Bank Statement")) {
+				waitUntilElementIsClickableAndClickTheElement(pendingBankStmntTab);
+				System.out.println("Pending with Bank Statement Tab clicked");
+			}
+
+			Select bank = new Select(bankname);
+			bank.selectByVisibleText(usrData.get("BANK"));
+			commonUtils.waitForSpinner();
+
+			Select type = new Select(txnType);
+			type.selectByVisibleText(usrData.get("OPTIONS"));
+			commonUtils.waitForSpinner();
+			
+			waitUntilElementIsClickable(bankStatementRow);
+			Assert.assertEquals(description.getText(), desc);
+			waitUntilElementIsClickableAndClickTheElement(bankStatementRow);
+			commonUtils.waitForSpinner();
+			
+			waitUntilElementIsVisible(requestRow);
+
 			waitUntilElementIsClickableAndClickTheElement(actionButton);
 			System.out.println("Action button clicked");
-			
+
 			waitUntilElementIsVisible(actionScreen);
 			waitUntilElementIsClickableAndClickTheElement(submitButton);
 			System.out.println("Submit button clicked");
-			
-			commonUtils.processingScreen();
-			
+
+//			commonUtils.processingScreen();
+
 			waitUntilElementIsVisible(toastMessage);
 			System.out.println(toastMessage.getText());
+			
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
@@ -81,7 +133,7 @@ public class FOPWalletLoadPage extends BasePage {
 			Assert.fail();
 		}
 	}
-	
+
 	public void reportsData(Map<String, String> usrData) throws ClassNotFoundException {
 		String[][] dataFromUI = new String[1][9];
 		for (int i = 0; i < 1; i++) {

@@ -155,6 +155,8 @@ public class SelfLoadRequestPage extends BasePage {
 				commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
 				commonUtils.selectFeatureFromMenu1(manageWalletButton, pageTitle);
+				
+				dbUtils.updateWalletTopupRequest();
 
 				waitUntilElementIsClickableAndClickTheElement(selfLoadRequestTab);
 				System.out.println("Self Load Request Tab clicked");
@@ -221,9 +223,9 @@ public class SelfLoadRequestPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(date);
 				String dayMonth = "";
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Future Date")) {
-					dayMonth = getTodaysDateOfMonth(1) + getTodaysMonth();
+					dayMonth = getTodaysDateOfMonth(1);
 				} else {
-					dayMonth = getTodaysDateOfMonth(0) + getTodaysMonth();
+					dayMonth = getTodaysDateOfMonth(0);
 				}
 				date.sendKeys(dayMonth);
 				System.out.println("DATE entered");
@@ -320,7 +322,7 @@ public class SelfLoadRequestPage extends BasePage {
 			throws ClassNotFoundException {
 		double totalAmount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 		double newWalletBal = 0.00;
-		newWalletBal = initialWalletBalance + totalAmount;
+		newWalletBal = initialWalletBalance + totalAmount - 25.00;
 		String newWalletBalance = df.format(newWalletBal);
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 		System.out.println("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));

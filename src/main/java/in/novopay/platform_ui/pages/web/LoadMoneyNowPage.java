@@ -209,6 +209,8 @@ public class LoadMoneyNowPage extends BasePage {
 			System.out.println("Load Amount: " + replaceSymbols(fetchedLoadAmount.getText()));
 			loadMoneyNowDataFromIni("StoreLoadAmount", replaceSymbols(fetchedLoadAmount.getText()));
 
+			commonUtils.waitForSpinner();
+			Thread.sleep(2000);
 			waitUntilElementIsClickableAndClickTheElement(proceedButton);
 			System.out.println("Proceed button clicked");
 			commonUtils.waitForSpinner();
@@ -250,6 +252,7 @@ public class LoadMoneyNowPage extends BasePage {
 				if (usrData.get("ASSERTION").contains("FCM")) {
 					assertionOnFCM(usrData);
 				}
+				commonUtils.refreshBalance();
 				verifyUpdatedBalanceAfterSuccessTxn(usrData, loadAmt);
 			} else if (loadMoneyNowTxnScreen.getText().equalsIgnoreCase("Pending!")) {
 				waitUntilElementIsClickableAndClickTheElement(loadMoneyNowTxnScreenOkButton);
@@ -282,7 +285,7 @@ public class LoadMoneyNowPage extends BasePage {
 
 	public void verifyUpdatedBalanceAfterSuccessTxn(Map<String, String> usrData, double loadAmount)
 			throws ClassNotFoundException {
-		double initialWalletBalance = 1000000.00;
+		double initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetRetailer",""));
 		double newWalletBal = 0.00;
 		newWalletBal = initialWalletBalance + loadAmount;
 		String newWalletBalance = df.format(newWalletBal);

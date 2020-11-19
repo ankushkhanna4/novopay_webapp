@@ -55,16 +55,22 @@ public class RBLMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//*[contains(text(),'Limit remaining')]")
 	WebElement limitRem;
 
+	@FindBy(xpath = "//*[contains(text(),'Proceed')]")
+	WebElement proceedButton;
+
+	@FindBy(xpath = "//*[contains(text(),'Edit')]")
+	WebElement editButton;
+
 	@FindBy(id = "money-transfer-customer-name")
 	WebElement custName;
 
 	@FindBy(id = "money-transfer-customer-dob")
 	WebElement dob;
 
-	@FindBy(xpath = "//div[4]/div/span[1][contains(@class,'radiobox')]")
+	@FindBy(xpath = "//label[@for='customer-gender-male']")
 	WebElement genderMale;
 
-	@FindBy(xpath = "//div[4]/div/span[2][contains(@class,'radiobox')]")
+	@FindBy(xpath = "//label[@for='customerGender-female']")
 	WebElement genderFemale;
 
 	@FindBy(id = "money-transfer-beneficiary-list")
@@ -85,19 +91,19 @@ public class RBLMoneyTransferPage extends BasePage {
 	@FindBy(id = "money-transfer-beneficiary-account-number")
 	WebElement beneACNum;
 
-	@FindBy(xpath = "//button[contains(text(),'Add Bene')]")
+	@FindBy(xpath = "//button[contains(text(),'Add Beneficiary')]")
 	WebElement addBeneButton;
 
-	@FindBy(xpath = "//button[contains(text(),'Val Bene')]")
+	@FindBy(xpath = "//button[contains(text(),'Verify Beneficiary')]")
 	WebElement validateBeneButton;
 
-	@FindBy(xpath = "//button[contains(text(),'Del Bene')]")
+	@FindBy(xpath = "//button[contains(text(),'Delete Beneficiary')]")
 	WebElement deleteBeneButton;
 
 	@FindBy(xpath = "//input[contains(@type,'checkbox')]")
 	WebElement deleteBeneCheckbox;
 
-	@FindBy(xpath = "//div[@class='card-layout']//button[contains(text(),'Clear')]/parent::div/following-sibling::div/button")
+	@FindBy(xpath = "//button[contains(text(),'Clear')]/parent::div/following-sibling::div/button")
 	WebElement moneyTransferSubmitButton;
 
 	@FindBy(xpath = "//*[contains(text(),'Clear')]")
@@ -151,7 +157,7 @@ public class RBLMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//h5[contains(text(),'Enter Bene. Registration OTP')]")
 	WebElement OTPScreen;
 
-	@FindBy(xpath = "//button[contains(@class,'input-group-addon btn-icon')]")
+	@FindBy(xpath = "//button[@class='charges-label']")
 	WebElement applicableChargesButton;
 
 	@FindBy(xpath = "//h4[contains(text(),'Applicable charges')]")
@@ -598,11 +604,6 @@ public class RBLMoneyTransferPage extends BasePage {
 					System.out.println("NEFT mode auto-selected");
 				}
 
-				waitUntilElementIsClickableAndClickTheElement(amount);
-				Thread.sleep(1000);
-				amount.sendKeys(usrData.get("AMOUNT"));
-				System.out.println("amount entered");
-
 				Thread.sleep(2000);
 				waitUntilElementIsClickableAndClickTheElement(moneyTransferSubmitButton);
 				System.out.println("Submit button clicked");
@@ -647,12 +648,12 @@ public class RBLMoneyTransferPage extends BasePage {
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
 				waitUntilElementIsClickableAndClickTheElement(moneyTransferClearButton);
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("No")) {
-				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
-					waitUntilElementIsClickableAndClickTheElement(amount);
-					Thread.sleep(1000);
-					amount.sendKeys(usrData.get("AMOUNT"));
-					System.out.println("amount entered");
-				}
+//				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
+//					waitUntilElementIsClickableAndClickTheElement(amount);
+//					Thread.sleep(1000);
+//					amount.sendKeys(usrData.get("AMOUNT"));
+//					System.out.println("amount entered");
+//				}
 
 				// Field level validation in Amount field
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
@@ -694,19 +695,37 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	public void customerDetails(Map<String, String> usrData)
 			throws InterruptedException, NumberFormatException, ClassNotFoundException {
+		try {
+			Thread.sleep(2000);
+			editButton.click();
+			System.out.println("Edit button clicked");
+		} catch (Exception e) {
+			System.out.println("Edit button not visible");
+		}
 		// Click on customer Mobile Number field
 		waitUntilElementIsClickableAndClickTheElement(custMobNum);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
 		System.out.println("Customer mobile number " + custMobNum.getText() + " entered");
+		commonUtils.waitForSpinner();
+		Thread.sleep(1000);
+		limitCheck(usrData); // check limit remaining
+		custMobNum.sendKeys(Keys.TAB);
+
+		waitUntilElementIsClickableAndClickTheElement(amount);
+		Thread.sleep(1000);
+		amount.sendKeys(usrData.get("AMOUNT"));
+		System.out.println("amount entered");
+		Thread.sleep(1000);
+		waitUntilElementIsClickableAndClickTheElement(proceedButton);
+		System.out.println("Proceed button clicked");
+		commonUtils.waitForSpinner();
+		Thread.sleep(1000);
 
 		// Provide customer details based on user data
 		if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
 			System.out.println("New customer mobile number entered");
-			commonUtils.waitForSpinner();
-			Thread.sleep(1000);
-			limitCheck(usrData); // check limit remaining
-			custMobNum.sendKeys(Keys.TAB);
+
 			custName.sendKeys(getCustomerDetailsFromIni("NewName"));
 			System.out.println("Customer name " + custName.getText() + " entered");
 			custName.sendKeys(Keys.TAB);
@@ -720,8 +739,6 @@ public class RBLMoneyTransferPage extends BasePage {
 			System.out.println("Gender selected");
 		} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
 			System.out.println("Existing customer mobile number entered");
-			commonUtils.waitForSpinner();
-			limitCheck(usrData); // check limit remaining
 		}
 	}
 

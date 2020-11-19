@@ -1868,4 +1868,49 @@ public class DBUtils extends JavaUtils {
 			sqe.printStackTrace();
 		}
 	}
+
+	public void updateWalletTopupRequest() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npOps"));
+			String query = "UPDATE np_ops.`wallet_topup_request` SET STATUS = 'APPROVED'";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating status of wallet_topup_request to APPROVED");
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void updateCdmWalletLoad() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npOps"));
+			String query = "UPDATE np_ops.`cdm_wallet_load` SET STATUS = 'APPROVED'";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating status of cdm_wallet_load to APPROVED");
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void insertCdmWalletLoadEntries(String partner, String term, String txn, String amount, String type,
+			String desc) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npOps"));
+			stmt = conn.createStatement();
+
+			String insertQuery = "INSERT INTO np_ops.`cdm_wallet_load` (`partner`, `machine_id`, `txn_id`, `txn_date`, "
+					+ "`amount`, `txn_description`, `bal_after_txn`, `status`, `created_by`, `created_on`, "
+					+ "`last_updated_by`, `last_updated_on`, `file_name`, `remarks`, `wallet_request_id`, "
+					+ "`cash_deposit_type`, `additional_data`) VALUES('" + partner + "','" + term + "','" + txn
+					+ "',NOW(),'" + amount + "','" + desc + "','1234000',"
+					+ "'PENDING','Automation',NOW(),NULL,NULL,'Automation.csv',NULL,NULL,'" + type + "','BENGALURU');";
+			stmt.executeUpdate(insertQuery);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			sqe.printStackTrace();
+		}
+	}
 }

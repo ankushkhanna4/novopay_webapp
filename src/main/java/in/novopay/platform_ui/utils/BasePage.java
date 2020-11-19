@@ -104,6 +104,20 @@ public class BasePage extends JavaUtils {
 		wdriver.close();
 		System.out.println("Tab is closed");
 	}
+	
+	/**
+	 * Close the tab
+	 * @throws InterruptedException 
+	 */
+	public void closeTabAndSwitchBack() throws InterruptedException {
+
+		wdriver.close();
+		System.out.println("Tab is closed");
+		
+		ArrayList<String> tabs = new ArrayList<String>(wdriver.getWindowHandles());
+		Thread.sleep(1000);
+		wdriver.switchTo().window(tabs.get(0)); // switch to previous tab
+	}
 
 	/**
 	 * Close the web browser
@@ -365,6 +379,15 @@ public class BasePage extends JavaUtils {
 	 */
 	public void waitUntilElementIsClickableForFinoAndClickTheElement(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 90);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		clickElement(element);
+	}
+	
+	/**
+	 * Wait until web element is clickable and click the element for Fino
+	 */
+	public void waitUntilSubmitIsClickableForFinoAndClickTheElement(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 10);
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 		clickElement(element);
 	}

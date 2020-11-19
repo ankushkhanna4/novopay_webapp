@@ -1494,7 +1494,11 @@ public class RBLBankingPage extends BasePage {
 		Assert.assertEquals(miniStatementTxnScreenMessage.getText(), "Mini Statement generated Successfully");
 		System.out.println(miniStatementTxnScreenMessage.getText());
 		txnDetailsFromIni("StoreTxnRefNo", miniStatementRefNo.getText());
-		System.out.println("Customer A/C Balance: " + replaceSymbols(miniStatementCustAcBalance.getText()));
+		try {
+			System.out.println("Customer A/C Balance: " + replaceSymbols(miniStatementCustAcBalance.getText()));
+		} catch (Exception e) {
+			System.out.println("Customer A/C Balance not visible");
+		}
 		Assert.assertTrue(miniStatementTxnScreenDisabledDoneButton.isDisplayed());
 		System.out.println("Done button is disabled");
 	}

@@ -178,6 +178,9 @@ public class RBLStatusEnquiryPage extends BasePage {
 	public void rBLStatusEnquiry(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
+			
+			commonUtils.closeToast();
+			
 			if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")
 					|| usrData.get("STATUS").equalsIgnoreCase("Refund")) {
 				dbUtils.updateRemittanceOutwardStatus(txnID, "FAIL", "NP_INITIATED");

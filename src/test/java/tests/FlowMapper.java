@@ -60,7 +60,7 @@ public class FlowMapper {
 		}
 		javaUtils.getWalletFromIni("StoreWallet", usrData.get("WALLET"));
 		javaUtils.getPartner(usrData.get("CONTRACT"));
-		
+
 		for (String flowTestID : flows) {
 			if ((!usrData.get(flowTestID).equalsIgnoreCase("SKIP")) && (!usrData.get(flowTestID).isEmpty())) {
 				testCaseID = usrData.get(flowTestID);
@@ -166,10 +166,11 @@ public class FlowMapper {
 			failureReason = errMsg;
 			failureReason = stepNo + ": " + testCaseID + ": " + result.getThrowable() + "";
 		}
-		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("CONTRACT"), usrData.get("DESCRIPTION"),
-				javaUtils.getExecutionResultStatus(result.getStatus()), failureReason, testStartTime, testEndTime };
+		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("CONTRACT"), usrData.get("FEATURE"),
+				usrData.get("DESCRIPTION"), javaUtils.getExecutionResultStatus(result.getStatus()), failureReason,
+				testStartTime, testEndTime };
 		javaUtils.writeExecutionStatusToExcel(execeutionDtls);
-		
+
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
 			System.out.println("Inserting all contracts");
 			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
