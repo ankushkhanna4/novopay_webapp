@@ -404,10 +404,14 @@ public class RechargesPage extends BasePage {
 										assertionOnSuccessScreen(usrData);
 										doneButton.click();
 										System.out.println("Done button clicked");
+										commonUtils.refreshBalance();
+										verifyUpdatedBalanceAfterSuccessTxn(usrData);
 									} else if (usrData.get("ASSERTION").equalsIgnoreCase("Failed")) {
 										assertionOnFailedScreen(usrData);
 										exitButton.click();
 										System.out.println("Exit button clicked");
+										commonUtils.refreshBalance();
+										verifyUpdatedBalanceAfterFailTxn(usrData);
 									}
 								} else {
 									doneButton.click();
@@ -416,8 +420,6 @@ public class RechargesPage extends BasePage {
 								if (usrData.get("ASSERTION").contains("FCM")) {
 									assertionOnFCM(usrData);
 								}
-								commonUtils.refreshBalance();
-								verifyUpdatedBalanceAfterSuccessTxn(usrData);
 							} else if (rechTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 									assertionOnFailedScreen(usrData);
@@ -503,9 +505,13 @@ public class RechargesPage extends BasePage {
 			System.out.println(rechTxnScreenFailureMessage.getText());
 			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 		} else {
+			if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Check Status Now")) {
+				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction is unsuccessful.");
+				System.out.println(rechTxnScreenMessage.getText());
+			} else {
 			Assert.assertEquals(rechTxnScreenMessage.getText(), "Bill Payment failed");
 			System.out.println(rechTxnScreenMessage.getText());
-
+			}
 			Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
 					rechargeDataFromIni("GetAmount", "") + ".00");
 			System.out.println("Recharge Amount: " + replaceSymbols(txnScreenBillAmount.getText()));

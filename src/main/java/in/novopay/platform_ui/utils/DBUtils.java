@@ -1661,9 +1661,6 @@ public class DBUtils extends JavaUtils {
 
 	public void modifyContract(String contrct, String mobNum) throws ClassNotFoundException {
 		String contract = contrct;
-		if (contrct.equalsIgnoreCase("FINO | RBL")) {
-			contract = "FINO";
-		}
 		try {
 			conn = createConnection(configProperties.get("master"));
 			String deleteQuery = "DELETE FROM master.contract WHERE organization = (SELECT u.`organization` FROM `master`.`user` u "
@@ -1673,26 +1670,21 @@ public class DBUtils extends JavaUtils {
 			String insertQuery1 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
 					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
 					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
-					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'novopay'));";
+					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = '" + contract
+					+ "'));";
 			String insertQuery2 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
 					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
 					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
 					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'rbl'));";
-			String insertQuery3 = "INSERT INTO `contract` (`organization`, `partner_organization`) "
-					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
-					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
-					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = '" + contract
-					+ "'));";
-
+			
 			stmt = conn.createStatement();
 			stmt.executeUpdate(deleteQuery);
 			System.out.println("Deleting all contracts");
 			stmt.executeUpdate(insertQuery1);
 			stmt.executeUpdate(insertQuery2);
-			stmt.executeUpdate(insertQuery3);
-			System.out.println("Inserting " + contract.toLowerCase() + " along with rbl and novopay");
+			System.out.println("Inserting contract: rbl and " + contract.toLowerCase());
 		} catch (SQLException sqe) {
-			System.out.println("Duplicate entry for " + contract);
+			System.out.println("Duplicate entry for contract: " + contract);
 		}
 	}
 
@@ -1910,6 +1902,28 @@ public class DBUtils extends JavaUtils {
 			stmt.executeUpdate(insertQuery);
 		} catch (SQLException sqe) {
 			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void updatePartnerStatus(String partner1, String p1status, String partner2, String p2status, String partner3,
+			String p3status) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npMaster"));
+			String query1 = "UPDATE `np_master`.`partner_status` SET `status` = '" + p1status + "' WHERE partner = '"
+					+ partner1 + "';";
+			String query2 = "UPDATE `np_master`.`partner_status` SET `status` = '" + p2status + "' WHERE partner = '"
+					+ partner2 + "';";
+			String query3 = "UPDATE `np_master`.`partner_status` SET `status` = '" + p3status + "' WHERE partner = '"
+					+ partner3 + "';";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query1);
+			stmt.executeUpdate(query2);
+			stmt.executeUpdate(query3);
+			System.out.println("Updating partner status: " + partner1 + "=" + p1status + " , " + partner2 + "="
+					+ p2status + " , " + partner3 + "=" + p3status);
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
 			sqe.printStackTrace();
 		}
 	}

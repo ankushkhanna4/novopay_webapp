@@ -46,6 +46,9 @@ public class RBLMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//*[@class='fa fa-bars fa-lg text-white']")
 	WebElement menu;
 
+	@FindBy(xpath = "//a[@href='/newportal/np-money-transfer']/span[contains(text(),'Money Transfer')]")
+	WebElement moneyTransferMenu;
+
 	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
 	WebElement pageTitle;
 
@@ -54,6 +57,9 @@ public class RBLMoneyTransferPage extends BasePage {
 
 	@FindBy(xpath = "//*[contains(text(),'Limit remaining')]")
 	WebElement limitRem;
+
+	@FindBy(xpath = "//form[@id='money-transfer-collection-form']//span[@class='err-msg']")
+	WebElement partnerErrorMsg;
 
 	@FindBy(xpath = "//*[contains(text(),'Proceed')]")
 	WebElement proceedButton;
@@ -365,11 +371,8 @@ public class RBLMoneyTransferPage extends BasePage {
 		try {
 			commonUtils.waitForSpinner();
 
-			String moneyTransferXpath = "//a[@href='/newportal/np-money-transfer']/span[contains(text(),'Money Transfer')]";
-			WebElement moneyTransfer = wdriver.findElement(By.xpath(moneyTransferXpath));
-
 			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
-				commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle);
+				commonUtils.selectFeatureFromMenu1(moneyTransferMenu, pageTitle);
 				Thread.sleep(4000);
 			}
 
@@ -393,6 +396,20 @@ public class RBLMoneyTransferPage extends BasePage {
 				dbUtils.updateBatchStatus("EnableRemittanceQueuing", "SUCCESS");
 				dbUtils.updateBatchStatus("DisableRemittanceQueuing", "STOPPED");
 			}
+
+			String p2separator = "", p3separator = "";
+			if (!usrData.get("PARTNER1").isEmpty()
+					&& (!usrData.get("PARTNER2").isEmpty() || !usrData.get("PARTNER3").isEmpty())) {
+				p2separator = "|";
+			}
+			if ((!usrData.get("PARTNER1").isEmpty() || !usrData.get("PARTNER2").isEmpty())
+					&& !usrData.get("PARTNER3").isEmpty()) {
+				p3separator = "|";
+			}
+			dbUtils.updateDmtPartner(getPartner(usrData.get("PARTNER1") + p2separator + usrData.get("PARTNER2")
+					+ p3separator + usrData.get("PARTNER3")), getLoginMobileFromIni("GetRetailerMobNum"));
+			dbUtils.updatePartnerStatus(usrData.get("PARTNER1"), usrData.get("P1STATUS"), usrData.get("PARTNER2"),
+					usrData.get("P2STATUS"), usrData.get("PARTNER3"), usrData.get("P3STATUS"));
 
 			customerDetails(usrData);
 
@@ -710,35 +727,39 @@ public class RBLMoneyTransferPage extends BasePage {
 		commonUtils.waitForSpinner();
 		Thread.sleep(1000);
 		limitCheck(usrData); // check limit remaining
-		custMobNum.sendKeys(Keys.TAB);
+		partnerErrorMessage(usrData); // check if partner error message is displayed
+		if (!usrData.get("ASSERTION").equalsIgnoreCase("All partners down")) {
+			custMobNum.sendKeys(Keys.TAB);
+			waitUntilElementIsClickableAndClickTheElement(amount);
+			Thread.sleep(1000);
+			amount.sendKeys(usrData.get("AMOUNT"));
+			System.out.println("amount entered");
+			Thread.sleep(1000);
+			waitUntilElementIsClickableAndClickTheElement(proceedButton);
+			System.out.println("Proceed button clicked");
+			commonUtils.waitForSpinner();
+			Thread.sleep(1000);
+			if (!partnerUrl(usrData).endsWith("paytm-transfer")) {
 
-		waitUntilElementIsClickableAndClickTheElement(amount);
-		Thread.sleep(1000);
-		amount.sendKeys(usrData.get("AMOUNT"));
-		System.out.println("amount entered");
-		Thread.sleep(1000);
-		waitUntilElementIsClickableAndClickTheElement(proceedButton);
-		System.out.println("Proceed button clicked");
-		commonUtils.waitForSpinner();
-		Thread.sleep(1000);
+				// Provide customer details based on user data
+				if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
+					System.out.println("New customer mobile number entered");
 
-		// Provide customer details based on user data
-		if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
-			System.out.println("New customer mobile number entered");
-
-			custName.sendKeys(getCustomerDetailsFromIni("NewName"));
-			System.out.println("Customer name " + custName.getText() + " entered");
-			custName.sendKeys(Keys.TAB);
-			dob.sendKeys(usrData.get("DOB"));
-			System.out.println("Date of birth entered");
-			if (usrData.get("GENDER").equalsIgnoreCase("MALE")) {
-				clickElement(genderMale);
-			} else if (usrData.get("GENDER").equalsIgnoreCase("FEMALE")) {
-				clickElement(genderFemale);
+					custName.sendKeys(getCustomerDetailsFromIni("NewName"));
+					System.out.println("Customer name " + custName.getText() + " entered");
+					custName.sendKeys(Keys.TAB);
+					dob.sendKeys(usrData.get("DOB"));
+					System.out.println("Date of birth entered");
+					if (usrData.get("GENDER").equalsIgnoreCase("MALE")) {
+						clickElement(genderMale);
+					} else if (usrData.get("GENDER").equalsIgnoreCase("FEMALE")) {
+						clickElement(genderFemale);
+					}
+					System.out.println("Gender selected");
+				} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
+					System.out.println("Existing customer mobile number entered");
+				}
 			}
-			System.out.println("Gender selected");
-		} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
-			System.out.println("Existing customer mobile number entered");
 		}
 	}
 
@@ -1279,9 +1300,30 @@ public class RBLMoneyTransferPage extends BasePage {
 	}
 
 	// Get remitter remaining limit
-	public String limitRemaining(String mobNum, String type) throws NumberFormatException, ClassNotFoundException {
-		double limit = Double.parseDouble(dbUtils.getLimitRemaining(mobNum, partner())) / 100;
-		String expectedLimitRem = df.format(limit);
+	public String limitRemaining(Map<String, String> usrData, String mobNum, String type)
+			throws NumberFormatException, ClassNotFoundException {
+		String limit1 = "", limit2 = "", limit3 = "";
+		String sep1 = "", sep2 = "";
+		if (usrData.get("P1STATUS").equals("1")) {
+			limit1 = df.format(Double.parseDouble(dbUtils.getLimitRemaining(mobNum, usrData.get("PARTNER1"))) / 100);
+		}
+		if (usrData.get("P2STATUS").equals("1")) {
+			limit2 = df.format(Double.parseDouble(dbUtils.getLimitRemaining(mobNum, usrData.get("PARTNER2"))) / 100);
+		}
+		if (usrData.get("P3STATUS").equals("1")) {
+			limit3 = df.format(Double.parseDouble(dbUtils.getLimitRemaining(mobNum, usrData.get("PARTNER3"))) / 100);
+		}
+
+		if (usrData.get("P1STATUS").equals("1")
+				&& (usrData.get("P2STATUS").equals("1") || usrData.get("P3STATUS").equals("1"))) {
+			sep1 = " + ";
+		}
+		if ((usrData.get("P1STATUS").equals("1") || usrData.get("P2STATUS").equals("1"))
+				&& usrData.get("P3STATUS").equals("1")) {
+			sep2 = " + ";
+		}
+
+		String expectedLimitRem = limit1 + sep1 + limit2 + sep2 + limit3;
 		String actualLimitRem = replaceSymbols(limitRem.getText().substring(33)).replaceAll("\\)", "");
 		if (type.equals("actual")) {
 			return actualLimitRem;
@@ -1295,10 +1337,61 @@ public class RBLMoneyTransferPage extends BasePage {
 	public void limitCheck(Map<String, String> usrData) throws NumberFormatException, ClassNotFoundException {
 		if (usrData.get("LIMITCHECK").equalsIgnoreCase("YES")) {
 			waitUntilElementIsVisible(limitRem);
-			Assert.assertEquals(limitRemaining("", "actual"),
-					limitRemaining(getCustomerDetailsFromIni("ExistingNum"), "expected"));
+			Assert.assertEquals(limitRemaining(usrData, "", "actual"),
+					limitRemaining(usrData, getCustomerDetailsFromIni("ExistingNum"), "expected"));
 			System.out.println(limitRem.getText());
 		}
+	}
+
+	public void partnerErrorMessage(Map<String, String> usrData) {
+		if (usrData.get("ASSERTION").contains("down")) {
+			if (usrData.get("ASSERTION").equalsIgnoreCase("All partners down")) {
+				Assert.assertEquals(partnerErrorMsg.getText(),
+						"Note: It looks like all partner banks are temporarily not accepting any request. "
+								+ "Please try after sometime.");
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("One partner down")) {
+				Assert.assertEquals(partnerErrorMsg.getText(),
+						"Note: It looks like one partner bank is temporarily not accepting any request. "
+								+ "We have stopped all transactions through the bank which is not accepting requests.");
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Two partners down")) {
+				Assert.assertEquals(partnerErrorMsg.getText(),
+						"Note: It looks like two partner banks are temporarily not accepting any request. "
+								+ "We have stopped all transactions through the bank which is not accepting requests.");
+			}
+			System.out.println(partnerErrorMsg.getText());
+		}
+	}
+
+	public String partnerUrl(Map<String, String> usrData) throws NumberFormatException, ClassNotFoundException {
+		double limit1 = 0.0, limit2 = 0.0, limit3 = 0.0;
+		if (usrData.get("P1STATUS").equals("1")) {
+			limit1 = Double.parseDouble(
+					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER1"))) / 100;
+		}
+		if (usrData.get("P2STATUS").equals("1")) {
+			limit2 = Double.parseDouble(
+					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER2"))) / 100;
+		}
+		if (usrData.get("P3STATUS").equals("1")) {
+			limit3 = Double.parseDouble(
+					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER3"))) / 100;
+		}
+		if (usrData.get("P1STATUS").equals("1") && usrData.get("P2STATUS").equals("1")
+				&& Double.parseDouble(usrData.get("AMOUNT")) > limit1) {
+			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+		} else if (usrData.get("P1STATUS").equals("1") && usrData.get("P2STATUS").equals("1")
+				&& Double.parseDouble(usrData.get("AMOUNT")) <= limit1) {
+			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+		} else if ((usrData.get("P1STATUS").equals("0") || usrData.get("P1STATUS").isEmpty())
+				&& usrData.get("P2STATUS").equals("1")) {
+			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+		} else if ((usrData.get("P1STATUS").equals("0") || usrData.get("P1STATUS").isEmpty())
+				&& (usrData.get("P2STATUS").equals("0") || usrData.get("P2STATUS").isEmpty())
+				&& usrData.get("P3STATUS").equals("1")) {
+			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER3").toLowerCase() + "-transfer"));
+		}
+		System.out.println(wdriver.getCurrentUrl());
+		return wdriver.getCurrentUrl();
 	}
 
 	// Unblock banks based on user data

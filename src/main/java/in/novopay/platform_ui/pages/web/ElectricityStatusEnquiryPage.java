@@ -229,6 +229,9 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 						assertionOnSMS();
 					}
 				} else if (usrData.get("STATUS").equalsIgnoreCase("Refund")) {
+					if (usrData.get("ASSERTION").equalsIgnoreCase("SMS")) {
+						assertionOnSMS();
+					}
 					Thread.sleep(1000);
 					waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
 					System.out.println("Initiate Refund button clicked");

@@ -91,10 +91,10 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//h4[contains(text(),'Processing...')]")
 	WebElement processingScreen;
-	
+
 	@FindBy(xpath = "//button[@class='toast-close-button']")
 	WebElement toastCloseButton;
-	
+
 	public CommonUtils(WebDriver wdriver) {
 		super(wdriver);
 		PageFactory.initElements(wdriver, this);
@@ -225,7 +225,7 @@ public class CommonUtils extends BasePage {
 			i = 4;
 		}
 
-		commission = Double.parseDouble(dbUtils.getRemittanceComm(amount, "RBL", 1));
+		commission = Double.parseDouble(dbUtils.getRemittanceComm((amount - 5000 * i), "RBL", 1)) * (i + 1);
 //		commission = minComm * i + Math.max(minCharge, (amount - 5000 * i) * commPer / 10000);
 
 		double tds = roundTo2Decimals(
@@ -310,12 +310,12 @@ public class CommonUtils extends BasePage {
 		Runtime.getRuntime().exec(uploadFile);
 		Thread.sleep(500);
 	}
-	
+
 	public void closeToast() {
 		try {
 			while (toastCloseButton.isDisplayed() == true) {
-			waitUntilElementIsClickableAndClickTheElement(toastCloseButton);
-			System.out.println("Toast closed");
+				waitUntilElementIsClickableAndClickTheElement(toastCloseButton);
+				System.out.println("Toast closed");
 //			Thread.sleep(1000);
 			}
 		} catch (Exception e) {

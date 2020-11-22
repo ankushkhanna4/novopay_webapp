@@ -99,9 +99,6 @@ public class LoginPage extends BasePage {
 			String mobNumFromSheet = "";
 			if (usrData.get("MOBILENUMBER").equalsIgnoreCase("RetailerMobNum")) {
 				mobNumFromSheet = getLoginMobileFromIni(mobNumFromSheet);
-				if (getPartner("GetPartner").equals("RBL") || getPartner("GetPartner").equalsIgnoreCase("FINO")) {
-					dbUtils.updateDmtPartner(getPartner("GetPartner"), mobNumFromSheet);
-				}
 			} else {
 				mobNumFromSheet = usrData.get("MOBILENUMBER");
 			}
