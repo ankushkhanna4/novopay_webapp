@@ -47,6 +47,12 @@ public class CapitalFirstAgentPage extends BasePage {
 
 	@FindBy(xpath = "//span[contains(text(),'Capital First Agent')]")
 	WebElement capitalFirstIcon;
+	
+	@FindBy(xpath = "//label[@for='appsService-sfdc']")
+	WebElement encollectRadioButton;
+
+	@FindBy(xpath = "//label[@for='appsService-Encollect']")
+	WebElement sfdcRadioButton;
 
 	@FindBy(id = "capital-first-money-transfer-mobile-number")
 	WebElement depositorMobNum;
@@ -136,6 +142,14 @@ public class CapitalFirstAgentPage extends BasePage {
 			// Click on capital first icon
 			waitUntilElementIsClickableAndClickTheElement(capitalFirstIcon);
 			System.out.println("Capital First icon clicked");
+
+			// Selecting app radio button
+			if (usrData.get("APP").equalsIgnoreCase("Encollect")) {
+				clickElement(encollectRadioButton);
+			} else if (usrData.get("APP").equalsIgnoreCase("SFDC")) {
+				clickElement(sfdcRadioButton);
+			}
+			System.out.println("Company selected");
 
 			// Click on depositor mobile number field
 			waitUntilElementIsClickableAndClickTheElement(depositorMobNum);
