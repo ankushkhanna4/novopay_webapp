@@ -33,10 +33,11 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -466,7 +467,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String getTermNumberFromIni(String name) {
 		Ini ini;
 		try {
@@ -487,7 +488,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String getTxnNumberFromIni(String name) {
 		Ini ini;
 		try {
@@ -638,7 +639,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String rechargeDataFromIni(String key, String value) {
 		Ini ini;
 		try {
@@ -669,7 +670,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String loadMoneyNowDataFromIni(String key, String value) {
 		Ini ini;
 		try {
@@ -689,7 +690,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.store();
 			} else if (key.equalsIgnoreCase("GetOrderId")) {
 				return ini.get("LoadMoneyNowData", "OrderId");
-			}  else if (key.equalsIgnoreCase("StoreLoadAmount")) {
+			} else if (key.equalsIgnoreCase("StoreLoadAmount")) {
 				ini.put("LoadMoneyNowData", "LoadAmount", value);
 				ini.store();
 			} else if (key.equalsIgnoreCase("GetLoadAmount")) {
@@ -793,8 +794,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put(sectionName, record.getCell(0).toString(), generateRandomNo(10));
 
 			} else {
-
-				record.getCell(2).setCellType(Cell.CELL_TYPE_STRING);
+				record.getCell(2).toString();
 				ini.put(sectionName, record.getCell(0).toString(), record.getCell(2).toString());
 
 			}
@@ -847,8 +847,6 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to NullPointerException" + e);
 		} catch (EncryptedDocumentException e) {
 			throw new EncryptedDocumentException("Failed due to EncryptedDocumentException" + e);
-		} catch (InvalidFormatException e) {
-			throw new NullPointerException("Failed due to InvalidFormatException" + e);
 		} catch (IOException e) {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
@@ -890,16 +888,15 @@ public class JavaUtils extends LoadableComponent {
 				if (flag == true) {
 					for (i = 0; i < headers.getLastCellNum(); i++) {
 						record.getCell(i);
-						if ((null != record.getCell(i))
-								&& (record.getCell(i).getCellType() == Cell.CELL_TYPE_NUMERIC)) {
-							if (HSSFDateUtil.isCellDateFormatted(record.getCell(i))) {
+						if ((null != record.getCell(i)) && (record.getCell(i).getCellType() == CellType.NUMERIC)) {
+							if (DateUtil.isCellDateFormatted(record.getCell(i))) {
 
 								DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 								value = dateFormat.format(record.getCell(i).getDateCellValue()).trim();
 
 							} else {
-								record.getCell(i).setCellType(Cell.CELL_TYPE_STRING);
+								record.getCell(i).toString();
 
 								value = record.getCell(i).toString().trim();
 							}
@@ -926,8 +923,6 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to NullPointerException" + e);
 		} catch (EncryptedDocumentException e) {
 			throw new EncryptedDocumentException("Failed due to EncryptedDocumentException" + e);
-		} catch (InvalidFormatException e) {
-			throw new NullPointerException("Failed due to InvalidFormatException" + e);
 		} catch (IOException e) {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
@@ -964,8 +959,6 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to NullPointerException" + e);
 		} catch (EncryptedDocumentException e) {
 			throw new EncryptedDocumentException("Failed due to EncryptedDocumentException" + e);
-		} catch (InvalidFormatException e) {
-			throw new NullPointerException("Failed due to InvalidFormatException" + e);
 		} catch (IOException e) {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
@@ -1048,8 +1041,6 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to NullPointerException" + e);
 		} catch (EncryptedDocumentException e) {
 			throw new EncryptedDocumentException("Failed due to EncryptedDocumentException" + e);
-		} catch (InvalidFormatException e) {
-			throw new NullPointerException("Failed due to InvalidFormatException" + e);
 		} catch (IOException e) {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
@@ -1068,30 +1059,25 @@ public class JavaUtils extends LoadableComponent {
 
 			Row headers = it.next();
 			while (it.hasNext()) {
-
 				Row record = it.next();
 				String cellValue = record.getCell(0).toString().trim();
 				if (cellValue.equalsIgnoreCase(uniqueValue)) {
-
 					for (int i = 0; i < headers.getLastCellNum(); i++) {
 						record.getCell(i);
-						if ((null != record.getCell(i))
-								&& (record.getCell(i).getCellType() == Cell.CELL_TYPE_NUMERIC)) {
-							if (HSSFDateUtil.isCellDateFormatted(record.getCell(i))) {
-
+						if ((null != record.getCell(i)) && (record.getCell(i).getCellType() == CellType.NUMERIC)) {
+							if (DateUtil.isCellDateFormatted(record.getCell(i))) {
 								DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 								value = dateFormat.format(record.getCell(i).getDateCellValue()).trim();
-
 							} else {
-								record.getCell(i).setCellType(Cell.CELL_TYPE_STRING);
-
-								value = record.getCell(i).toString().trim();
+								String cellText = record.getCell(i).toString();
+								if (cellText.endsWith(".0")) {
+									value = cellText.substring(0, cellText.length() - 2).trim();
+								} else {
+									value = cellText.trim();
+								}
 							}
 							key = headers.getCell(i).toString().trim();
-
 						} else {
-
 							key = (headers.getCell(i) + "".toString()).trim() + "";
 							value = (null != record.getCell(i)) ? (record.getCell(i) + "".toString()).trim() + "" : "";
 						}
@@ -1105,8 +1091,6 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to NullPointerException" + e);
 		} catch (EncryptedDocumentException e) {
 			throw new EncryptedDocumentException("Failed due to EncryptedDocumentException" + e);
-		} catch (InvalidFormatException e) {
-			throw new NullPointerException("Failed due to InvalidFormatException" + e);
 		} catch (IOException e) {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
@@ -1136,8 +1120,6 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to NullPointerException" + e);
 		} catch (EncryptedDocumentException e) {
 			throw new EncryptedDocumentException("Failed due to EncryptedDocumentException" + e);
-		} catch (InvalidFormatException e) {
-			throw new NullPointerException("Failed due to InvalidFormatException" + e);
 		} catch (IOException e) {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
@@ -1159,7 +1141,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return dayOfMonth;
 	}
-	
+
 	public String getTodaysMonth() {
 		int month = Calendar.getInstance(TimeZone.getTimeZone("India")).get(Calendar.MONTH) + 1;
 		String currentMonth = "";
@@ -1229,8 +1211,8 @@ public class JavaUtils extends LoadableComponent {
 					for (int i = 0; i < (headerKeyRow.getLastCellNum() - headerKeyRow.getFirstCellNum()); i++) {
 						key = headerKeyRow.getCell(i).getStringCellValue();
 						headerValueRow.getCell(i);
-						if (headerValueRow.getCell(i).getCellType() == Cell.CELL_TYPE_NUMERIC) {
-							headerValueRow.getCell(i).setCellType(Cell.CELL_TYPE_STRING);
+						if (headerValueRow.getCell(i).getCellType() == CellType.NUMERIC) {
+							headerValueRow.getCell(i).toString();
 						}
 						value = headerValueRow.getCell(i).getStringCellValue();
 						headers.put(key, value);
@@ -1246,9 +1228,6 @@ public class JavaUtils extends LoadableComponent {
 		} catch (EncryptedDocumentException e) {
 			Reporter.log("Unable to load headers from the excelsheet..!");
 			throw new EncryptedDocumentException("Failed due to EncryptedDocumentException" + e);
-		} catch (InvalidFormatException e) {
-			Reporter.log("Unable to load headers from the excelsheet..!");
-			throw new NullPointerException("Failed due to InvalidFormatException" + e);
 		} catch (IOException e) {
 			Reporter.log("Unable to load headers from the excelsheet..!");
 			throw new NullPointerException("Failed due to IOException" + e);
@@ -1352,8 +1331,6 @@ public class JavaUtils extends LoadableComponent {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (EncryptedDocumentException e) {
-			e.printStackTrace();
-		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
 	}
@@ -1675,7 +1652,7 @@ public class JavaUtils extends LoadableComponent {
 		String saltStr = salt.toString();
 		return saltStr + "@gmail.com";
 	}
-	
+
 	public String generateRandomTermNumber() {
 		String SALTCHARS = "abcdefghijklmnopqrstuvwxyz";
 		StringBuilder salt = new StringBuilder();
@@ -1687,7 +1664,7 @@ public class JavaUtils extends LoadableComponent {
 		String saltStr = salt.toString();
 		return saltStr;
 	}
-	
+
 	public String generateRandomTxnNumber() {
 		String SALTCHARS = "1234567890";
 		StringBuilder salt = new StringBuilder();
@@ -1699,7 +1676,7 @@ public class JavaUtils extends LoadableComponent {
 		String saltStr = salt.toString();
 		return saltStr;
 	}
-	
+
 	public String generateRandomReferenceNumber() {
 		Random rand = new Random();
 		int maxF = 9, minF = 1;
@@ -1721,7 +1698,7 @@ public class JavaUtils extends LoadableComponent {
 		LocalDate localDate = LocalDate.now();
 		return dtf.format(localDate);
 	}
-	
+
 	public void pressEnter() throws AWTException {
 		Robot robot = new Robot();
 		robot.keyPress(KeyEvent.VK_ENTER);

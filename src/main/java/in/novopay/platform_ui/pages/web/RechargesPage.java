@@ -478,7 +478,7 @@ public class RechargesPage extends BasePage {
 		System.out.println("Recharge Amount: " + replaceSymbols(txnScreenBillAmount.getText()));
 
 		String chrges = dbUtils.getRechargeChargesAndComm("charges", usrData.get("VENDOR"), usrData.get("MOBILETYPE"),
-				usrData.get("OPERATOR").toUpperCase());
+				usrData.get("OPERATOR"));
 		if (!chrges.equals("0.00")) {
 			Assert.assertEquals(replaceSymbols(txnScreenCharges.getText()), chrges);
 			System.out.println("Charges: " + chrges);
@@ -509,8 +509,8 @@ public class RechargesPage extends BasePage {
 				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction is unsuccessful.");
 				System.out.println(rechTxnScreenMessage.getText());
 			} else {
-			Assert.assertEquals(rechTxnScreenMessage.getText(), "Bill Payment failed");
-			System.out.println(rechTxnScreenMessage.getText());
+				Assert.assertEquals(rechTxnScreenMessage.getText(), "Bill Payment failed");
+				System.out.println(rechTxnScreenMessage.getText());
 			}
 			Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
 					rechargeDataFromIni("GetAmount", "") + ".00");
@@ -518,7 +518,7 @@ public class RechargesPage extends BasePage {
 			txnDetailsFromIni("StoreTxfAmount", replaceSymbols(txnScreenBillAmount.getText()));
 
 			String chrges = dbUtils.getRechargeChargesAndComm("charges", usrData.get("VENDOR"),
-					usrData.get("MOBILETYPE"), usrData.get("OPERATOR").toUpperCase());
+					usrData.get("MOBILETYPE"), usrData.get("OPERATOR"));
 			if (!chrges.equals("0.00")) {
 				Assert.assertEquals(replaceSymbols(txnScreenCharges.getText()), chrges);
 				System.out.println("Charges: " + chrges);
@@ -569,7 +569,7 @@ public class RechargesPage extends BasePage {
 		double amount = Double.parseDouble(rechargeDataFromIni("GetAmount", ""));
 		double charges = Double.parseDouble(txnDetailsFromIni("GetCharges", ""));
 		String comm = dbUtils.getRechargeChargesAndComm("comm", usrData.get("VENDOR"), usrData.get("MOBILETYPE"),
-				usrData.get("OPERATOR").toUpperCase());
+				usrData.get("OPERATOR"));
 		double comm1 = amount * Double.parseDouble(comm) / 100;
 		double commission = Math.round(comm1 * 100.0) / 100.0;
 		double taxDS = commission * Double.parseDouble(dbUtils.getTDSPercentage(mobileNumFromIni())) / 10000;

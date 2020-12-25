@@ -83,7 +83,7 @@ public class FlowMapper {
 				Pattern r = Pattern.compile(pattern);
 
 				try {
-					obj = flow.newInstance();
+					obj = flow.getDeclaredConstructor().newInstance();
 					Method[] method = obj.getClass().getDeclaredMethods();
 					for (int i = 0; i < method.length; i++) {
 						String message = method[i].toString();

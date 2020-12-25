@@ -266,11 +266,11 @@ public class ElectricityPage extends BasePage {
 				if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
 					waitUntilElementIsClickableAndClickTheElement(id1);
 					id1.sendKeys(usrData.get("ACCOUNTID"));
-					System.out.println("Account Id entered");
+					System.out.println(usrData.get("ACCOUNTID") + " Account Id entered");
 				} else if (usrData.get("BILLERNAME").equalsIgnoreCase("MSEDC Limited")) {
 					waitUntilElementIsClickableAndClickTheElement(id1);
 					id1.sendKeys(usrData.get("ACCOUNTID"));
-					System.out.println("Account Id entered");
+					System.out.println(usrData.get("ACCOUNTID") + " Account Id entered");
 					waitUntilElementIsClickableAndClickTheElement(id2);
 					id2.sendKeys(usrData.get("BILLINGUNIT"));
 					System.out.println("Billing Unit entered");

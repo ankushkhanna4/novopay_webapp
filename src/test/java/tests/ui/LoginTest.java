@@ -20,7 +20,7 @@ import in.novopay.platform_ui.utils.JavaUtils;
 
 public class LoginTest {
 	String featureName = "Login";
-	public WebDriver wdriver;
+	public static WebDriver wdriver;
 	private BasePage mBasePage = new BasePage(wdriver);
 	private LoginPage wLoginPage;
 	private Map<String, String> usrData;

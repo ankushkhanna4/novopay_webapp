@@ -183,9 +183,6 @@ public class BasePage extends JavaUtils {
 		} catch (EncryptedDocumentException e) {
 			System.out.println("Caught EncryptedDocumentException");
 			e.printStackTrace();
-		} catch (InvalidFormatException e) {
-			System.out.println("Caught InvalidFormatException");
-			e.printStackTrace();
 		} catch (IOException e) {
 			System.out.println("Caught IOException");
 			e.printStackTrace();

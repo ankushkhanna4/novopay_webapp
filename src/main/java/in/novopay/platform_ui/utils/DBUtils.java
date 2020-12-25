@@ -380,15 +380,15 @@ public class DBUtils extends JavaUtils {
 			String query = "";
 			if (wallet.equalsIgnoreCase("retailer")) {
 				query = "UPDATE `wallet`.`m_savings_account` SET `account_balance_derived` = '" + amount
-						+ ".000000' WHERE `account_no` = (SELECT attr_value FROM `master`.`organization_attribute` oa WHERE `attr_key` = 'WALLET_ACCOUNT_NUMBER' AND `orgnization_id` = (SELECT `organization` FROM `master`.`user` WHERE `id` = (SELECT `user_id` FROM `master`.`user_attribute` WHERE `attr_value` = '"
+						+ "' WHERE `account_no` = (SELECT attr_value FROM `master`.`organization_attribute` oa WHERE `attr_key` = 'WALLET_ACCOUNT_NUMBER' AND `orgnization_id` = (SELECT `organization` FROM `master`.`user` WHERE `id` = (SELECT `user_id` FROM `master`.`user_attribute` WHERE `attr_value` = '"
 						+ mobNum + "' ORDER BY id DESC LIMIT 1)));";
 			} else if (wallet.equalsIgnoreCase("cashout")) {
 				query = "UPDATE `wallet`.`m_savings_account` SET `account_balance_derived` = '" + amount
-						+ ".000000' WHERE `account_no` = (SELECT attr_value FROM `master`.`organization_attribute` oa WHERE `attr_key` = 'CASH_OUT_WALLET_ACCOUNT_NUMBER' AND `orgnization_id` = (SELECT `organization` FROM `master`.`user` WHERE `id` = (SELECT `user_id` FROM `master`.`user_attribute` WHERE `attr_value` = '"
+						+ "' WHERE `account_no` = (SELECT attr_value FROM `master`.`organization_attribute` oa WHERE `attr_key` = 'CASH_OUT_WALLET_ACCOUNT_NUMBER' AND `orgnization_id` = (SELECT `organization` FROM `master`.`user` WHERE `id` = (SELECT `user_id` FROM `master`.`user_attribute` WHERE `attr_value` = '"
 						+ mobNum + "' ORDER BY id DESC LIMIT 1)));";
 			} else if (wallet.equalsIgnoreCase("merchant")) {
 				query = "UPDATE `wallet`.`m_savings_account` SET `account_balance_derived` = '" + amount
-						+ ".000000' WHERE `account_no` = (SELECT attr_value FROM `master`.`organization_attribute` oa WHERE `attr_key` = 'OTC_MERCHANT_WALLET_ACCOUNT_NUMBER' AND `orgnization_id` = (SELECT `organization` FROM `master`.`user` WHERE `id` = (SELECT `user_id` FROM `master`.`user_attribute` WHERE `attr_value` = '"
+						+ "' WHERE `account_no` = (SELECT attr_value FROM `master`.`organization_attribute` oa WHERE `attr_key` = 'OTC_MERCHANT_WALLET_ACCOUNT_NUMBER' AND `orgnization_id` = (SELECT `organization` FROM `master`.`user` WHERE `id` = (SELECT `user_id` FROM `master`.`user_attribute` WHERE `attr_value` = '"
 						+ mobNum + "' ORDER BY id DESC LIMIT 1)));";
 			}
 			stmt = conn.createStatement();

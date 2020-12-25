@@ -13,8 +13,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<surefire.version>2.14.1</surefire.version>
-		<poi.version>3.13</poi.version>
-		<testng.version>6.8.8</testng.version>
+		<poi.version>4.1.2</poi.version>
+		<testng.version>7.3.0</testng.version>
 		<mysqlconnector.version>5.1.38</mysqlconnector.version>
 		<selenium.version>3.12.0</selenium.version>
 		<appium-javaclient.version>3.3.0</appium-javaclient.version>
@@ -113,9 +113,6 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.54</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.applitools</groupId> <artifactId>eyes-selenium-java3</artifactId> 
-			<version>RELEASE</version> </dependency> -->
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-io</artifactId>
@@ -124,7 +121,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-sync</artifactId>
-			<version>3.8.2</version>
+			<version>3.12.7</version>
 		</dependency>
 	</dependencies>
 </project>

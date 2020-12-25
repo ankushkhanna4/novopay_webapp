@@ -1388,11 +1388,10 @@ public class RBLBankingPage extends BasePage {
 
 	// SMS assertion
 	public void assertionOnWithdrawalSMS(Map<String, String> usrData) throws ClassNotFoundException {
-		String successSMS = "Cash Withdrawal: INR " + usrData.get("AMOUNT") + ".00 withdrawn from your "
-				+ usrData.get("BANKNAME") + " a/c linked to Aadhaar  XXXX XXXX "
-				+ usrData.get("AADHAAR").substring(8, 12) + ". Reference Number: "
-				+ txnDetailsFromIni("GetTxnRefNo", "") + ", Charges: 0.00, Date: " + dbUtils.aepsTxnDate() + " IST";
-
+		String successSMS = usrData.get("AMOUNT") + ".00 Rs. withdrawn from your " + usrData.get("BANKNAME")
+				+ " a/c linked to Aadhaar  XXXX XXXX " + usrData.get("AADHAAR").substring(8, 12)
+				+ ". 0.00 Rs. are the Charges. Ref No: " + txnDetailsFromIni("GetTxnRefNo", "")
+				+ ". Track the status of all your transactions anytime on our app https://bit.ly/Novopay_Grahak";
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successSMS, dbUtils.sms());
 			System.out.println(successSMS);

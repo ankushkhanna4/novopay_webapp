@@ -2,10 +2,12 @@
 
 <html>
   <head>
+  <meta charset='utf-8'>
   <title>TestNG reports</title>
 
-    <link type="text/css" href="testng-reports.css" rel="stylesheet" />  
-    <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+    <link type="text/css" href="testng-reports1.css" rel="stylesheet" id="ultra" />
+    <link type="text/css" href="testng-reports.css" rel="stylesheet" id="retro" disabled="false"/>
+    <script type="text/javascript" src="jquery-3.4.1.min.js"></script>
     <script type="text/javascript" src="testng-reports.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type='text/javascript'>
@@ -22,21 +24,22 @@
   <body>
     <div class="top-banner-root">
       <span class="top-banner-title-font">Test results</span>
+      <button id="button" class="button">Switch Retro Theme</button> <!-- button -->
       <br/>
       <span class="top-banner-font-1">1 suite</span>
     </div> <!-- top-banner-root -->
     <div class="navigator-root">
       <div class="navigator-suite-header">
         <span>All suites</span>
-        <a href="#" class="collapse-all-link" title="Collapse/expand all the suites">
-          <img class="collapse-all-icon" src="collapseall.gif">
+        <a href="#" title="Collapse/expand all the suites" class="collapse-all-link">
+          <img src="collapseall.gif" class="collapse-all-icon">
           </img> <!-- collapse-all-icon -->
         </a> <!-- collapse-all-link -->
       </div> <!-- navigator-suite-header -->
       <div class="suite">
         <div class="rounded-window">
           <div class="suite-header light-rounded-window-top">
-            <a href="#" class="navigator-link" panel-name="suite-Default_suite">
+            <a href="#" panel-name="suite-Default_suite" class="navigator-link">
               <span class="suite-name border-passed">Default suite</span>
             </a> <!-- navigator-link -->
           </div> <!-- suite-header light-rounded-window-top -->
@@ -47,37 +50,37 @@
             <div class="suite-section-content">
               <ul>
                 <li>
-                  <a href="#" class="navigator-link " panel-name="test-xml-Default_suite">
-                    <span>C:\Users\Ankush\AppData\Local\Temp\testng-eclipse-513842899\testng-customsuite.xml</span>
+                  <a href="#" panel-name="test-xml-Default_suite" class="navigator-link ">
+                    <span>C:\Users\Ankush Khanna\AppData\Local\Temp\testng-eclipse-55617553\testng-customsuite.xml</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
-                  <a href="#" class="navigator-link " panel-name="testlist-Default_suite">
+                  <a href="#" panel-name="testlist-Default_suite" class="navigator-link ">
                     <span class="test-stats">1 test</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
-                  <a href="#" class="navigator-link " panel-name="group-Default_suite">
+                  <a href="#" panel-name="group-Default_suite" class="navigator-link ">
                     <span>0 groups</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
-                  <a href="#" class="navigator-link " panel-name="times-Default_suite">
+                  <a href="#" panel-name="times-Default_suite" class="navigator-link ">
                     <span>Times</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
-                  <a href="#" class="navigator-link " panel-name="reporter-Default_suite">
+                  <a href="#" panel-name="reporter-Default_suite" class="navigator-link ">
                     <span>Reporter output</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
-                  <a href="#" class="navigator-link " panel-name="ignored-methods-Default_suite">
+                  <a href="#" panel-name="ignored-methods-Default_suite" class="navigator-link ">
                     <span>Ignored methods</span>
                   </a> <!-- navigator-link  -->
                 </li>
                 <li>
-                  <a href="#" class="navigator-link " panel-name="chronological-Default_suite">
+                  <a href="#" panel-name="chronological-Default_suite" class="navigator-link ">
                     <span>Chronological view</span>
                   </a> <!-- navigator-link  -->
                 </li>
@@ -90,7 +93,7 @@
               <div class="suite-section-content">
                 <ul>
                   <li>
-                    <span class="method-stats">2 methods,   2 passed</span>
+                    <span class="method-stats">9 methods,   9 passed</span>
                   </li>
                   <li>
                     <span class="method-list-title passed">Passed methods</span>
@@ -100,13 +103,48 @@
                     </span>
                     <div class="method-list-content passed suite-Default_suite">
                       <span>
-                        <img width="3%" src="passed.png"/>
-                        <a href="#" class="method navigator-link" panel-name="suite-Default_suite" title="tests.FlowMapper" hash-for-method="flowMapperTest({CONTRACT=RECHARGES, STEP10=, PRIORITY=P0, STEP02=RechargesTest_066, STEP13=, TCID=FlowMapper_086, S...)">flowMapperTest({CONTRACT=RECHARGES, STEP10=, PRIORITY=P0, STEP02=RechargesTest_066, STEP13=, TCID=FlowMapper_086, S...)</a> <!-- method navigator-link -->
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_046, STEP13=, TCID=FlowMapper_138, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_046, STEP13=, TCID=FlowMapper_138, S...)</a> <!-- method navigator-link -->
                       </span>
                       <br/>
                       <span>
-                        <img width="3%" src="passed.png"/>
-                        <a href="#" class="method navigator-link" panel-name="suite-Default_suite" title="tests.FlowMapper" hash-for-method="flowMapperTest({CONTRACT=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=En...)">flowMapperTest({CONTRACT=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=En...)</a> <!-- method navigator-link -->
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_024, STEP13=, TCID=FlowMapper_176, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_024, STEP13=, TCID=FlowMapper_176, S...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_006, STEP13=, TCID=FlowMapper_143, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_006, STEP13=, TCID=FlowMapper_143, S...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_001, STEP13=, TCID=FlowMapper_119, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_001, STEP13=, TCID=FlowMapper_119, S...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=En...)">flowMapperTest({CONTRACT=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=En...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_144, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_144, S...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_147, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_147, S...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_023, STEP13=, TCID=FlowMapper_157, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_023, STEP13=, TCID=FlowMapper_157, S...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="passed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Default_suite" title="tests.FlowMapper" class="method navigator-link" hash-for-method="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_007, STEP13=, TCID=FlowMapper_139, S...)">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_007, STEP13=, TCID=FlowMapper_139, S...)</a> <!-- method navigator-link -->
                       </span>
                       <br/>
                     </div> <!-- method-list-content passed suite-Default_suite -->
@@ -129,10 +167,34 @@
             <div class="main-panel-content rounded-window-bottom">
               <div class="method">
                 <div class="method-content">
-                  <a name="flowMapperTest({CONTRACT=RECHARGES, STEP10=, PRIORITY=P0, STEP02=RechargesTest_066, STEP13=, TCID=FlowMapper_086, S...)">
-                  </a> <!-- flowMapperTest({CONTRACT=RECHARGES, STEP10=, PRIORITY=P0, STEP02=RechargesTest_066, STEP13=, TCID=FlowMapper_086, S...) -->
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_046, STEP13=, TCID=FlowMapper_138, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_046, STEP13=, TCID=FlowMapper_138, S...) -->
                   <span class="method-name">flowMapperTest</span>
-                  <span class="parameters">({CONTRACT=RECHARGES, STEP10=, PRIORITY=P0, STEP02=RechargesTest_066, STEP13=, TCID=FlowMapper_086, STEP03=LogoutTest_001, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Pending to Pending transaction for Mobile Prepaid, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Recharge : ML})</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_046, STEP13=, TCID=FlowMapper_138, STEP03=ElectricityStatusEnquiryTest_001, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=Positive, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Status enquiry for a successful transaction, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: CP})</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_024, STEP13=, TCID=FlowMapper_176, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_024, STEP13=, TCID=FlowMapper_176, S...) -->
+                  <span class="method-name">flowMapperTest</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_024, STEP13=, TCID=FlowMapper_176, STEP03=ElectricityStatusEnquiryTest_003, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Status enquiry for a pending to pending transaction, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: BA})</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_006, STEP13=, TCID=FlowMapper_143, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_006, STEP13=, TCID=FlowMapper_143, S...) -->
+                  <span class="method-name">flowMapperTest</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_006, STEP13=, TCID=FlowMapper_143, STEP03=ElectricityStatusEnquiryTest_005, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=Negative, STEP07=, STEP04=ElectricityStatusEnquiryTest_006, STEP05=LogoutTest_001, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Refund for a later failed transaction and Status enquiry for refunded transaction, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: CP})</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_001, STEP13=, TCID=FlowMapper_119, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_001, STEP13=, TCID=FlowMapper_119, S...) -->
+                  <span class="method-name">flowMapperTest</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_001, STEP13=, TCID=FlowMapper_119, STEP03=ElectricityTest_003, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=Positive, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Verify biller list and pay bill for BESCOM after fetching amount and entering mobile number again, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: CP})</span>
                 </div> <!-- method-content -->
               </div> <!-- method -->
               <div class="method">
@@ -143,19 +205,51 @@
                   <span class="parameters">({CONTRACT=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=EnvTest_QA1, STEP12=, STEP06=, FCM=-, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=-, DESCRIPTION=Set environment to run test cases, TESTTYPE=no-check, STEP08=, STEP09=, FEATURE=-})</span>
                 </div> <!-- method-content -->
               </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_144, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_144, S...) -->
+                  <span class="method-name">flowMapperTest</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_144, STEP03=ElectricityStatusEnquiryTest_007, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Status Enquiry via section using Mobile Number, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: CP})</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_147, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_147, S...) -->
+                  <span class="method-name">flowMapperTest</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_147, STEP03=ElectricityStatusEnquiryTest_010, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Status Enquiry via page using Mobile Number, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: CP})</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_023, STEP13=, TCID=FlowMapper_157, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_023, STEP13=, TCID=FlowMapper_157, S...) -->
+                  <span class="method-name">flowMapperTest</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_023, STEP13=, TCID=FlowMapper_157, STEP03=ElectricityTest_022, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Verify biller list and pay bill for MSEDC after paying the bill and entering mobile number again, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: BA})</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_007, STEP13=, TCID=FlowMapper_139, S...)">
+                  </a> <!-- flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_007, STEP13=, TCID=FlowMapper_139, S...) -->
+                  <span class="method-name">flowMapperTest</span>
+                  <span class="parameters">({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_007, STEP13=, TCID=FlowMapper_139, STEP03=ElectricityStatusEnquiryTest_002, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Status enquiry for a failed transaction, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity: CP})</span>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
             </div> <!-- main-panel-content rounded-window-bottom -->
           </div> <!-- suite-Default_suite-class-passed -->
         </div> <!-- panel Default_suite -->
         <div panel-name="test-xml-Default_suite" class="panel">
           <div class="main-panel-header rounded-window-top">
-            <span class="header-content">C:\Users\Ankush\AppData\Local\Temp\testng-eclipse-513842899\testng-customsuite.xml</span>
+            <span class="header-content">C:\Users\Ankush Khanna\AppData\Local\Temp\testng-eclipse-55617553\testng-customsuite.xml</span>
           </div> <!-- main-panel-header rounded-window-top -->
           <div class="main-panel-content rounded-window-bottom">
             <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;!DOCTYPE suite SYSTEM &quot;http://testng.org/testng-1.0.dtd&quot;&gt;
-&lt;suite name=&quot;Default suite&quot;&gt;
-  &lt;test verbose=&quot;2&quot; name=&quot;Default test&quot;&gt;
+&lt;!DOCTYPE suite SYSTEM &quot;https://testng.org/testng-1.0.dtd&quot;&gt;
+&lt;suite name=&quot;Default suite&quot; guice-stage=&quot;DEVELOPMENT&quot;&gt;
+  &lt;test thread-count=&quot;5&quot; name=&quot;Default test&quot; verbose=&quot;2&quot;&gt;
     &lt;classes&gt;
       &lt;class name=&quot;tests.FlowMapper&quot;/&gt;
     &lt;/classes&gt;
@@ -197,20 +291,48 @@ data.addColumn('number', 'Number');
 data.addColumn('string', 'Method');
 data.addColumn('string', 'Class');
 data.addColumn('number', 'Time (ms)');
-data.addRows(2);
+data.addRows(9);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'flowMapperTest')
 data.setCell(0, 2, 'tests.FlowMapper')
-data.setCell(0, 3, 72533);
+data.setCell(0, 3, 70755);
 data.setCell(1, 0, 1)
 data.setCell(1, 1, 'flowMapperTest')
 data.setCell(1, 2, 'tests.FlowMapper')
-data.setCell(1, 3, 1787);
+data.setCell(1, 3, 68227);
+data.setCell(2, 0, 2)
+data.setCell(2, 1, 'flowMapperTest')
+data.setCell(2, 2, 'tests.FlowMapper')
+data.setCell(2, 3, 60661);
+data.setCell(3, 0, 3)
+data.setCell(3, 1, 'flowMapperTest')
+data.setCell(3, 2, 'tests.FlowMapper')
+data.setCell(3, 3, 51432);
+data.setCell(4, 0, 4)
+data.setCell(4, 1, 'flowMapperTest')
+data.setCell(4, 2, 'tests.FlowMapper')
+data.setCell(4, 3, 47827);
+data.setCell(5, 0, 5)
+data.setCell(5, 1, 'flowMapperTest')
+data.setCell(5, 2, 'tests.FlowMapper')
+data.setCell(5, 3, 46085);
+data.setCell(6, 0, 6)
+data.setCell(6, 1, 'flowMapperTest')
+data.setCell(6, 2, 'tests.FlowMapper')
+data.setCell(6, 3, 45558);
+data.setCell(7, 0, 7)
+data.setCell(7, 1, 'flowMapperTest')
+data.setCell(7, 2, 'tests.FlowMapper')
+data.setCell(7, 3, 44641);
+data.setCell(8, 0, 8)
+data.setCell(8, 1, 'flowMapperTest')
+data.setCell(8, 2, 'tests.FlowMapper')
+data.setCell(8, 3, 1859);
 window.suiteTableData['Default_suite']= { tableData: data, tableDiv: 'times-div-Default_suite'}
 return data;
 }
               </script>
-              <span class="suite-total-time">Total running time: 1 minutes</span>
+              <span class="suite-total-time">Total running time: 7 minutes</span>
               <div id="times-div-Default_suite">
               </div> <!-- times-div-Default_suite -->
             </div> <!-- times-div -->
@@ -243,27 +365,84 @@ return data;
               </div> <!-- configuration-suite before -->
               <div class="test-method">
                 <span class="method-name">flowMapperTest({CONTRACT=-, STEP10=, PRIORITY=P, STEP02=, STEP13=, TCID=FlowMapper_000, STEP03=, STEP11=, STEP01=En...)</span>
-                <span class="method-start">1563 ms</span>
+                <span class="method-start">2370 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
-                <span class="method-start">3351 ms</span>
+                <span class="method-start">4234 ms</span>
               </div> <!-- configuration-method after -->
               <div class="test-method">
-                <span class="method-name">flowMapperTest({CONTRACT=RECHARGES, STEP10=, PRIORITY=P0, STEP02=RechargesTest_066, STEP13=, TCID=FlowMapper_086, S...)</span>
-                <span class="method-start">3552 ms</span>
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_001, STEP13=, TCID=FlowMapper_119, S...)</span>
+                <span class="method-start">4424 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
-                <span class="method-start">76085 ms</span>
+                <span class="method-start">72651 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_046, STEP13=, TCID=FlowMapper_138, S...)</span>
+                <span class="method-start">74495 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
+                <span class="method-start">119136 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_007, STEP13=, TCID=FlowMapper_139, S...)</span>
+                <span class="method-start">120738 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
+                <span class="method-start">168565 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_006, STEP13=, TCID=FlowMapper_143, S...)</span>
+                <span class="method-start">169750 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
+                <span class="method-start">240506 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_144, S...)</span>
+                <span class="method-start">241863 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
+                <span class="method-start">287422 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_005, STEP13=, TCID=FlowMapper_147, S...)</span>
+                <span class="method-start">288782 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
+                <span class="method-start">340214 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_023, STEP13=, TCID=FlowMapper_157, S...)</span>
+                <span class="method-start">341525 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
+                <span class="method-start">402187 ms</span>
+              </div> <!-- configuration-method after -->
+              <div class="test-method">
+                <span class="method-name">flowMapperTest({CONTRACT=BILLPAY, STEP10=, PRIORITY=P0, STEP02=ElectricityTest_024, STEP13=, TCID=FlowMapper_176, S...)</span>
+                <span class="method-start">403531 ms</span>
+              </div> <!-- test-method -->
+              <div class="configuration-method after">
+                <span class="method-name">result([TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[p...)</span>
+                <span class="method-start">449617 ms</span>
               </div> <!-- configuration-method after -->
               <div class="configuration-class after">
                 <span class="method-name">killDriver</span>
-                <span class="method-start">77287 ms</span>
+                <span class="method-start">450916 ms</span>
               </div> <!-- configuration-class after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->
       </div> <!-- main-panel-root -->
     </div> <!-- wrapper -->
   </body>
+<script type="text/javascript" src="testng-reports2.js"></script>
 </html>

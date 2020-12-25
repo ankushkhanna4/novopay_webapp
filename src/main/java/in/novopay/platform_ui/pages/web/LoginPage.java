@@ -81,7 +81,7 @@ public class LoginPage extends BasePage {
 
 	@FindBy(xpath = "//*[contains(text(),'RESEND OTP')]")
 	WebElement resendOTP;
-	
+
 	@FindBy(xpath = "//enable-location//button[contains(text(),'Ok')]")
 	WebElement location;
 
@@ -113,7 +113,7 @@ public class LoginPage extends BasePage {
 				mPin.sendKeys(usrData.get("MPIN"));
 				System.out.println("clicking on LOGIN button");
 				waitUntilElementIsClickableAndClickTheElement(login);
-
+				System.out.println(usrData.get("MPIN"));
 				if (mobNumValidation(mobNumFromSheet).equalsIgnoreCase("valid")
 						&& checkMobNumExistence(mobNumFromSheet).equalsIgnoreCase("exists")
 						&& (usrData.get("MPIN").equals("1111") || usrData.get("MPIN").equals("2222"))) {

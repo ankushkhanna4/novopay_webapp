@@ -744,7 +744,7 @@ public class RBLMoneyTransferPage extends BasePage {
 				// Provide customer details based on user data
 				if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
 					System.out.println("New customer mobile number entered");
-
+					Thread.sleep(2000);
 					custName.sendKeys(getCustomerDetailsFromIni("NewName"));
 					System.out.println("Customer name " + custName.getText() + " entered");
 					custName.sendKeys(Keys.TAB);
