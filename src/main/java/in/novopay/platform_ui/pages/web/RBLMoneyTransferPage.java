@@ -411,7 +411,7 @@ public class RBLMoneyTransferPage extends BasePage {
 			dbUtils.updatePartnerStatus(usrData.get("PARTNER1"), usrData.get("P1STATUS"), usrData.get("PARTNER2"),
 					usrData.get("P2STATUS"), usrData.get("PARTNER3"), usrData.get("P3STATUS"));
 			dbUtils.updateDmtBcAgentId("NOV1000704", getLoginMobileFromIni("GetRetailerMobNum"));
-			
+
 			customerDetails(usrData);
 
 			// Provide beneficiary details based on user data
@@ -960,7 +960,15 @@ public class RBLMoneyTransferPage extends BasePage {
 						System.out.println("Queuing auto-disabled");
 					}
 				}
-				if (!remittanceTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+				if (remittanceTxnScreen.getText().equalsIgnoreCase("Info!")) {
+					waitUntilElementIsVisible(blackout);
+					Assert.assertTrue(blackout.getText()
+							.contains("Similar transaction is under processing please try after 5 mins"));
+					System.out.println(blackout.getText());
+					waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
+					System.out.println("Exit button clicked");
+					dbUtils.updateBlackoutDuration("1");
+				} else if (!remittanceTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 					assertionOnSMS(usrData);
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Check Limit")) {
 						limitCheck(usrData); // check limit remaining
@@ -1055,12 +1063,6 @@ public class RBLMoneyTransferPage extends BasePage {
 							verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
 						}
 					}
-				} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Info!")) {
-					waitUntilElementIsVisible(blackout);
-					System.out.println(blackout.getText());
-					waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
-					System.out.println("Exit button clicked");
-					dbUtils.updateBlackoutDuration("1");
 				}
 			}
 		}

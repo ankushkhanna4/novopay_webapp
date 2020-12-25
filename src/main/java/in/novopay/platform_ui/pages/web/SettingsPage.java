@@ -450,7 +450,7 @@ public class SettingsPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
-					"Your end of the day withdrawable amount will now be credited to your verified bank account.");
+					"Your end of the day withdrawable amount will now be credited to your Primary bank account.");
 			System.out.println(settingsTxnScreenMessage.getText());
 		} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
