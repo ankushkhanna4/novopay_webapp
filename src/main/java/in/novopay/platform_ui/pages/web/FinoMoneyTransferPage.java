@@ -721,7 +721,7 @@ public class FinoMoneyTransferPage extends BasePage {
 		waitUntilElementIsClickableForFinoAndClickTheElement(custMobNum);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
-		System.out.println("Customer mobile number " + custMobNum.getText() + " entered");
+		System.out.println("Customer mobile number " + getCustomerDetailsFromIni("ExistingNum") + " entered");
 		commonUtils.waitForSpinner();
 		Thread.sleep(1000);
 		limitCheck(usrData); // check limit remaining
@@ -742,21 +742,11 @@ public class FinoMoneyTransferPage extends BasePage {
 
 				// Provide customer details based on user data
 				if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
-					System.out.println("New customer mobile number entered");
-
+					System.out.println("Customer is new");
 					custName.sendKeys(getCustomerDetailsFromIni("NewName"));
-					System.out.println("Customer name " + custName.getText() + " entered");
-//			custName.sendKeys(Keys.TAB);
-//			dob.sendKeys(usrData.get("DOB"));
-//			System.out.println("Date of birth entered");
-//			if (usrData.get("GENDER").equalsIgnoreCase("MALE")) {
-//				clickElement(genderMale);
-//			} else if (usrData.get("GENDER").equalsIgnoreCase("FEMALE")) {
-//				clickElement(genderFemale);
-//			}
-//			System.out.println("Gender selected");
+					System.out.println("Customer name " + getCustomerDetailsFromIni("ExistingName") + " entered");
 				} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
-					System.out.println("Existing customer mobile number entered");
+					System.out.println("Customer is existing");
 				}
 			}
 		}

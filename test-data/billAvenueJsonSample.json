@@ -30,7 +30,7 @@
 				"dueDate": "2021-06-03"
 			},
 			"fail": {
-				"responseCode": "001",
+				"responseCode": "100",
 				"errorInfo": {
 					"error": {
 						"errorCode": "E002",
@@ -91,7 +91,7 @@
 				"RespDueDate": "2016-06-30"
 			},
 			"fail": {
-				"responseCode": "001",
+				"responseCode": "208",
 				"errorInfo": {
 					"error": {
 						"errorCode": "E002",
@@ -141,7 +141,7 @@
 			"amount": "100",
 			"billerId": "TSTU00000NAT07",
 			"txnDate": "2016-10-17T18:06:40.554+05:30",
-			"txnStatus": "FAILED"
+			"txnStatus": "FAILURE"
 		},
 		"pending": {
 			"agentId": "YS01AB21000001123458",

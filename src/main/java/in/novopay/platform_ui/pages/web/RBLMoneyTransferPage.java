@@ -410,7 +410,8 @@ public class RBLMoneyTransferPage extends BasePage {
 					+ p3separator + usrData.get("PARTNER3")), getLoginMobileFromIni("GetRetailerMobNum"));
 			dbUtils.updatePartnerStatus(usrData.get("PARTNER1"), usrData.get("P1STATUS"), usrData.get("PARTNER2"),
 					usrData.get("P2STATUS"), usrData.get("PARTNER3"), usrData.get("P3STATUS"));
-
+			dbUtils.updateDmtBcAgentId("NOV1000704", getLoginMobileFromIni("GetRetailerMobNum"));
+			
 			customerDetails(usrData);
 
 			// Provide beneficiary details based on user data
@@ -433,9 +434,6 @@ public class RBLMoneyTransferPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(beneName);
 				beneName.sendKeys(getBeneNameFromIni(usrData.get("BENENAME")));
 				System.out.println("Bene name '" + usrData.get("BENENAME") + "' entered");
-//				waitUntilElementIsClickableAndClickTheElement(beneMobNum);
-//				beneMobNum.sendKeys(getBeneNumberFromIni(usrData.get("BENENUMBER")));
-//				System.out.println("Bene mobile number '" + getBeneNumberFromIni("GetNum") + "' entered");
 				waitUntilElementIsClickableAndClickTheElement(beneACNum);
 				beneACNum.sendKeys(getAccountNumberFromIni(usrData.get("BENEACNUM")));
 				System.out.println("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
@@ -622,7 +620,14 @@ public class RBLMoneyTransferPage extends BasePage {
 				}
 
 				Thread.sleep(2000);
-				waitUntilElementIsClickableAndClickTheElement(moneyTransferSubmitButton);
+				try {
+					waitUntilSubmitIsClickableAndClickTheElement(moneyTransferSubmitButton);
+				} catch (Exception e) {
+					System.out.println("Submit button not visible. Pressing Tab");
+					Thread.sleep(1000);
+					deleteBeneButton.sendKeys(Keys.TAB);
+					waitUntilElementIsClickableAndClickTheElement(moneyTransferSubmitButton);
+				}
 				System.out.println("Submit button clicked");
 
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Main!=0 Cashout=0")) {
@@ -723,7 +728,7 @@ public class RBLMoneyTransferPage extends BasePage {
 		waitUntilElementIsClickableAndClickTheElement(custMobNum);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
-		System.out.println("Customer mobile number " + custMobNum.getText() + " entered");
+		System.out.println("Customer mobile number " + getCustomerDetailsFromIni("ExistingNum") + " entered");
 		commonUtils.waitForSpinner();
 		Thread.sleep(1000);
 		limitCheck(usrData); // check limit remaining
@@ -743,10 +748,10 @@ public class RBLMoneyTransferPage extends BasePage {
 
 				// Provide customer details based on user data
 				if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
-					System.out.println("New customer mobile number entered");
+					System.out.println("Customer is new");
 					Thread.sleep(2000);
 					custName.sendKeys(getCustomerDetailsFromIni("NewName"));
-					System.out.println("Customer name " + custName.getText() + " entered");
+					System.out.println("Customer name " + getCustomerDetailsFromIni("ExistingName") + " entered");
 					custName.sendKeys(Keys.TAB);
 					dob.sendKeys(usrData.get("DOB"));
 					System.out.println("Date of birth entered");
@@ -757,7 +762,7 @@ public class RBLMoneyTransferPage extends BasePage {
 					}
 					System.out.println("Gender selected");
 				} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
-					System.out.println("Existing customer mobile number entered");
+					System.out.println("Customer is existing");
 				}
 			}
 		}

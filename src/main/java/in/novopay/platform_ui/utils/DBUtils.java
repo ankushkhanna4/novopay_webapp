@@ -789,7 +789,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 
 		}
@@ -1556,7 +1556,7 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 
 		}
@@ -1622,7 +1622,7 @@ public class DBUtils extends JavaUtils {
 			stmt.executeUpdate(query);
 			System.out.println("Updating org_stlmnt_info table as per mode " + mode + " and status " + status);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 		}
 	}
@@ -1676,7 +1676,7 @@ public class DBUtils extends JavaUtils {
 					+ "VALUES((SELECT u.`organization` FROM `master`.`user` u JOIN `master`.`user_attribute` ua "
 					+ "ON u.`id`=ua.`user_id` WHERE ua.`attr_value`='" + mobNum + "' "
 					+ "AND u.status = 'ACTIVE'),(SELECT id " + "FROM master.organization WHERE `CODE` = 'rbl'));";
-			
+
 			stmt = conn.createStatement();
 			stmt.executeUpdate(deleteQuery);
 			System.out.println("Deleting all contracts");
@@ -1722,7 +1722,7 @@ public class DBUtils extends JavaUtils {
 				}
 			}
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 		}
 	}
@@ -1737,7 +1737,7 @@ public class DBUtils extends JavaUtils {
 			stmt.executeUpdate(query);
 			System.out.println("Updating IMPS_DISABLE as " + value + " for partner " + partner);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 		}
 	}
@@ -1770,7 +1770,7 @@ public class DBUtils extends JavaUtils {
 			stmt.executeUpdate(query2);
 			System.out.println("Updating public holiday as " + date);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 		}
 	}
@@ -1805,7 +1805,7 @@ public class DBUtils extends JavaUtils {
 			stmt.executeUpdate(query2);
 			System.out.println("Updating start time as " + startTime + " and end time as " + endTime);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 		}
 	}
@@ -1861,10 +1861,27 @@ public class DBUtils extends JavaUtils {
 		}
 	}
 
+	public void updateDmtBcAgentId(String value, String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "UPDATE master.organization_attribute SET attr_value = '" + value
+					+ "' WHERE orgnization_id = (SELECT organization FROM master.user "
+					+ "WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "') AND `status` = 'ACTIVE') AND attr_key = 'RBL_BCAGENT_ID';";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating DMT BC Agent ID as " + value);
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
+	}
+
 	public void updateWalletTopupRequest() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npOps"));
-			String query = "UPDATE np_ops.`wallet_topup_request` SET STATUS = 'APPROVED'";
+			String query = "UPDATE np_ops.`wallet_topup_request` SET `status` = 'APPROVED', "
+					+ "`processed_on` = NOW() WHERE `status` = 'PENDING';";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Updating status of wallet_topup_request to APPROVED");
@@ -1901,7 +1918,7 @@ public class DBUtils extends JavaUtils {
 					+ "'PENDING','Automation',NOW(),NULL,NULL,'Automation.csv',NULL,NULL,'" + type + "','BENGALURU');";
 			stmt.executeUpdate(insertQuery);
 		} catch (SQLException sqe) {
-			System.out.println("Error connecting DB!! BC Agent ID update  failed..!");
+			System.out.println("Error connecting DB!! Update failed..!");
 			sqe.printStackTrace();
 		}
 	}

@@ -381,7 +381,16 @@ public class BasePage extends JavaUtils {
 	}
 	
 	/**
-	 * Wait until web element is clickable and click the element for Fino
+	 * Wait until Submit element is clickable and click the element
+	 */
+	public void waitUntilSubmitIsClickableAndClickTheElement(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 10);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		clickElement(element);
+	}
+	
+	/**
+	 * Wait until Submit element is clickable and click the element for Fino
 	 */
 	public void waitUntilSubmitIsClickableForFinoAndClickTheElement(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 10);

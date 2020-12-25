@@ -2,21 +2,17 @@
 "responseConfigMap" :
         {
                 "0":{ "npciResponseCode":"M3"},
-                "999":{ "npciResponseCode":"00"},
-                "2999":{ "npciResponseCode":"00"},
-                "3000":{ "npciResponseCode":"00"},
-                "10000":{ "npciResponseCode":"00"},
-                "1001":{ "npciResponseCode":"00"},
+                "10":{ "npciResponseCode":"00"},
                 "100":{ "npciResponseCode":"00"},
                 "1000":{ "npciResponseCode":"00"},
-                "150":{ "npciResponseCode":"DS"},
-                "2000":{ "npciResponseCode":"91"},
-                "2500":{ "npciResponseCode":"DD"},
-                "4000":{ "npciResponseCode":"VT"},
-                "350":{ "npciResponseCode":"UH"},
-                "4001":{ "npciResponseCode":"M3"},
-                "3001":{ "npciResponseCode":"00"},
-                "200":{ "npciResponseCode":"91"},
-                "400":{ "npciResponseCode":"M3"}
+                "10000":{ "npciResponseCode":"DS"},
+                "200":{ "npciResponseCode":"DS"},
+                "300":{ "npciResponseCode":"DD"},
+                "400":{ "npciResponseCode":"VT"},
+                "500":{ "npciResponseCode":"UH"},
+                "600":{ "npciResponseCode":"M3"},
+                "700":{ "npciResponseCode":"00"},
+                "800":{ "npciResponseCode":"91"},
+                "900":{ "npciResponseCode":"M3"}
         }
 }

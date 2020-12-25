@@ -117,7 +117,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.host.ip", "192.168.150.7");
 				ini.put("Common", "server.host.port", "22");
 				ini.put("Common", "server.username", "akhanna");
-				ini.put("Common", "server.password", "qazxsw123");
+				ini.put("Common", "server.password", "qaonenovopay");
 				configProperties.put("env", "qa1");
 				configProperties.put("webAppUrl", "https://qa1-retailer.novopay.in/");
 				configProperties.put("finOpsUrl", "https://qa1-finance-portal.novopay.in");
@@ -131,7 +131,7 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.ip", "192.168.150.7");
 				configProperties.put("server.host.port", "22");
 				configProperties.put("server.username", "akhanna");
-				configProperties.put("server.password", "qazxsw123");
+				configProperties.put("server.password", "qaonenovopay");
 			} else if (env.equalsIgnoreCase("QA2")) {
 				ini.put("Common", "env", "qa2");
 				ini.put("Common", "webAppUrl", "https://qa2-retailer.novopay.in/");
@@ -146,7 +146,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.host.ip", "192.168.150.24");
 				ini.put("Common", "server.host.port", "22");
 				ini.put("Common", "server.username", "akhanna");
-				ini.put("Common", "server.password", "qazxsw123");
+				ini.put("Common", "server.password", "qatwonovopay");
 				configProperties.put("env", "qa2");
 				configProperties.put("webAppUrl", "https://qa2-retailer.novopay.in/");
 				configProperties.put("finOpsUrl", "https://qa2-finance-portal.novopay.in");
@@ -160,7 +160,7 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.ip", "192.168.150.24");
 				configProperties.put("server.host.port", "22");
 				configProperties.put("server.username", "akhanna");
-				configProperties.put("server.password", "qazxsw123");
+				configProperties.put("server.password", "qatwonovopay");
 			} else if (env.equalsIgnoreCase("PP")) {
 				ini.put("Common", "env", "pre-prod");
 				ini.put("Common", "webAppUrl", "https://preretailer.novopay.in/");

@@ -221,17 +221,14 @@ public class ServerUtils {
 				m_channelExec = (ChannelExec) session.openChannel("exec");
 				System.out.println("Open Channel");
 				m_channelExec.setCommand(cmd);
-				System.out.println("Setting command");
 				m_channelExec.setInputStream(null);
-				System.out.println("Setting InputStream");
 	            ((ChannelExec) m_channelExec).setErrStream(System.err);
-	            System.out.println("Setting ErrorStream");
 	            ((ChannelExec) m_channelExec).setPty(true);
-	            System.out.println("Setting Pseudo Terminal");
 				m_channelExec.connect();
 				System.out.println("Connecting...");
+				Thread.sleep(2000);
 				m_channelExec.disconnect();
-				System.out.println("Disconnecting...");
+				System.out.println("Disconnected");
 				return true;
 			} catch (JSchException e) {
 				e.printStackTrace();
