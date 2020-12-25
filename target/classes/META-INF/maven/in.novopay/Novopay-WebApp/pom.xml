@@ -12,14 +12,14 @@
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<surefire.version>2.14.1</surefire.version>
+		<surefire.version>3.0.0-M5</surefire.version>
 		<poi.version>4.1.2</poi.version>
 		<testng.version>7.3.0</testng.version>
 		<mysqlconnector.version>8.0.22</mysqlconnector.version>
-		<selenium.version>3.12.0</selenium.version>
-		<appium-javaclient.version>3.3.0</appium-javaclient.version>
-		<java-mail.version>1.4</java-mail.version>
-		<common-lang.version>2.3</common-lang.version>
+		<selenium.version>3.141.59</selenium.version>
+		<appium-javaclient.version>7.4.1</appium-javaclient.version>
+		<java-mail.version>1.6.2</java-mail.version>
+		<common-lang.version>2.6</common-lang.version>
 		<androidlib.version>4.1.1.4</androidlib.version>
 		<ini.version>0.5.4</ini.version>
 	</properties>
@@ -70,7 +70,7 @@
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
+			<artifactId>javax.mail-api</artifactId>
 			<version>${java-mail.version}</version>
 		</dependency>
 		<dependency>
@@ -111,7 +111,7 @@
 		<dependency>
 			<groupId>com.jcraft</groupId>
 			<artifactId>jsch</artifactId>
-			<version>0.1.54</version>
+			<version>0.1.55</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
