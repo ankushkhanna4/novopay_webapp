@@ -263,8 +263,8 @@ public class RechargesPage extends BasePage {
 			dropdownField.sendKeys(usrData.get("OPERATOR"));
 			System.out.println("Operator " + usrData.get("OPERATOR") + " entered");
 
-			String operatorXpath = "//*[@class='select2-results']/ul/li[contains(text(),'" + usrData.get("OPERATOR")
-					+ "')]";
+			String operatorXpath = "//*[@class='select2-results']/ul/li[contains(text(),'"
+					+ usrData.get("OPERATOR") + "')]";
 			WebElement operator = wdriver.findElement(By.xpath(operatorXpath));
 			waitUntilElementIsClickableAndClickTheElement(operator);
 
