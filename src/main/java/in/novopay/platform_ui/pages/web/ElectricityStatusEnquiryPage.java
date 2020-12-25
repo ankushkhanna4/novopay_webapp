@@ -244,6 +244,7 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 						System.out.println("Refund OTP entered");
 						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 						commonUtils.waitForSpinner();
+						Thread.sleep(2000);
 						waitUntilElementIsVisible(seTxnTitle);
 						assertionOnRefundScreen(usrData);
 						seOkBtn.click();

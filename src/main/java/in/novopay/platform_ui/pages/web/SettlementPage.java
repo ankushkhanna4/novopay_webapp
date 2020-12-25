@@ -467,7 +467,7 @@ public class SettlementPage extends BasePage {
 	public void assertionOnWarnScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		try {
-			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request deemed successful.");
+			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer initiated successfully.");
 		} catch (AssertionError e) {
 			Assert.assertEquals(
 					settlementTxnScreenMessage.getText().substring(0, 32)

@@ -113,9 +113,6 @@
 			<artifactId>jsch</artifactId>
 			<version>0.1.54</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.applitools</groupId> <artifactId>eyes-selenium-java3</artifactId> 
-			<version>RELEASE</version> </dependency> -->
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-io</artifactId>

@@ -102,7 +102,7 @@ public class FinoCMSPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div/following-sibling::div/div[2]")
 	WebElement cmsTxnScreenMessage;
-	
+
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Txn ID')]/parent::span/parent::div/following-sibling::div//span")
 	WebElement finoCMSRefNo;
 
@@ -315,7 +315,11 @@ public class FinoCMSPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
-			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Failed");
+			try {
+				Assert.assertEquals(cmsTxnScreenMessage.getText(), "Failed");
+			} catch (AssertionError e) {
+				Assert.assertEquals(cmsTxnScreenMessage.getText(), "Token Generation Failed");
+			}
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 		txnDetailsFromIni("StoreTxnRefNo", finoCMSRefNo.getText());

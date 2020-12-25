@@ -345,7 +345,7 @@ public class BasePage extends JavaUtils {
 	 * Wait until web element is visible
 	 */
 	public void waitUntilElementIsVisible(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		WebDriverWait wait = new WebDriverWait(wdriver, 60);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
 
@@ -361,7 +361,7 @@ public class BasePage extends JavaUtils {
 	 * Wait until web element is invisible
 	 */
 	public void waitUntilElementIsInvisible(String xpath) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		WebDriverWait wait = new WebDriverWait(wdriver, 60);
 		wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(xpath)));
 	}
 
@@ -369,7 +369,7 @@ public class BasePage extends JavaUtils {
 	 * Wait until web element is clickable and click the element
 	 */
 	public void waitUntilElementIsClickableAndClickTheElement(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		WebDriverWait wait = new WebDriverWait(wdriver, 60);
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 		clickElement(element);
 	}
@@ -396,7 +396,7 @@ public class BasePage extends JavaUtils {
 	 * Wait until web element is clickable
 	 */
 	public void waitUntilElementIsClickable(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 30);
+		WebDriverWait wait = new WebDriverWait(wdriver, 60);
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 	}
 
