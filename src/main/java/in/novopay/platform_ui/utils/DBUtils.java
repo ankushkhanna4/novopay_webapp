@@ -1627,6 +1627,45 @@ public class DBUtils extends JavaUtils {
 		}
 	}
 
+	public String deleteOrgSettlementInfo(String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("rblSimulator"));
+			String query = "DELETE FROM `master`.`org_stlmnt_info` WHERE `organization_id` = (SELECT "
+					+ "organization FROM master.user WHERE id IN (SELECT user_id FROM master.user_attribute "
+					+ "WHERE attr_key = 'MSISDN' AND attr_value = '" + mobNum + "' AND `status` = 'ACTIVE'));";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+
+	public void insertOrgSettlementInfo(String mode, String status, String enabled, String mobNum, String primary)
+			throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			stmt = conn.createStatement();
+			String insertQuery = "INSERT INTO `master`.`org_stlmnt_info` (`organization_id`, `ac_no`, `bank_name`, `ifsc_code`,"
+					+ " `ac_holder_name`, `settlement_mode`, `is_primary`, `mdr_code`, `financial_category`, `frequency`,"
+					+ " `info_proof`, `info_proof_urn`, `info_proof_version`, `start_date`, `end_date`, `update_type`,"
+					+ " `update_remark`, `updated_on`, `created_by`, `inspected_by`, `inspected_on`, `status`,"
+					+ " `inspection_comments`, `validation_remarks`, `enabled`, `blocking_remarks`) VALUES((SELECT "
+					+ "organization FROM master.user WHERE id IN (SELECT user_id FROM master.user_attribute WHERE "
+					+ "attr_key = 'MSISDN' AND attr_value = '" + mobNum + "' AND `status` = 'ACTIVE')),'1234567890'"
+					+ ",'HDFC BANK','HDFC0000240','Ankush Khanna','TO_BANK','" + primary + "','MRCHNT_MDR_DEFAULT',"
+					+ "'MICRO','DAILY',NULL,'dce3aa24-479c-4069-a8df-c14197896531',NULL,NOW(),NULL,'ACCOUNT_DETAILS',"
+					+ "'1234567890, HDFC BANK',NOW(),'f4124888-6d00-4005-a6cf-778dea9f89d7','ankush_1608216767690',"
+					+ "NOW(),'2',NULL,NULL,'1',NULL);";
+			stmt.executeUpdate(insertQuery);
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB!! Update failed..!");
+			sqe.printStackTrace();
+		}
+	}
+
 	public String cfcDate() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
@@ -1775,7 +1814,7 @@ public class DBUtils extends JavaUtils {
 		}
 	}
 
-	public void updateWlletManagedByBank(String partner, String mobNum) throws ClassNotFoundException {
+	public void updateWalletManagedByBank(String partner, String mobNum) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));
 			String query = "UPDATE master.organization_attribute SET attr_value = '" + partner

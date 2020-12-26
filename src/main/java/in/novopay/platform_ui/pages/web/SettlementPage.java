@@ -197,16 +197,28 @@ public class SettlementPage extends BasePage {
 
 			// Updating org_stlmnt_info table as per test case
 			if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
-				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1");
+//				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")) {
-				dbUtils.updateOrgSettlementInfo("TO_BANK", "1", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "1", "1", mobileNumFromIni(), "0");
+//				dbUtils.updateOrgSettlementInfo("TO_BANK", "1", "1", "(NULL)", mobileNumFromIni());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Rejected")) {
-				dbUtils.updateOrgSettlementInfo("TO_BANK", "3", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "3", "1", mobileNumFromIni(), "0");
+//				dbUtils.updateOrgSettlementInfo("TO_BANK", "3", "1", "(NULL)", mobileNumFromIni());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
-				dbUtils.updateOrgSettlementInfo("TO_BANK", "4", "0", "Incorrect bank details", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "4", "1", mobileNumFromIni(), "0");
+//				dbUtils.updateOrgSettlementInfo("TO_BANK", "4", "0", "Incorrect bank details", mobileNumFromIni());
+			} else if (usrData.get("MODE").equalsIgnoreCase("Deleted")) {
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "6", "1", mobileNumFromIni(), "0");
+//				dbUtils.updateOrgSettlementInfo("TO_BANK", "6", "0", "(NULL)", mobileNumFromIni());
 			}
 
-			dbUtils.updateWlletManagedByBank(usrData.get("PARTNER").toUpperCase(),
+			dbUtils.updateWalletManagedByBank(usrData.get("PARTNER").toUpperCase(),
 					getLoginMobileFromIni("RetailerMobNum"));
 
 			if (usrData.get("TYPE").equalsIgnoreCase("NEFT")) {
@@ -405,7 +417,8 @@ public class SettlementPage extends BasePage {
 						}
 					}
 
-					dbUtils.updateWlletManagedByBank("RBL", getLoginMobileFromIni("RetailerMobNum"));
+					dbUtils.updateWalletManagedByBank("RBL", getLoginMobileFromIni("RetailerMobNum"));
+					dbUtils.updateSetllementStartAndEndTime(usrData.get("PARTNER"), "'00:00:00'", "'23:59:59'");
 
 				} else if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")) {
 					waitUntilElementIsClickableAndClickTheElement(applicableChargesButton);
