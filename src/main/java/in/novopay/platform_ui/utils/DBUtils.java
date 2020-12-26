@@ -1944,4 +1944,22 @@ public class DBUtils extends JavaUtils {
 			sqe.printStackTrace();
 		}
 	}
+
+	public String getOrderId(String orderId) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npPaymentGateway"));
+			String query = "SELECT `status` FROM `np_payment_gateway`.`order_details` WHERE order_id = '" + orderId
+					+ "';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
 }

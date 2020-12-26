@@ -240,7 +240,7 @@ public class RechargesStatusEnquiryPage extends BasePage {
 		System.out.println("Status Enquiry drop down clicked");
 
 		waitUntilElementIsClickableAndClickTheElement(rechargeProduct);
-		System.out.println("Bill Payment selected");
+		System.out.println("Recharges selected");
 
 		if (usrData.get("TXNDETAILS").equalsIgnoreCase("MobNum")) {
 			waitUntilElementIsClickableAndClickTheElement(seCustMobNum);
