@@ -91,6 +91,9 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//h4[contains(text(),'Processing...')]")
 	WebElement processingScreen;
+	
+	@FindBy(xpath = "//h4[contains(text(),'Pending...')]")
+	WebElement pendingScreen;
 
 	@FindBy(xpath = "//button[@class='toast-close-button']")
 	WebElement toastCloseButton;
@@ -298,6 +301,15 @@ public class CommonUtils extends BasePage {
 			System.out.println("Processing screen displayed");
 		} catch (Exception e) {
 			System.out.println("Processing screen skipped");
+		}
+	}
+	
+	public void pendingScreen() {
+		try {
+			waitUntilElementIsVisible(pendingScreen);
+			System.out.println("Pending screen displayed");
+		} catch (Exception e) {
+			System.out.println("Pending screen skipped");
 		}
 	}
 

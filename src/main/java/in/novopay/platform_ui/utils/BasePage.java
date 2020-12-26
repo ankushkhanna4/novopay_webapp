@@ -341,7 +341,7 @@ public class BasePage extends JavaUtils {
 	 * Wait until web element is visible
 	 */
 	public void waitUntilElementIsVisible(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 60);
+		WebDriverWait wait = new WebDriverWait(wdriver, 150);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
 

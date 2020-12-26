@@ -56,13 +56,13 @@ public class SettingsPage extends BasePage {
 
 	@FindBy(xpath = "//h1[contains(text(),'Settings')]")
 	WebElement pageTitle;
-	
+
 	@FindBy(xpath = "//h1[contains(text(),'Money Transfer')]")
 	WebElement pageTitle2;
-	
+
 	@FindBy(xpath = "//a[@href='/newportal/np-money-transfer']/span[contains(text(),'Money Transfer')]")
 	WebElement moneyTransfer;
-	
+
 	@FindBy(xpath = "//span[contains(text(),'Capital First')]/parent::li")
 	WebElement capitalFirstIcon;
 
@@ -102,6 +102,9 @@ public class SettingsPage extends BasePage {
 	@FindBy(xpath = "//pin-modal/div//button[contains(text(),'Submit')]")
 	WebElement mpinSubmitButton;
 
+	@FindBy(xpath = "//additional-info-modal//h4")
+	WebElement additionalInfoModal;
+
 	@FindBy(xpath = "//div[contains(@class,'settlement-modal')]/div/div/div/h4[contains(text(),'!')]")
 	WebElement settingsTxnScreen;
 
@@ -110,6 +113,18 @@ public class SettingsPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'settlement-modal')]/div/div/div/following-sibling::div/div[1]")
 	WebElement settingsTxnScreenMessage;
+
+	@FindBy(xpath = "//div[contains(@class,'settlementTxn-modal')]/div/div/div/h4[contains(text(),'Pending')]")
+	WebElement multiAccountPendingScreen;
+
+	@FindBy(xpath = "//div[contains(@class,'settlementTxn-modal')]/div/div/div/h4[contains(text(),'Success')]")
+	WebElement multiAccountSuccessScreen;
+
+	@FindBy(xpath = "//div[contains(@class,'settlementTxn-modal')]/div/div/div")
+	WebElement multiAccountScreenType;
+
+	@FindBy(xpath = "//div[contains(@class,'settlementTxn-modal')]//div[contains(@class,'messages')]//strong")
+	WebElement multiAccountTxnScreenMessage;
 
 	@FindBy(xpath = "//button[contains(text(),'Exit')]")
 	WebElement exitButton;
@@ -123,10 +138,16 @@ public class SettingsPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'toast-message')]")
 	WebElement toasterMsg;
 
-	@FindBy(xpath = "//button[contains(text(),'Edit')]")
-	WebElement editButton;
+	@FindBy(xpath = "//settlement-mode//p")
+	WebElement noBankAccountMsg;
 
-	@FindBy(xpath = "//button[contains(text(),'Ok')]")
+	@FindBy(xpath = "//p[contains(@class,'debitInfo')]")
+	WebElement debitInfo;
+
+	@FindBy(xpath = "//button[contains(text(),'Add Bank Account')]")
+	WebElement addButton;
+
+	@FindBy(xpath = "//button[contains(text(),'OK')]")
 	WebElement okButton;
 
 	@FindBy(id = "settlement-mode-retailer-name")
@@ -140,6 +161,9 @@ public class SettingsPage extends BasePage {
 
 	@FindBy(id = "settlement-mode-retailer-account-number")
 	WebElement accNumber;
+
+	@FindBy(xpath = "//*[@name='settlement-mode-retailer-confirm-account-number']")
+	WebElement confirmAccNumber;
 
 	@FindBy(xpath = "//*[@for='file-upload']")
 	WebElement uploadFile;
@@ -201,13 +225,25 @@ public class SettingsPage extends BasePage {
 
 			// Updating org_stlmnt_info table as per test case
 			if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
-				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", mobileNumFromIni(), "1");
+//				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
-				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1");
+//				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
-				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1");
+//				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
-				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
+				if (usrData.get("ACCOUNT").equalsIgnoreCase("No exisitng account")) {
+					System.out.println("No new entry added");
+				} else {
+					dbUtils.insertOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", mobileNumFromIni(), "1");
+//					dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
+				}
 			}
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
@@ -215,7 +251,8 @@ public class SettingsPage extends BasePage {
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
 				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "3", "1", "(NULL)", mobileNumFromIni());
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "4", "0", "Incorrect bank details", mobileNumFromIni());
+				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "4", "0", "Incorrect bank details",
+						mobileNumFromIni());
 			}
 
 			commonUtils.selectFeatureFromMenu1(settings, pageTitle);
@@ -256,21 +293,41 @@ public class SettingsPage extends BasePage {
 
 				if (usrData.get("MODE").contains("Keep")) {
 					if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
-						waitUntilElementIsClickableAndClickTheElement(editButton);
+						waitUntilElementIsClickableAndClickTheElement(addButton);
 						waitUntilElementIsVisible(settingsTxnScreen);
 						System.out.println("Txn screen displayed");
 						assertionOnInfoScreen(usrData);
 						waitUntilElementIsClickableAndClickTheElement(okButton);
 						System.out.println("Ok button clicked");
 					} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
-						waitUntilElementIsClickableAndClickTheElement(editButton);
+						waitUntilElementIsVisible(noBankAccountMsg);
+						System.out.println(noBankAccountMsg.getText());
+						Thread.sleep(1000);
+						Assert.assertTrue(noBankAccountMsg.getText().contains("There are no saved accounts."));
+						waitUntilElementIsClickableAndClickTheElement(addButton);
 
 						if (!usrData.get("ACHOLDERNAME").equalsIgnoreCase("SKIP")) {
 							Thread.sleep(1000);
+
+							Assert.assertEquals(debitInfo.getText(), "Rs. " + dbUtils.getAccountValidationCharge()
+									+ " will be deducted from Cashout Wallet for Account details submission.");
+							System.out.println(debitInfo.getText());
+							
 							waitUntilElementIsClickableAndClickTheElement(accHolderName);
 							accHolderName.clear();
 							accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
 							System.out.println("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
+
+							waitUntilElementIsClickableAndClickTheElement(accNumber);
+							accNumber.clear();
+							accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
+							System.out.println("Account number '" + getAccountNumberFromIni("GetNum") + "' entered");
+
+							waitUntilElementIsClickableAndClickTheElement(confirmAccNumber);
+							confirmAccNumber.clear();
+							confirmAccNumber.sendKeys(usrData.get("ACNUMBER"));
+							System.out.println("Confirm Account number '" + usrData.get("ACNUMBER") + "' entered");
+
 							if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
 								waitUntilElementIsClickableAndClickTheElement(ifscCode);
 								ifscCode.clear();
@@ -324,14 +381,7 @@ public class SettingsPage extends BasePage {
 							getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
 							waitUntilElementIsVisible(validateIFSC); // wait for Branch name
 							System.out.println(validateIFSC.getText());
-
-							waitUntilElementIsClickableAndClickTheElement(accNumber);
-							accNumber.clear();
-							accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
-							System.out.println("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 						}
-						commonUtils.uploadFile(uploadFile);
-						System.out.println("Image selected");
 
 						String buttonName = usrData.get("SETTINGSBUTTON");
 						String buttonXpath = "//button[contains(text(),'" + buttonName + "')]";
@@ -372,12 +422,29 @@ public class SettingsPage extends BasePage {
 					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
 						System.out.println("Cancel button clicked");
 					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
-						commonUtils.waitForSpinner();
-						waitUntilElementIsVisible(settingsTxnScreen);
-						System.out.println("Txn screen displayed");
+//						commonUtils.waitForSpinner();
+						commonUtils.pendingScreen();
+
+						waitUntilElementIsVisible(additionalInfoModal);
+						System.out.println("Need Additional Info modal displayed");
+
+						commonUtils.uploadFile(uploadFile);
+						System.out.println("Image selected");
+
+						waitUntilElementIsVisible(toasterMsg);
+						Assert.assertEquals(toasterMsg.getText(), "Image Upload success !!");
+
+						while (okButton.getCssValue("background-color").equals("rgba(0, 150, 197, 1)") == false) {
+							okButton.click();
+						}
+						okButton.click();
+						System.out.println("Ok button clicked");
+
+						waitUntilElementIsVisible(multiAccountPendingScreen);
+						System.out.println("Pending screen displayed");
 
 						// Verify the details on transaction screen
-						if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
+						if (multiAccountPendingScreen.getText().equalsIgnoreCase("Success!")) {
 							assertionOnSuccessScreen(usrData);
 							waitUntilElementIsClickableAndClickTheElement(doneButton);
 							System.out.println("Done button clicked");
@@ -385,7 +452,11 @@ public class SettingsPage extends BasePage {
 								commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
 								assertionOnFCM(usrData);
 							}
-						} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+						} else if (multiAccountPendingScreen.getText().contains("Pending")) {
+							assertionOnPendingScreen(usrData);
+							waitUntilElementIsClickableAndClickTheElement(okButton);
+							System.out.println("OK button clicked");
+						} else if (multiAccountPendingScreen.getText().equalsIgnoreCase("Failed!")) {
 							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 								assertionOnFailedScreen(usrData);
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
@@ -459,9 +530,18 @@ public class SettingsPage extends BasePage {
 		} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
 					"The bank account details have been submitted for verification. "
-					+ "Amount shall not be settled to older account.");
+							+ "Amount shall not be settled to older account.");
 			System.out.println(settingsTxnScreenMessage.getText());
 		}
+	}
+
+	// Verify details on success screen
+	public void assertionOnPendingScreen(Map<String, String> usrData)
+			throws ClassNotFoundException, ParseException, InterruptedException {
+		waitUntilElementIsVisible(multiAccountTxnScreenMessage);
+		Assert.assertEquals(multiAccountTxnScreenMessage.getText(),
+				"Bank Account details have been submitted successfully");
+		System.out.println(multiAccountTxnScreenMessage.getText());
 	}
 
 	// Verify details on failed screen

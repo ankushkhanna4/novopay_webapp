@@ -2001,4 +2001,21 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
+
+	public String getAccountValidationCharge() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npPaymentGateway"));
+			String query = "SELECT `value` FROM np_actor.`platform_master_data` WHERE `code` = 'ACCOUNT_VALIDATION_CHARGE'";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
 }
