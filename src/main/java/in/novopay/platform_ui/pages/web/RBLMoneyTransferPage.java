@@ -1370,19 +1370,20 @@ public class RBLMoneyTransferPage extends BasePage {
 	}
 
 	public String partnerUrl(Map<String, String> usrData) throws NumberFormatException, ClassNotFoundException {
-		double limit1 = 0.0, limit2 = 0.0, limit3 = 0.0;
+		double limit1 = 0.0;
+//		double limit2 = 0.0, limit3 = 0.0;
 		if (usrData.get("P1STATUS").equals("1")) {
 			limit1 = Double.parseDouble(
 					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER1"))) / 100;
 		}
-		if (usrData.get("P2STATUS").equals("1")) {
-			limit2 = Double.parseDouble(
-					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER2"))) / 100;
-		}
-		if (usrData.get("P3STATUS").equals("1")) {
-			limit3 = Double.parseDouble(
-					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER3"))) / 100;
-		}
+//		if (usrData.get("P2STATUS").equals("1")) {
+//			limit2 = Double.parseDouble(
+//					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER2"))) / 100;
+//		}
+//		if (usrData.get("P3STATUS").equals("1")) {
+//			limit3 = Double.parseDouble(
+//					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER3"))) / 100;
+//		}
 		if (usrData.get("P1STATUS").equals("1") && usrData.get("P2STATUS").equals("1")
 				&& Double.parseDouble(usrData.get("AMOUNT")) > limit1) {
 			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));

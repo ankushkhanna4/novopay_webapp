@@ -16,7 +16,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import in.novopay.platform_ui.pages.web.LoadMoneyNowPage;
-import in.novopay.platform_ui.pages.web.SelfLoadRequestPage;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.JavaUtils;
 

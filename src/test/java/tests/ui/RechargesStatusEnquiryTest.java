@@ -15,7 +15,6 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import in.novopay.platform_ui.pages.web.ElectricityStatusEnquiryPage;
 import in.novopay.platform_ui.pages.web.RechargesStatusEnquiryPage;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.JavaUtils;
