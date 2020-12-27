@@ -425,7 +425,7 @@ public class SettingsPage extends BasePage {
 //						commonUtils.waitForSpinner();
 						commonUtils.pendingScreen();
 
-						waitUntilElementIsVisible(additionalInfoModal);
+						waitUntilRblAccountValElementIsVisible(additionalInfoModal);
 						System.out.println("Need Additional Info modal displayed");
 
 						commonUtils.uploadFile(uploadFile);
@@ -443,8 +443,12 @@ public class SettingsPage extends BasePage {
 						waitUntilElementIsVisible(multiAccountPendingScreen);
 						System.out.println("Pending screen displayed");
 
+						assertionOnPendingScreen(usrData);
+						waitUntilElementIsClickableAndClickTheElement(okButton);
+						System.out.println("OK button clicked");
+						
 						// Verify the details on transaction screen
-						if (multiAccountPendingScreen.getText().equalsIgnoreCase("Success!")) {
+						if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
 							assertionOnSuccessScreen(usrData);
 							waitUntilElementIsClickableAndClickTheElement(doneButton);
 							System.out.println("Done button clicked");
@@ -452,11 +456,7 @@ public class SettingsPage extends BasePage {
 								commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
 								assertionOnFCM(usrData);
 							}
-						} else if (multiAccountPendingScreen.getText().contains("Pending")) {
-							assertionOnPendingScreen(usrData);
-							waitUntilElementIsClickableAndClickTheElement(okButton);
-							System.out.println("OK button clicked");
-						} else if (multiAccountPendingScreen.getText().equalsIgnoreCase("Failed!")) {
+						} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 								assertionOnFailedScreen(usrData);
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {

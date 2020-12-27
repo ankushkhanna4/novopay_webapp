@@ -2018,4 +2018,40 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
+
+	public String getRBLEKYCStatus(String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npPaymentGateway"));
+			String query = "SELECT attr_value FROM master.organization_attribute WHERE "
+					+ "orgnization_id = (SELECT organization FROM master.user "
+					+ "WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "') AND `status` = 'ACTIVE') AND attr_key = 'RBL_EKYC_STATUS';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+
+	public void updateRBLEKYCStatus(String value, String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "UPDATE master.organization_attribute SET attr_value = '" + value
+					+ "' WHERE orgnization_id = (SELECT organization FROM master.user "
+					+ "WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "') AND `status` = 'ACTIVE') AND attr_key = 'RBL_EKYC_STATUS';";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating RBL EKYC Status as " + value);
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
+	}
 }

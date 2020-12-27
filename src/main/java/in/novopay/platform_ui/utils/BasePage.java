@@ -341,6 +341,14 @@ public class BasePage extends JavaUtils {
 	 * Wait until web element is visible
 	 */
 	public void waitUntilElementIsVisible(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 60);
+		wait.until(ExpectedConditions.visibilityOf(element));
+	}
+	
+	/**
+	 * Wait until rbl account validation element is visible
+	 */
+	public void waitUntilRblAccountValElementIsVisible(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 150);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}

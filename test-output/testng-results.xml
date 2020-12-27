@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testng-results ignored="0" total="2" passed="2" failed="0" skipped="0">
   <reporter-output>
+    <line>
+      <![CDATA[Connecting server...]]>
+    </line>
+    <line>
+      <![CDATA[Connection established...]]>
+    </line>
   </reporter-output>
-  <suite started-at="2020-12-27T00:54:47 IST" name="Default suite" finished-at="2020-12-27T00:56:14 IST" duration-ms="86810">
+  <suite started-at="2020-12-27T14:00:51 IST" name="Default suite" finished-at="2020-12-27T14:03:01 IST" duration-ms="129554">
     <groups>
     </groups>
-    <test started-at="2020-12-27T00:54:47 IST" name="Default test" finished-at="2020-12-27T00:56:14 IST" duration-ms="86810">
+    <test started-at="2020-12-27T14:00:51 IST" name="Default test" finished-at="2020-12-27T14:03:01 IST" duration-ms="129554">
       <class name="tests.FlowMapper">
-        <test-method is-config="true" signature="generateIniFile()[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T00:54:47 IST" name="generateIniFile" finished-at="2020-12-27T00:54:47 IST" duration-ms="37" status="PASS">
+        <test-method is-config="true" signature="generateIniFile()[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T14:00:51 IST" name="generateIniFile" finished-at="2020-12-27T14:00:51 IST" duration-ms="27" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- generateIniFile -->
-        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T00:54:50 IST" name="flowMapperTest" data-provider="getData" finished-at="2020-12-27T00:54:52 IST" duration-ms="2276" status="PASS">
+        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T14:00:54 IST" name="flowMapperTest" data-provider="getData" finished-at="2020-12-27T14:00:55 IST" duration-ms="1886" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -22,7 +28,7 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- flowMapperTest -->
-        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T00:54:52 IST" name="result" finished-at="2020-12-27T00:54:53 IST" duration-ms="468" status="PASS">
+        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T14:00:55 IST" name="result" finished-at="2020-12-27T14:00:56 IST" duration-ms="240" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -33,29 +39,35 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- result -->
-        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T00:54:53 IST" name="flowMapperTest" data-provider="getData" finished-at="2020-12-27T00:56:12 IST" duration-ms="78765" status="PASS">
+        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T14:00:56 IST" name="flowMapperTest" data-provider="getData" finished-at="2020-12-27T14:02:59 IST" duration-ms="123034" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[{CONTRACT=RBL, STEP10=, PRIORITY=P3, STEP02=SettingsTest_019, STEP13=, TCID=FlowMapper_673, STEP03=LogoutTest_001, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Add New account when there is no account and becomes pending, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Settings}]]>
+                <![CDATA[{CONTRACT=RBL, STEP10=, PRIORITY=P1, STEP02=RBLEKYCTest_001, STEP13=, TCID=FlowMapper_675, STEP03=RBLBankingTest_030, STEP11=, STEP01=LoginTest_001, STEP12=, STEP06=, FCM=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Complete RBL EKYC and do a withdrawal transaction, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=EKYC}]]>
               </value>
             </param>
           </params>
           <reporter-output>
+            <line>
+              <![CDATA[Connecting server...]]>
+            </line>
+            <line>
+              <![CDATA[Connection established...]]>
+            </line>
           </reporter-output>
         </test-method> <!-- flowMapperTest -->
-        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T00:56:12 IST" name="result" finished-at="2020-12-27T00:56:13 IST" duration-ms="1395" status="PASS">
+        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T14:02:59 IST" name="result" finished-at="2020-12-27T14:03:00 IST" duration-ms="1285" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[[TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@505fc5a4] output={null}]]]>
+                <![CDATA[[TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@505fc5a4] output=Connecting server...]]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- result -->
-        <test-method is-config="true" signature="killDriver()[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T00:56:13 IST" name="killDriver" finished-at="2020-12-27T00:56:14 IST" duration-ms="865" status="PASS">
+        <test-method is-config="true" signature="killDriver()[pri:0, instance:tests.FlowMapper@505fc5a4]" started-at="2020-12-27T14:03:00 IST" name="killDriver" finished-at="2020-12-27T14:03:01 IST" duration-ms="657" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- killDriver -->
