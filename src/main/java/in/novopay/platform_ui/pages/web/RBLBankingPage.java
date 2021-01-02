@@ -50,7 +50,7 @@ public class RBLBankingPage extends BasePage {
 	@FindBy(xpath = "//h1[contains(text(),'Banking')]")
 	WebElement pageTitle;
 
-	@FindBy(xpath = "//a[contains(@href,'banking')]/span[2][contains(text(),'Banking')]")
+	@FindBy(xpath = "//a[contains(@href,'/newportal/banking')]/span[2][contains(text(),'Banking')]")
 	WebElement banking;
 
 	@FindBy(xpath = "//a[contains(text(),'Deposit')]")
@@ -155,10 +155,10 @@ public class RBLBankingPage extends BasePage {
 	@FindBy(xpath = "//app-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
 	WebElement withdrawalConsentCheckbox;
 
-	@FindBy(xpath = "//fapp-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p")
+	@FindBy(xpath = "//fapp-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::span")
 	WebElement withdrawalConsentMessage;
 
-	@FindBy(xpath = "//app-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p/a")
+	@FindBy(xpath = "//app-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::span/a")
 	WebElement withdrawalConsentLink;
 
 	@FindBy(xpath = "//app-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::ul/li")
@@ -756,13 +756,7 @@ public class RBLBankingPage extends BasePage {
 		System.out.println("Amount " + usrData.get("AMOUNT") + " entered");
 
 		// Field level validation in Amount field
-		if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-			withdrawalAadhaarNum.click();
-			waitUntilElementIsVisible(withdrawalAmountError);
-			Assert.assertEquals(withdrawalAmountError.getText(), "Insufficient wallet balance");
-			System.out.println(withdrawalAmountError.getText());
-			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
-		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
 			withdrawalAadhaarNum.click();
 			waitUntilElementIsVisible(withdrawalAmountError);
 			Assert.assertEquals(withdrawalAmountError.getText(),
@@ -864,13 +858,8 @@ public class RBLBankingPage extends BasePage {
 						waitUntilElementIsVisible(aepsTxnScreen);
 						System.out.println("Txn screen displayed");
 						assertionOnWithdrawalFailedScreen(usrData);
-						if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-							System.out.println("Done button clicked");
-						} else {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
-							System.out.println("Exit button clicked");
-						}
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
+						System.out.println("Exit button clicked");
 					}
 					if (usrData.get("ASSERTION").contains("FCM")) {
 						assertionOnWithdrawalFCM(usrData);
@@ -1028,13 +1017,8 @@ public class RBLBankingPage extends BasePage {
 						waitUntilElementIsVisible(aepsTxnScreen);
 						System.out.println("Txn screen displayed");
 						assertionOnBalanceEnquiryFailedScreen(usrData);
-						if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-							System.out.println("Done button clicked");
-						} else {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
-							System.out.println("Exit button clicked");
-						}
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
+						System.out.println("Exit button clicked");
 					}
 					if (usrData.get("ASSERTION").contains("FCM")) {
 						assertionOnBalanceEnquiryFCM(usrData);

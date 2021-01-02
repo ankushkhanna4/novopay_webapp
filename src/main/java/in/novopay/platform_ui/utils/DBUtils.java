@@ -1736,6 +1736,7 @@ public class DBUtils extends JavaUtils {
 			org_code.add("novopay");
 			org_code.add("rbl");
 			org_code.add("ybl");
+			org_code.add("indusind");
 			org_code.add("paytm");
 			org_code.add("fino");
 			org_code.add("cms");

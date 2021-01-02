@@ -89,10 +89,10 @@ public class CommonUtils extends BasePage {
 	@FindBy(xpath = "//table//tr[contains(@class,'table-row')][1]")
 	WebElement firstTxnInList;
 
-	@FindBy(xpath = "//h4[contains(text(),'Processing...')]")
+	@FindBy(xpath = "//h4[contains(text(),'Processing')]")
 	WebElement processingScreen;
 	
-	@FindBy(xpath = "//h4[contains(text(),'Pending...')]")
+	@FindBy(xpath = "//h4[contains(text(),'Pending')]")
 	WebElement pendingScreen;
 
 	@FindBy(xpath = "//button[@class='toast-close-button']")
