@@ -732,10 +732,10 @@ public class DBUtils extends JavaUtils {
 					+ "WHERE `category_code` = 'LIMITS_REMITTER_" + partner + "_NO_KYC')-(SELECT IF((SELECT "
 					+ "SUM(txn_amount) FROM `limit_charges`.`entity_consumed_limits` "
 					+ "WHERE category = 'LIMITS_REMITTER_" + partner + "_NO_KYC' AND entity_id = '" + mobNum
-					+ "' AND is_reversed = '0' AND txn_date LIKE '2020-" + month
+					+ "' AND is_reversed = '0' AND txn_date LIKE '2021-" + month
 					+ "-%') IS NULL, 0, (SELECT SUM(txn_amount) FROM `limit_charges`.`entity_consumed_limits` "
 					+ "WHERE category = 'LIMITS_REMITTER_" + partner + "_NO_KYC' AND entity_id = '" + mobNum
-					+ "' AND is_reversed = '0' AND txn_date LIKE '2020-" + month + "-%')))";
+					+ "' AND is_reversed = '0' AND txn_date LIKE '2021-" + month + "-%')))";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			rs.next();
@@ -795,7 +795,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-
+	
 	public String sms() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("smsLog"));
@@ -1736,7 +1736,6 @@ public class DBUtils extends JavaUtils {
 			org_code.add("novopay");
 			org_code.add("rbl");
 			org_code.add("ybl");
-			org_code.add("indusind");
 			org_code.add("paytm");
 			org_code.add("fino");
 			org_code.add("cms");
@@ -1747,8 +1746,10 @@ public class DBUtils extends JavaUtils {
 			org_code.add("gold");
 			org_code.add("INS_CLINIK");
 			org_code.add("INS_ADITYA_BIRLA");
-			org_code.add("equitas");
 			org_code.add("INS_ZOPPER");
+			org_code.add("equitas");
+			org_code.add("indusind");
+			org_code.add("np_loans");
 
 			for (String code : org_code) {
 				String insertQuery = "INSERT INTO `contract` (`organization`, `partner_organization`) "
@@ -1934,7 +1935,7 @@ public class DBUtils extends JavaUtils {
 	public void updateCdmWalletLoad() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npOps"));
-			String query = "UPDATE np_ops.`cdm_wallet_load` SET STATUS = 'APPROVED'";
+			String query = "UPDATE np_ops.`cdm_wallet_load` SET `status` = 'APPROVED' WHERE `status` = 'PENDING'";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Updating status of cdm_wallet_load to APPROVED");

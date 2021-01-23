@@ -3,6 +3,7 @@ package in.novopay.platform_ui.utils;
 import java.io.IOException;
 import java.util.Map;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -91,7 +92,7 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//h4[contains(text(),'Processing')]")
 	WebElement processingScreen;
-	
+
 	@FindBy(xpath = "//h4[contains(text(),'Pending')]")
 	WebElement pendingScreen;
 
@@ -303,7 +304,7 @@ public class CommonUtils extends BasePage {
 			System.out.println("Processing screen skipped");
 		}
 	}
-	
+
 	public void pendingScreen() {
 		try {
 			waitUntilElementIsVisible(pendingScreen);
@@ -333,5 +334,13 @@ public class CommonUtils extends BasePage {
 		} catch (Exception e) {
 			System.out.println("No toast present");
 		}
+	}
+
+	public void selectCmsBiller() {
+		waitForSpinner();
+		String billerXpath = "//form[@id='money-transfer-credit-card-form']//div[contains(text(),'"
+				+ cmsDetailsFromIni("CmsBiller","") + "')]";
+		WebElement biller = wdriver.findElement(By.xpath(billerXpath));
+		waitUntilElementIsClickableAndClickTheElement(biller);
 	}
 }

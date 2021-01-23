@@ -180,4 +180,14 @@ public class MongoDBUtils extends JavaUtils {
 		coll.updateMany(new BasicDBObject("name", operator), new BasicDBObject("$set", rechargeVendor));
 		System.out.println("Record updated to " + rechargeVendor);
 	}
+	
+	public void updateCMSBillerOrder(String biller, String order) {
+
+		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "biller_info");
+
+		BasicDBObject orderName = new BasicDBObject("order", order);
+
+		coll.updateMany(new BasicDBObject("billerName", biller), new BasicDBObject("$set", orderName));
+		System.out.println("Record updated to " + orderName);
+	}
 }

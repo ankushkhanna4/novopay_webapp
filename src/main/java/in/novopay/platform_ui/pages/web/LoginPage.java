@@ -205,12 +205,15 @@ public class LoginPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(panNumber);
 				panNumber.clear();
 				System.out.println("entering PAN number");
-				panNumber.sendKeys(usrData.get("PAN"));
+				String pan = usrData.get("PAN");
+				if (pan.equalsIgnoreCase("GetPAN")) {
+					pan = dbUtils.getPanNumber(getLoginMobileFromIni(mobNumFromSheet));
+				}
+				panNumber.sendKeys(pan);
 				System.out.println("clicking on PROCEED button");
 				waitUntilElementIsClickableAndClickTheElement(proceedPan);
-				if (panValidation(usrData.get("PAN")).equalsIgnoreCase("valid")) {
-					if (usrData.get("PAN")
-							.equalsIgnoreCase(dbUtils.getPanNumber(getLoginMobileFromIni(mobNumFromSheet)))) {
+				if (panValidation(pan).equalsIgnoreCase("valid")) {
+					if (pan.equalsIgnoreCase(dbUtils.getPanNumber(getLoginMobileFromIni(mobNumFromSheet)))) {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsClickableAndClickTheElement(otp);
 						otp.clear();

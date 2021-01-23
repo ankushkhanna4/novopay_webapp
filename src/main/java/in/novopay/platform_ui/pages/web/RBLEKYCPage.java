@@ -13,6 +13,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.Assert;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
@@ -55,6 +56,9 @@ public class RBLEKYCPage extends BasePage {
 	@FindBy(xpath = "//h5[contains(text(),'Verify KYC Details')]")
 	WebElement kycModal;
 
+	@FindBy(xpath = "//div[contains(text(),'Aadhar Authentication failed. Please try again!')]")
+	WebElement authFailed;
+
 	@FindBy(xpath = "//verify-details-modal//button[contains(text(),'Proceed')]")
 	WebElement proceedButton;
 
@@ -82,6 +86,12 @@ public class RBLEKYCPage extends BasePage {
 	@FindBy(id = "txtdob")
 	WebElement dateOfBirth;
 
+	@FindBy(xpath = "//select[@class='picker__select--year']")
+	WebElement year;
+
+	@FindBy(xpath = "//select[@class='picker__select--month']")
+	WebElement month;
+
 	@FindBy(xpath = "//*[@id='txtgender']//input[@value='M']/following-sibling::label")
 	WebElement genderMale;
 
@@ -97,8 +107,14 @@ public class RBLEKYCPage extends BasePage {
 	@FindBy(xpath = "//p[contains(text(),'Verified successfully')]")
 	WebElement verifiedSuccessMessage;
 
+	@FindBy(xpath = "//p[contains(text(),'Pi (basic) attributes of demographic data did not match')]")
+	WebElement attributeMismatchedMessage;
+
 	@FindBy(xpath = "//button[contains(text(),'OK')]")
 	WebElement OKButton;
+
+	@FindBy(xpath = "//button[contains(text(),'Exit')]")
+	WebElement exitButton;
 
 	@FindBy(xpath = "//p[contains(text(),'Aadhaar captured successfully.')]")
 	WebElement aadhaarCapturedMessage;
@@ -199,6 +215,9 @@ public class RBLEKYCPage extends BasePage {
 	@FindBy(xpath = "//*[@class='slimScrollBar']")
 	WebElement scrollBar;
 
+	@FindBy(xpath = "//h1[contains(text(),'Recharge')]")
+	WebElement rechargesScreen;
+
 	String batchConfigSection = "rblaepsstatusenquiry";
 
 	// Load all objects
@@ -212,15 +231,9 @@ public class RBLEKYCPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
-			dbUtils.updateRBLEKYCStatus("PENDING", mobileNumFromIni());
 			dbUtils.updateDmtBcAgentId("NOV2160858", mobileNumFromIni());
 
 			commonUtils.selectFeatureFromMenu2(banking, pageTitle);
-
-			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
-			if (!usrData.get("KEY").isEmpty()) {
-				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
-			}
 
 			// Refresh wallet balances whenever required
 			if (usrData.get("REFRESH").equalsIgnoreCase("YES")) {
@@ -249,7 +262,18 @@ public class RBLEKYCPage extends BasePage {
 			System.out.println("Switched to RBL interface");
 			aadhaarNumberField.sendKeys(usrData.get("AADHAAR"));
 			reenterAadhaarNumberField.sendKeys(usrData.get("AADHAAR"));
-			dateOfBirth.sendKeys(usrData.get("DOB"));
+//			dateOfBirth.sendKeys(usrData.get("DOB"));
+			waitUntilElementIsClickableAndClickTheElement(dateOfBirth);
+			waitUntilElementIsVisible(year);
+			Select yearValue = new Select(year);
+			yearValue.selectByValue(usrData.get("YEAR"));
+			waitUntilElementIsVisible(month);
+			Select monthValue = new Select(month);
+			monthValue.selectByVisibleText(usrData.get("MONTH"));
+			String dayXpath = "//table[@class='picker__table']/tbody/tr/td/div[@class='picker__day picker__day--infocus'][text()='"
+					+ usrData.get("DAY") + "']";
+			WebElement day = wdriver.findElement(By.xpath(dayXpath));
+			waitUntilElementIsClickableAndClickTheElement(day);
 			if (usrData.get("GENDER").equalsIgnoreCase("Male")) {
 				genderMale.click();
 			} else if (usrData.get("GENDER").equalsIgnoreCase("Female")) {
@@ -259,11 +283,17 @@ public class RBLEKYCPage extends BasePage {
 			submitButton.click();
 			System.out.println("Submitted Aadhaar details");
 
-			waitUntilElementIsVisible(verifiedSuccessMessage);
-			Thread.sleep(3000);
-			OKButton.click();
-			System.out.println("Verified details");
-
+			if (usrData.get("ASSERTION").equalsIgnoreCase("FAIL")) {
+				waitUntilElementIsVisible(attributeMismatchedMessage);
+				System.out.println(attributeMismatchedMessage.getText());
+				Thread.sleep(3000);
+				OKButton.click();
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("SUCCESS")) {
+				waitUntilElementIsVisible(verifiedSuccessMessage);
+				System.out.println(verifiedSuccessMessage.getText());
+				Thread.sleep(3000);
+				OKButton.click();
+			}
 			waitUntilElementIsVisible(aadhaarCapturedMessage);
 
 			wdriver.close(); // close the tab
@@ -284,64 +314,74 @@ public class RBLEKYCPage extends BasePage {
 			}
 			waitUntilElementIsInvisible("//h4[contains(text(),'Please Wait')]");
 			System.out.println("Please wait modal dismissed");
-			waitUntilElementIsVisible(kycModal);
-			waitUntilElementIsClickableAndClickTheElement(proceedButton);
-			System.out.println("Proceed button clicked");
 
-			waitUntilElementIsInvisible("//h4[contains(text(),'Please Wait')]");
-			System.out.println("Please wait modal dismissed");
+			if (usrData.get("ASSERTION").equalsIgnoreCase("FAIL")) {
+				waitUntilElementIsVisible(authFailed);
+				waitUntilElementIsClickableAndClickTheElement(exitButton);
+				System.out.println("Exit button clicked");
+				waitUntilElementIsVisible(rechargesScreen);
+				System.out.println("Redirected to recharges screen");
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("SUCCESS")) {
+				waitUntilElementIsVisible(kycModal);
+				waitUntilElementIsClickableAndClickTheElement(proceedButton);
+				System.out.println("Proceed button clicked");
 
-			waitUntilElementIsVisible(withdrawalScanSuccessScreen);
-			Assert.assertEquals("Fingerprints scanned successfully", withdrawalFingerprintSuccess.getText());
-			System.out.println(withdrawalFingerprintSuccess.getText());
-			withdrawalFingerprintScreenOkButton.click();
-			System.out.println("Ok button clicked");
+				waitUntilElementIsInvisible("//h4[contains(text(),'Please Wait')]");
+				System.out.println("Please wait modal dismissed");
 
-			waitUntilElementIsVisible(aepsTxnScreen);
-			System.out.println("Txn screen displayed");
+				waitUntilElementIsVisible(withdrawalScanSuccessScreen);
+				Assert.assertEquals("Fingerprints scanned successfully", withdrawalFingerprintSuccess.getText());
+				System.out.println(withdrawalFingerprintSuccess.getText());
+				withdrawalFingerprintScreenOkButton.click();
+				System.out.println("Ok button clicked");
 
-			if (aepsTxnScreen.getText().equalsIgnoreCase("Success!")) {
-				if (aepsTxnScreenType.getAttribute("class").contains("completed")) {
-					assertionOnWithdrawalSuccessScreen(usrData);
-					waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-					System.out.println("Done button clicked");
+				waitUntilElementIsVisible(aepsTxnScreen);
+				System.out.println("Txn screen displayed");
 
-					Assert.assertEquals(dbUtils.getRBLEKYCStatus(mobileNumFromIni()), "APPROVED");
-				}
-			} else if (aepsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
-				assertionOnWithdrawalFailedScreen(usrData);
-				if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-					waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
-					System.out.println("Exit button clicked");
-				} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
-					waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-					System.out.println("Done button clicked");
-				} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-					waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenRetryButton);
-					System.out.println("Retry button clicked");
-					waitUntilElementIsVisible(withdrawalScanSuccessScreen);
-					Assert.assertEquals("Fingerprints scanned successfully", withdrawalFingerprintSuccess.getText());
-					System.out.println(withdrawalFingerprintSuccess.getText());
-					withdrawalFingerprintScreenOkButton.click();
-					System.out.println("Ok button clicked");
-					waitUntilElementIsInvisible("//ekyc-biometric-scan-modal//button[contains(text(),'Ok')]");
-					waitUntilElementIsVisible(withdrawalFingerprintGreen);
-					Assert.assertEquals("Fingerprint scanned successfully!", withdrawalFingerprintGreen.getText());
-					waitUntilElementIsClickableAndClickTheElement(withdrawalSubmit);
-					System.out.println("Submit button clicked");
-					commonUtils.processingScreen();
-					waitUntilElementIsVisible(aepsTxnScreen);
-					System.out.println("Txn screen displayed");
-					assertionOnWithdrawalFailedScreen(usrData);
-					if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+				if (aepsTxnScreen.getText().equalsIgnoreCase("Success!")) {
+					if (aepsTxnScreenType.getAttribute("class").contains("completed")) {
+						assertionOnWithdrawalSuccessScreen(usrData);
 						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
 						System.out.println("Done button clicked");
-					} else {
+						Assert.assertEquals(dbUtils.getRBLEKYCStatus(mobileNumFromIni()), "APPROVED");
+					}
+				} else if (aepsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+					assertionOnWithdrawalFailedScreen(usrData);
+					if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
 						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
 						System.out.println("Exit button clicked");
+					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
+						System.out.println("Done button clicked");
+					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenRetryButton);
+						System.out.println("Retry button clicked");
+						waitUntilElementIsVisible(withdrawalScanSuccessScreen);
+						Assert.assertEquals("Fingerprints scanned successfully",
+								withdrawalFingerprintSuccess.getText());
+						System.out.println(withdrawalFingerprintSuccess.getText());
+						withdrawalFingerprintScreenOkButton.click();
+						System.out.println("Ok button clicked");
+						waitUntilElementIsInvisible("//ekyc-biometric-scan-modal//button[contains(text(),'Ok')]");
+						waitUntilElementIsVisible(withdrawalFingerprintGreen);
+						Assert.assertEquals("Fingerprint scanned successfully!", withdrawalFingerprintGreen.getText());
+						waitUntilElementIsClickableAndClickTheElement(withdrawalSubmit);
+						System.out.println("Submit button clicked");
+						commonUtils.processingScreen();
+						waitUntilElementIsVisible(aepsTxnScreen);
+						System.out.println("Txn screen displayed");
+						assertionOnWithdrawalFailedScreen(usrData);
+						if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
+							System.out.println("Done button clicked");
+						} else {
+							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
+							System.out.println("Exit button clicked");
+						}
 					}
 				}
 			}
+			dbUtils.updateRBLEKYCStatus("APPROVED", mobileNumFromIni());
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();

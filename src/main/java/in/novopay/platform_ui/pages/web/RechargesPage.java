@@ -544,12 +544,12 @@ public class RechargesPage extends BasePage {
 			rechargeType = "Mobile";
 			id = rechargeDataFromIni("GetMobNum", "");
 		}
-		String successSms = "Your " + mobiletype + " recharge of " + rechargeDataFromIni("GetAmount", "") + ".00 to "
-				+ rechargeType + " " + id + " is successful. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "")
+		String successSms = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "") + ".00 to "
+				+ rechargeType + " " + id + " at Novopay Outlet is successful. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "")
 				+ " on " + dbUtils.doTransferDate() + " via cash.";
-		String pendingSms = "Your " + mobiletype + " recharge of " + rechargeDataFromIni("GetAmount", "") + ".00 to "
-				+ rechargeType + " " + id + " is pending. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on "
-				+ dbUtils.doTransferDate() + ". Please check the status after some time.";
+		String pendingSms = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "") + ".00 to "
+				+ rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on "
+				+ dbUtils.doTransferDate() + ". Check status after some time.";
 		if (usrData.get("ASSERTION").contains("Success")) {
 			Assert.assertEquals(successSms, dbUtils.sms());
 		} else if (usrData.get("ASSERTION").contains("Pending")) {

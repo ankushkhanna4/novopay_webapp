@@ -27,8 +27,8 @@ public class CapitalFirstAgentPage extends BasePage {
 	@FindBy(xpath = "//*[@class='slimScrollBar']")
 	WebElement scrollBar;
 
-	@FindBy(xpath = "//span[contains(text(),'Cash Management')]")
-	WebElement cashManagement;
+	@FindBy(xpath = "//span[contains(text(),'Cash Services')]")
+	WebElement cashServices;
 
 	@FindBy(xpath = "//span[contains(text(),'wallet balance')]")
 	WebElement retailerWallet;
@@ -42,7 +42,7 @@ public class CapitalFirstAgentPage extends BasePage {
 	@FindBy(xpath = "//span[contains(text(),'cashout balance')]/parent::p/following-sibling::p/span")
 	WebElement cashoutWalletBalance;
 
-	@FindBy(xpath = "//h1[contains(text(),'Cash Management Services (CMS)')]")
+	@FindBy(xpath = "//h1[contains(text(),'Cash Services')]")
 	WebElement pageTitle;
 
 	@FindBy(xpath = "//span[contains(text(),'Capital First Agent')]")
@@ -134,13 +134,14 @@ public class CapitalFirstAgentPage extends BasePage {
 			// Update wallet balance as per the scenarios
 			updateWalletBalance(usrData);
 
-			commonUtils.selectFeatureFromMenu2(cashManagement, pageTitle);
+			commonUtils.selectFeatureFromMenu2(cashServices, pageTitle);
 
 			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
 			// Click on capital first icon
-			waitUntilElementIsClickableAndClickTheElement(capitalFirstIcon);
+//			waitUntilElementIsClickableAndClickTheElement(capitalFirstIcon);
+			commonUtils.selectCmsBiller();
 			System.out.println("Capital First icon clicked");
 
 			// Selecting app radio button

@@ -682,6 +682,11 @@ public class JavaUtils extends LoadableComponent {
 				ini.store();
 			} else if (key.equalsIgnoreCase("FinoCMSMobNum")) {
 				return ini.get("CmsData", "FinoCMSMobNum");
+			} else if (key.equalsIgnoreCase("StoreCmsBiller")) {
+				ini.put("CmsData", "Biller", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("CmsBiller")) {
+				return ini.get("CmsData", "Biller");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -312,7 +312,7 @@ public class SettingsPage extends BasePage {
 							Assert.assertEquals(debitInfo.getText(), "Rs. " + dbUtils.getAccountValidationCharge()
 									+ " will be deducted from Cashout Wallet for Account details submission.");
 							System.out.println(debitInfo.getText());
-							
+
 							waitUntilElementIsClickableAndClickTheElement(accHolderName);
 							accHolderName.clear();
 							accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
@@ -422,85 +422,88 @@ public class SettingsPage extends BasePage {
 					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
 						System.out.println("Cancel button clicked");
 					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
-//						commonUtils.waitForSpinner();
-						commonUtils.pendingScreen();
+						if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
+							commonUtils.waitForSpinner();
 
-						waitUntilRblAccountValElementIsVisible(additionalInfoModal);
-						System.out.println("Need Additional Info modal displayed");
-
-						commonUtils.uploadFile(uploadFile);
-						System.out.println("Image selected");
-
-						waitUntilElementIsVisible(toasterMsg);
-						Assert.assertEquals(toasterMsg.getText(), "Image Upload success !!");
-
-						while (okButton.getCssValue("background-color").equals("rgba(0, 150, 197, 1)") == false) {
-							okButton.click();
-						}
-						okButton.click();
-						System.out.println("Ok button clicked");
-
-						waitUntilElementIsVisible(multiAccountPendingScreen);
-						System.out.println("Pending screen displayed");
-
-						assertionOnPendingScreen(usrData);
-						waitUntilElementIsClickableAndClickTheElement(okButton);
-						System.out.println("OK button clicked");
-						
-						// Verify the details on transaction screen
-						if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
-							assertionOnSuccessScreen(usrData);
-							waitUntilElementIsClickableAndClickTheElement(doneButton);
-							System.out.println("Done button clicked");
-							if (usrData.get("ASSERTION").contains("FCM")) {
-								commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
-								assertionOnFCM(usrData);
-							}
-						} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
-							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-								assertionOnFailedScreen(usrData);
-								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-									System.out.println("Clicking exit button");
-								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-									retryButton.click();
-									waitUntilElementIsVisible(MPINScreen);
-									System.out.println("MPIN screen displayed");
-									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									System.out.println("MPIN entered");
-									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									System.out.println("Submit button clicked");
-									commonUtils.waitForSpinner();
-									waitUntilElementIsVisible(settingsTxnScreen);
-									System.out.println("Txn screen displayed");
+							// Verify the details on transaction screen
+							if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
+								assertionOnSuccessScreen(usrData);
+								waitUntilElementIsClickableAndClickTheElement(doneButton);
+								System.out.println("Done button clicked");
+								if (usrData.get("ASSERTION").contains("FCM")) {
+									commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
+									assertionOnFCM(usrData);
+								}
+							} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 									assertionOnFailedScreen(usrData);
-								}
-								waitUntilElementIsClickableAndClickTheElement(exitButton);
-								System.out.println("Exit button clicked");
-							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-								waitUntilElementIsVisible(settingsTxnScreenMessage);
-								System.out.println(settingsTxnScreenMessage.getText());
-								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-									exitButton.click();
+									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+										System.out.println("Clicking exit button");
+									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+										retryButton.click();
+										waitUntilElementIsVisible(MPINScreen);
+										System.out.println("MPIN screen displayed");
+										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+										System.out.println("MPIN entered");
+										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+										System.out.println("Submit button clicked");
+										commonUtils.waitForSpinner();
+										waitUntilElementIsVisible(settingsTxnScreen);
+										System.out.println("Txn screen displayed");
+										assertionOnFailedScreen(usrData);
+									}
+									waitUntilElementIsClickableAndClickTheElement(exitButton);
 									System.out.println("Exit button clicked");
-								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-									retryButton.click();
-									waitUntilElementIsVisible(MPINScreen);
-									System.out.println("MPIN screen displayed");
-									Thread.sleep(1000);
-									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									System.out.println("MPIN entered");
-									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									System.out.println("Submit button clicked");
-									commonUtils.waitForSpinner();
-									waitUntilElementIsVisible(settingsTxnScreen);
-									System.out.println("Txn screen displayed");
-									assertionOnSuccessScreen(usrData);
-									waitUntilElementIsClickableAndClickTheElement(doneButton);
-									System.out.println("Done button clicked");
+								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+									waitUntilElementIsVisible(settingsTxnScreenMessage);
+									System.out.println(settingsTxnScreenMessage.getText());
+									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+										exitButton.click();
+										System.out.println("Exit button clicked");
+									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+										retryButton.click();
+										waitUntilElementIsVisible(MPINScreen);
+										System.out.println("MPIN screen displayed");
+										Thread.sleep(1000);
+										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+										System.out.println("MPIN entered");
+										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+										System.out.println("Submit button clicked");
+										commonUtils.waitForSpinner();
+										waitUntilElementIsVisible(settingsTxnScreen);
+										System.out.println("Txn screen displayed");
+										assertionOnSuccessScreen(usrData);
+										waitUntilElementIsClickableAndClickTheElement(doneButton);
+										System.out.println("Done button clicked");
+									}
 								}
 							}
+						} else {
+							commonUtils.pendingScreen();
+
+							waitUntilRblAccountValElementIsVisible(additionalInfoModal);
+							System.out.println("Need Additional Info modal displayed");
+
+							commonUtils.uploadFile(uploadFile);
+							System.out.println("Image selected");
+
+							waitUntilElementIsVisible(toasterMsg);
+							Assert.assertEquals(toasterMsg.getText(), "Image Upload success !!");
+
+							while (okButton.getCssValue("background-color").equals("rgba(0, 150, 197, 1)") == false) {
+								okButton.click();
+							}
+							okButton.click();
+							System.out.println("Ok button clicked");
+
+							waitUntilElementIsVisible(multiAccountPendingScreen);
+							System.out.println("Pending screen displayed");
+
+							assertionOnPendingScreen(usrData);
+							waitUntilElementIsClickableAndClickTheElement(okButton);
+							System.out.println("OK button clicked");
 						}
 					} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
 						clearButton.click();

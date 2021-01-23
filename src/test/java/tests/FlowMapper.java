@@ -26,6 +26,7 @@ import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.JavaUtils;
 import in.novopay.platform_ui.utils.Log;
+import in.novopay.platform_ui.utils.MongoDBUtils;
 import io.appium.java_client.MobileElement;
 import io.appium.java_client.android.AndroidDriver;
 
@@ -35,6 +36,7 @@ public class FlowMapper {
 	private String sheetName = "FLOWMAPPER";
 	private JavaUtils javaUtils = new JavaUtils();
 	private DBUtils dbUtils = new DBUtils();
+	MongoDBUtils mongoDbUtils = new MongoDBUtils();
 	private Map<String, String> usrData;
 	private Object obj;
 	private String errMsg;
@@ -58,6 +60,15 @@ public class FlowMapper {
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
 			dbUtils.modifyContract(usrData.get("CONTRACT"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
+		if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
+			dbUtils.updateRBLEKYCStatus("APPROVED", mobileNumFromIni());
+		} else if (usrData.get("FEATURE").equalsIgnoreCase("EKYC")) {
+			dbUtils.updateRBLEKYCStatus("PENDING", mobileNumFromIni());
+		} else if (usrData.get("CONTRACT").equalsIgnoreCase("CMS")) {
+			mongoDbUtils.updateCMSBillerOrder(usrData.get("FEATURE"), "1");
+			javaUtils.cmsDetailsFromIni("StoreCmsBiller", usrData.get("FEATURE"));
+		}
+
 		javaUtils.getWalletFromIni("StoreWallet", usrData.get("WALLET"));
 
 		for (String flowTestID : flows) {
@@ -174,5 +185,13 @@ public class FlowMapper {
 			System.out.println("Inserting all contracts");
 			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
+		if (usrData.get("CONTRACT").equalsIgnoreCase("CMS")) {
+			mongoDbUtils.updateCMSBillerOrder(usrData.get("FEATURE"), "2");
+		}
+	}
+
+	// Get mobile number from Ini file
+	public String mobileNumFromIni() {
+		return dbUtils.getLoginMobileFromIni("RetailerMobNum");
 	}
 }

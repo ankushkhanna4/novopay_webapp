@@ -28,8 +28,8 @@ public class FinoCMSPage extends BasePage {
 	@FindBy(xpath = "//*[@class='slimScrollBar']")
 	WebElement scrollBar;
 
-	@FindBy(xpath = "//span[contains(text(),'Cash Management')]")
-	WebElement cashManagement;
+	@FindBy(xpath = "//span[contains(text(),'Cash Services')]")
+	WebElement cashServices;
 
 	@FindBy(xpath = "//span[contains(text(),'wallet balance')]")
 	WebElement retailerWallet;
@@ -43,7 +43,7 @@ public class FinoCMSPage extends BasePage {
 	@FindBy(xpath = "//span[contains(text(),'cashout balance')]/parent::p/following-sibling::p/span")
 	WebElement cashoutWalletBalance;
 
-	@FindBy(xpath = "//h1[contains(text(),'Cash Management Services (CMS)')]")
+	@FindBy(xpath = "//h1[contains(text(),'Cash Services')]")
 	WebElement pageTitle;
 
 	@FindBy(xpath = "//span[contains(text(),'Fino')]")
@@ -138,29 +138,30 @@ public class FinoCMSPage extends BasePage {
 			// Update wallet balance as per the scenarios
 			updateWalletBalance(usrData);
 
-			commonUtils.selectFeatureFromMenu2(cashManagement, pageTitle);
+			commonUtils.selectFeatureFromMenu2(cashServices, pageTitle);
 
 			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
 			// Click on Fino CMS icon
-			waitUntilElementIsClickableAndClickTheElement(finoCMSIcon);
-			System.out.println("Fino CMS icon clicked");
+//			waitUntilElementIsClickableAndClickTheElement(finoCMSIcon);
+			commonUtils.selectCmsBiller();
+			System.out.println("Lok Suvidha icon clicked");
 
 			commonUtils.waitForSpinner();
 			Thread.sleep(1000);
 
-			waitUntilElementIsClickableAndClickTheElement(clientDropdown);
-			System.out.println("Client Dropdown clicked");
+//			waitUntilElementIsClickableAndClickTheElement(clientDropdown);
+//			System.out.println("Client Dropdown clicked");
 
-			waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
-			dropDownSearch.sendKeys(usrData.get("CLIENT"));
-			System.out.println("Typing " + usrData.get("CLIENT"));
-
-			String clientXpath = "//li[text()='" + usrData.get("CLIENT") + "']";
-			WebElement clientDropDown = wdriver.findElement(By.xpath(clientXpath));
-			clientDropDown.click();
-			System.out.println(usrData.get("CLIENT") + " drop down selected");
+//			waitUntilElementIsClickableAndClickTheElement(dropDownSearch);
+//			dropDownSearch.sendKeys(usrData.get("CLIENT"));
+//			System.out.println("Typing " + usrData.get("CLIENT"));
+//
+//			String clientXpath = "//li[text()='" + usrData.get("CLIENT") + "']";
+//			WebElement clientDropDown = wdriver.findElement(By.xpath(clientXpath));
+//			clientDropDown.click();
+//			System.out.println(usrData.get("CLIENT") + " drop down selected");
 
 			Assert.assertTrue(label.getText().contains("EMPLOYEE ID"));
 
