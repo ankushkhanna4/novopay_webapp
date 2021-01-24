@@ -795,7 +795,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String sms() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("smsLog"));
@@ -1608,7 +1608,30 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-
+	
+	public String doTransferDateWithIncreasedTime() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npActor"));
+			String query = "SELECT IF((SELECT DATE_FORMAT(created_on, '%i') FROM service_repo.service_data_audit "
+					+ "WHERE api_name = 'doTransfer' ORDER BY id DESC LIMIT 1)<10,(CONCAT((SELECT DATE_FORMAT(created_on, "
+					+ "'%d-%m-%Y %H:') FROM service_repo.service_data_audit WHERE api_name = 'doTransfer' ORDER BY id DESC "
+					+ "LIMIT 1),\"0\",(SELECT DATE_FORMAT(created_on, '%i')+1 FROM service_repo.service_data_audit WHERE "
+					+ "api_name = 'doTransfer' ORDER BY id DESC LIMIT 1))),(CONCAT((SELECT DATE_FORMAT(created_on, "
+					+ "'%d-%m-%Y %H:') FROM service_repo.service_data_audit WHERE api_name = 'doTransfer' ORDER BY id "
+					+ "DESC LIMIT 1),(SELECT DATE_FORMAT(created_on, '%i')+1 FROM service_repo.service_data_audit WHERE "
+					+ "api_name = 'doTransfer' ORDER BY id DESC LIMIT 1))))";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+		}
+		return null;
+	}
+	
 	public void updateOrgSettlementInfo(String mode, String status, String enabled, String remarks, String mobNum)
 			throws ClassNotFoundException {
 		try {

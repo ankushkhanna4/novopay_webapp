@@ -263,8 +263,8 @@ public class RechargesPage extends BasePage {
 			dropdownField.sendKeys(usrData.get("OPERATOR"));
 			System.out.println("Operator " + usrData.get("OPERATOR") + " entered");
 
-			String operatorXpath = "//*[@class='select2-results']/ul/li[contains(text(),'"
-					+ usrData.get("OPERATOR") + "')]";
+			String operatorXpath = "//*[@class='select2-results']/ul/li[contains(text(),'" + usrData.get("OPERATOR")
+					+ "')]";
 			WebElement operator = wdriver.findElement(By.xpath(operatorXpath));
 			waitUntilElementIsClickableAndClickTheElement(operator);
 
@@ -544,18 +544,38 @@ public class RechargesPage extends BasePage {
 			rechargeType = "Mobile";
 			id = rechargeDataFromIni("GetMobNum", "");
 		}
-		String successSms = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "") + ".00 to "
-				+ rechargeType + " " + id + " at Novopay Outlet is successful. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "")
-				+ " on " + dbUtils.doTransferDate() + " via cash.";
-		String pendingSms = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "") + ".00 to "
-				+ rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on "
-				+ dbUtils.doTransferDate() + ". Check status after some time.";
+		String successSms1 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
+				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is successful. Txn Ref ID "
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + " via cash.";
+		String pendingSms1 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
+				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID "
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate()
+				+ ". Check status after some time.";
+		String successSms2 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
+				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is successful. Txn Ref ID "
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime() + " via cash.";
+		String pendingSms2 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
+				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID "
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime()
+				+ ". Check status after some time.";
 		if (usrData.get("ASSERTION").contains("Success")) {
-			Assert.assertEquals(successSms, dbUtils.sms());
+			try {
+				Assert.assertEquals(successSms1, dbUtils.sms());
+				System.out.println("Actual time taken");
+			} catch (AssertionError e) {
+				Assert.assertEquals(successSms2, dbUtils.sms());
+				System.out.println("Increased time taken");
+			}
 		} else if (usrData.get("ASSERTION").contains("Pending")) {
-			Assert.assertEquals(pendingSms, dbUtils.sms());
+			try {
+				Assert.assertEquals(pendingSms1, dbUtils.sms());
+				System.out.println("Actual time taken");
+			} catch (AssertionError e) {
+				Assert.assertEquals(pendingSms2, dbUtils.sms());
+				System.out.println("Increased time taken");
+			}
 		}
-		System.out.println(successSms);
+		System.out.println(dbUtils.sms());
 	}
 
 	// Assertion after success or orange screen is displayed
