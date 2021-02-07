@@ -1340,13 +1340,15 @@ public class FinoMoneyTransferPage extends BasePage {
 						"Note: It looks like all partner banks are temporarily not accepting any request. "
 								+ "Please try after sometime.");
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("One partner down")) {
-				Assert.assertEquals(partnerErrorMsg.getText(),
-						"Note: It looks like one partner bank is temporarily not accepting any request. "
-								+ "We have stopped all transactions through the bank which is not accepting requests.");
+//				Assert.assertEquals(partnerErrorMsg.getText(),
+//						"Note: It looks like one partner bank is temporarily not accepting any request. "
+//								+ "We have stopped all transactions through the bank which is not accepting requests.");
+				Assert.assertEquals(partnerErrorMsg.getText(), "Note: .");
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Two partners down")) {
-				Assert.assertEquals(partnerErrorMsg.getText(),
-						"Note: It looks like two partner banks are temporarily not accepting any request. "
-								+ "We have stopped all transactions through the bank which is not accepting requests.");
+//				Assert.assertEquals(partnerErrorMsg.getText(),
+//						"Note: It looks like two partner banks are temporarily not accepting any request. "
+//								+ "We have stopped all transactions through the bank which is not accepting requests.");
+				Assert.assertEquals(partnerErrorMsg.getText(), "Note: .");
 			}
 			System.out.println(partnerErrorMsg.getText());
 		}

@@ -312,7 +312,7 @@ public class CapitalFirstAgentPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Capital-First success.");
+		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to IDFC First success.");
 		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
@@ -324,7 +324,7 @@ public class CapitalFirstAgentPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
-			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Capital First failed.");
+			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to IDFC failed.");
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}
@@ -332,9 +332,9 @@ public class CapitalFirstAgentPage extends BasePage {
 	// SMS assertion
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 		String successSMS = "Success! Deposit of Rs " + cmsDetailsFromIni("CfAmount", "") + " for BATCH-ID "
-				+ cmsDetailsFromIni("CfBatchId", "") + " was successful.";
+				+ cmsDetailsFromIni("CfBatchId", "") + " was successful at Novopay outlet.";
 		String failSMS = "Failure! Deposit of Rs " + cmsDetailsFromIni("CfAmount", "") + " for BATCH-ID "
-				+ cmsDetailsFromIni("CfBatchId", "") + " failed.";
+				+ cmsDetailsFromIni("CfBatchId", "") + " failed at Novopay outlet.";
 		Thread.sleep(5000);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successSMS, dbUtils.sms());

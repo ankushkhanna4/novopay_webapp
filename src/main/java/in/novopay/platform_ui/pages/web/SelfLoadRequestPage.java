@@ -322,7 +322,7 @@ public class SelfLoadRequestPage extends BasePage {
 			throws ClassNotFoundException {
 		double totalAmount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 		double newWalletBal = 0.00;
-		newWalletBal = initialWalletBalance + totalAmount - 25.00;
+		newWalletBal = initialWalletBalance + totalAmount - 0.35*totalAmount/100;
 		String newWalletBalance = df.format(newWalletBal);
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 		System.out.println("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));

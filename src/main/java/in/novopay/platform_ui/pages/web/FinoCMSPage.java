@@ -304,7 +304,7 @@ public class FinoCMSPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Success");
+		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Transaction completed successfully");
 		System.out.println(cmsTxnScreenMessage.getText());
 	}
 

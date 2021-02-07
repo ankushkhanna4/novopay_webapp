@@ -8,9 +8,9 @@
                 "10000":{ "npciResponseCode":"DS"},
                 "200":{ "npciResponseCode":"DS"},
                 "300":{ "npciResponseCode":"DD"},
-                "400":{ "npciResponseCode":"VT"},
+                "400":{ "npciResponseCode":"M3"},
                 "500":{ "npciResponseCode":"UH"},
-                "600":{ "npciResponseCode":"M3"},
+                "600":{ "npciResponseCode":"VT"},
                 "700":{ "npciResponseCode":"00"},
                 "800":{ "npciResponseCode":"91"},
                 "900":{ "npciResponseCode":"M3"}

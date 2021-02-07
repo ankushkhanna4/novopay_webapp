@@ -261,18 +261,21 @@ public class RBLEKYCPage extends BasePage {
 			System.out.println("Switched to RBL interface");
 			aadhaarNumberField.sendKeys(usrData.get("AADHAAR"));
 			reenterAadhaarNumberField.sendKeys(usrData.get("AADHAAR"));
-//			dateOfBirth.sendKeys(usrData.get("DOB"));
-			waitUntilElementIsClickableAndClickTheElement(dateOfBirth);
-			waitUntilElementIsVisible(year);
-			Select yearValue = new Select(year);
-			yearValue.selectByValue(usrData.get("YEAR"));
-			waitUntilElementIsVisible(month);
-			Select monthValue = new Select(month);
-			monthValue.selectByVisibleText(usrData.get("MONTH"));
-			String dayXpath = "//table[@class='picker__table']/tbody/tr/td/div[@class='picker__day picker__day--infocus'][text()='"
-					+ usrData.get("DAY") + "']";
-			WebElement day = wdriver.findElement(By.xpath(dayXpath));
-			waitUntilElementIsClickableAndClickTheElement(day);
+			try {
+				dateOfBirth.sendKeys(usrData.get("DOB"));
+			} catch (Exception e) {
+				waitUntilElementIsClickableAndClickTheElement(dateOfBirth);
+				waitUntilElementIsVisible(year);
+				Select yearValue = new Select(year);
+				yearValue.selectByValue(usrData.get("YEAR"));
+				waitUntilElementIsVisible(month);
+				Select monthValue = new Select(month);
+				monthValue.selectByVisibleText(usrData.get("MONTH"));
+				String dayXpath = "//table[@class='picker__table']/tbody/tr/td/div[@class='picker__day picker__day--infocus'][text()='"
+						+ usrData.get("DAY") + "']";
+				WebElement day = wdriver.findElement(By.xpath(dayXpath));
+				waitUntilElementIsClickableAndClickTheElement(day);
+			}
 			if (usrData.get("GENDER").equalsIgnoreCase("Male")) {
 				genderMale.click();
 			} else if (usrData.get("GENDER").equalsIgnoreCase("Female")) {

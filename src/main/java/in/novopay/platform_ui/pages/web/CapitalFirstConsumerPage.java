@@ -304,7 +304,7 @@ public class CapitalFirstConsumerPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Capital First success.");
+		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to IDFC success.");
 		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
