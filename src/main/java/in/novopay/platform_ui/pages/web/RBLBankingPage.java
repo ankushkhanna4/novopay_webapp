@@ -1376,6 +1376,7 @@ public class RBLBankingPage extends BasePage {
 				+ " a/c linked to Aadhaar  XXXX XXXX " + usrData.get("AADHAAR").substring(8, 12)
 				+ " . Charges Rs. 0.00. Ref No: " + txnDetailsFromIni("GetTxnRefNo", "")
 				+ ". Novopay App bit.ly/33n4yrH";
+
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successSMS, dbUtils.sms());
 			System.out.println(successSMS);

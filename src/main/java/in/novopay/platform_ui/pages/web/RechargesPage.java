@@ -560,18 +560,18 @@ public class RechargesPage extends BasePage {
 				+ ". Check status after some time.";
 		if (usrData.get("ASSERTION").contains("Success")) {
 			try {
-				Assert.assertEquals(successSms1, dbUtils.sms());
+				Assert.assertEquals(dbUtils.sms(), successSms1);
 				System.out.println("Actual time taken");
 			} catch (AssertionError e) {
-				Assert.assertEquals(successSms2, dbUtils.sms());
+				Assert.assertEquals(dbUtils.sms(), successSms2);
 				System.out.println("Increased time taken");
 			}
 		} else if (usrData.get("ASSERTION").contains("Pending")) {
 			try {
-				Assert.assertEquals(pendingSms1, dbUtils.sms());
+				Assert.assertEquals(dbUtils.sms(), pendingSms1);
 				System.out.println("Actual time taken");
 			} catch (AssertionError e) {
-				Assert.assertEquals(pendingSms2, dbUtils.sms());
+				Assert.assertEquals(dbUtils.sms(), pendingSms2);
 				System.out.println("Increased time taken");
 			}
 		}

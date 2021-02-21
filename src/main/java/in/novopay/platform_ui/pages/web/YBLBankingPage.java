@@ -71,6 +71,12 @@ public class YBLBankingPage extends BasePage {
 	@FindBy(xpath = "//app-deposit//input[@id='aeps-deposit-aadhar-number']/parent::div//li")
 	WebElement depositAadhaarNumError;
 
+	@FindBy(xpath = "//app-deposit//input[@id='money-transfer-amount-to-be-transferred']")
+	WebElement depositAmount;
+
+	@FindBy(xpath = "//app-deposit//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
+	WebElement depositAmountError;
+
 	@FindBy(xpath = "//app-deposit//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
 	WebElement depositConsentCheckbox;
 
@@ -82,12 +88,6 @@ public class YBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//app-deposit//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::ul/li")
 	WebElement depositConsentError;
-
-	@FindBy(xpath = "//app-deposit//input[@id='money-transfer-amount-to-be-transferred']")
-	WebElement depositAmount;
-
-	@FindBy(xpath = "//app-deposit//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
-	WebElement depositAmountError;
 
 	@FindBy(xpath = "//app-deposit//div[contains(@class,'scan_finger_container')]")
 	WebElement depositScanFingerprint;
@@ -146,6 +146,12 @@ public class YBLBankingPage extends BasePage {
 	@FindBy(xpath = "//app-withdrawl//input[@id='aeps-deposit-aadhar-number']/parent::div/following-sibling::ul/li")
 	WebElement withdrawalAadhaarNumError2;
 
+	@FindBy(xpath = "//app-withdrawl//input[@id='money-transfer-amount-to-be-transferred']")
+	WebElement withdrawalAmount;
+
+	@FindBy(xpath = "//app-withdrawl//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
+	WebElement withdrawalAmountError;
+
 	@FindBy(xpath = "//app-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
 	WebElement withdrawalConsentCheckbox;
 
@@ -157,12 +163,6 @@ public class YBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//app-withdrawl//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::ul/li")
 	WebElement withdrawalConsentError;
-
-	@FindBy(xpath = "//app-withdrawl//input[@id='money-transfer-amount-to-be-transferred']")
-	WebElement withdrawalAmount;
-
-	@FindBy(xpath = "//app-withdrawl//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
-	WebElement withdrawalAmountError;
 
 	@FindBy(xpath = "//app-withdrawl//div[contains(@class,'scan_finger_container')]")
 	WebElement withdrawalScanFingerprint;
@@ -218,6 +218,12 @@ public class YBLBankingPage extends BasePage {
 	@FindBy(xpath = "//app-aepsbalanceenquiry//input[@id='aeps-deposit-aadhar-number']/parent::div/following-sibling::ul/li")
 	WebElement balanceEnquiryAadhaarNumError2;
 
+	@FindBy(xpath = "//app-aepsbalanceenquiry//input[@id='money-transfer-amount-to-be-transferred']")
+	WebElement balanceEnquiryAmount;
+
+	@FindBy(xpath = "//app-aepsbalanceenquiry//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
+	WebElement balanceEnquiryAmountError;
+
 	@FindBy(xpath = "//app-aepsbalanceenquiry//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
 	WebElement balanceEnquiryConsentCheckbox;
 
@@ -229,12 +235,6 @@ public class YBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//app-aepsbalanceenquiry//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::ul/li")
 	WebElement balanceEnquiryConsentError;
-
-	@FindBy(xpath = "//app-aepsbalanceenquiry//input[@id='money-transfer-amount-to-be-transferred']")
-	WebElement balanceEnquiryAmount;
-
-	@FindBy(xpath = "//app-aepsbalanceenquiry//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
-	WebElement balanceEnquiryAmountError;
 
 	@FindBy(xpath = "//app-aepsbalanceenquiry//div[contains(@class,'scan_finger_container')]")
 	WebElement balanceEnquiryScanFingerprint;
@@ -259,6 +259,69 @@ public class YBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//app-aepsbalanceenquiry/div//button[contains(text(),'Clear')]")
 	WebElement balanceEnquiryClear;
+
+	@FindBy(xpath = "//a[contains(text(),'Mini Statement')]")
+	WebElement miniStatementTab;
+
+	@FindBy(xpath = "//rbl-mini-statement//span[contains(text(),'Select...')]/parent::span")
+	WebElement miniStatementDropdown;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-mobile-number']")
+	WebElement miniStatementMobNum;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-mobile-number']/parent::div//li")
+	WebElement miniStatementMobNumError;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[@id='aeps-deposit-aadhar-number']")
+	WebElement miniStatementAadhaarNum;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[@id='aeps-deposit-aadhar-number']/parent::div//li")
+	WebElement miniStatementAadhaarNumError;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[@id='aeps-deposit-aadhar-number']/parent::div/following-sibling::ul/li")
+	WebElement miniStatementAadhaarNumError2;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-amount-to-be-transferred']")
+	WebElement miniStatementAmount;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
+	WebElement miniStatementAmountError;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
+	WebElement miniStatementConsentCheckbox;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p")
+	WebElement miniStatementConsentMessage;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p/a")
+	WebElement miniStatementConsentLink;
+
+	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::ul/li")
+	WebElement miniStatementConsentError;
+
+	@FindBy(xpath = "//rbl-mini-statement//div[contains(@class,'scan_finger_container')]")
+	WebElement miniStatementScanFingerprint;
+
+	@FindBy(xpath = "//rbl-mini-statement//h4[contains(text(),'Success!')]")
+	WebElement miniStatementScanSuccessScreen;
+
+	@FindBy(xpath = "//rbl-mini-statement//div[contains(text(),'Fingerprints scanned successfully')]")
+	WebElement miniStatementFingerprintSuccess;
+
+	@FindBy(xpath = "//rbl-mini-statement//span[contains(text(),'Fingerprint scanned successfully!')]")
+	WebElement miniStatementFingerprintGreen;
+
+	@FindBy(xpath = "//rbl-mini-statement//span[contains(text(),'Click to scan fingerprint')]")
+	WebElement miniStatementFingerprintUnscanned;
+
+	@FindBy(xpath = "//rbl-mini-statement//button[contains(text(),'Ok')]")
+	WebElement miniStatementFingerprintScreenOkButton;
+
+	@FindBy(xpath = "//rbl-mini-statement/div//button[contains(text(),'Submit')]")
+	WebElement miniStatementSubmit;
+
+	@FindBy(xpath = "//rbl-mini-statement/div//button[contains(text(),'Clear')]")
+	WebElement miniStatementClear;
 
 	@FindBy(xpath = "//*[@type='search']")
 	WebElement dropdownSearch;
@@ -311,6 +374,51 @@ public class YBLBankingPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'aeps-modal')]//button[contains(text(),'Print')]")
 	WebElement aepsTxnScreenPrintButton;
 
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]/div/div/div/h4[contains(text(),'!')]")
+	WebElement miniStatementTxnScreen;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]/div/div/div")
+	WebElement miniStatementTxnScreenType;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]/div/div/div/following-sibling::div/div[1]")
+	WebElement miniStatementTxnScreenMessage;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]/div/div/div/following-sibling::div/div/strong")
+	WebElement miniStatementDeemedTxnScreenMessage;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//span[contains(text(),'Amount:')]/parent::div/following-sibling::div")
+	WebElement miniStatementTxnScreenTxnAmount;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//span[contains(text(),'Charges:')]/parent::div/following-sibling::div")
+	WebElement miniStatementTxnScreenCharges;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//span[contains(text(),'Failed Amount:')]/parent::div/following-sibling::div")
+	WebElement miniStatementTxnScreenFailedAmount;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
+	WebElement miniStatementTxnScreenTotalAmount;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]/div/div/div/following-sibling::div/div/span")
+	WebElement miniStatementTxnScreenFailureReason;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Done')]")
+	WebElement miniStatementTxnScreenDoneButton;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Done')][contains(@class,'disabled')]")
+	WebElement miniStatementTxnScreenDisabledDoneButton;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Exit')]")
+	WebElement miniStatementTxnScreenExitButton;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Retry')]")
+	WebElement miniStatementTxnScreenRetryButton;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Save')]")
+	WebElement miniStatementTxnScreenSaveButton;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Print')]")
+	WebElement miniStatementTxnScreenPrintButton;
+
 	@FindBy(xpath = "//div[contains(@class,'deposit-aeps-modal')]//strong[contains(text(),'Ref.ID')]/parent::span/parent::div/following-sibling::div//span")
 	WebElement depositRefNo;
 
@@ -319,6 +427,12 @@ public class YBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'enquiry-aeps-modal')]//strong[contains(text(),'Ref.ID')]/parent::span/parent::div/following-sibling::div//span")
 	WebElement balanceEnquiryRefNo;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//strong[contains(text(),'Ref. ID')]/parent::span/parent::div/following-sibling::div//span")
+	WebElement miniStatementRefNo;
+
+	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//span[contains(text(),'Customer A/C Balance:')]/parent::div/following-sibling::div//span")
+	WebElement miniStatementCustAcBalance;
 
 	@FindBy(xpath = "//li[1][contains(@class,'notifications')]//strong")
 	WebElement fcmHeading;
@@ -366,6 +480,8 @@ public class YBLBankingPage extends BasePage {
 				withdrawalTxns(usrData, initialCashoutBalance);
 			} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Balance Enquiry")) {
 				balanceEnquiryTxns(usrData, initialCashoutBalance);
+			} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Mini Statement")) {
+				miniStatementTxns(usrData, initialCashoutBalance);
 			}
 
 		} catch (Exception e) {
@@ -640,13 +756,7 @@ public class YBLBankingPage extends BasePage {
 		System.out.println("Amount " + usrData.get("AMOUNT") + " entered");
 
 		// Field level validation in Amount field
-		if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Wallet")) {
-			withdrawalAadhaarNum.click();
-			waitUntilElementIsVisible(withdrawalAmountError);
-			Assert.assertEquals(withdrawalAmountError.getText(), "Insufficient wallet balance");
-			System.out.println(withdrawalAmountError.getText());
-			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
-		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
 			withdrawalAadhaarNum.click();
 			waitUntilElementIsVisible(withdrawalAmountError);
 			Assert.assertEquals(withdrawalAmountError.getText(),
@@ -748,13 +858,8 @@ public class YBLBankingPage extends BasePage {
 						waitUntilElementIsVisible(aepsTxnScreen);
 						System.out.println("Txn screen displayed");
 						assertionOnWithdrawalFailedScreen(usrData);
-						if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-							System.out.println("Done button clicked");
-						} else {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
-							System.out.println("Exit button clicked");
-						}
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
+						System.out.println("Exit button clicked");
 					}
 					if (usrData.get("ASSERTION").contains("FCM")) {
 						assertionOnWithdrawalFCM(usrData);
@@ -912,13 +1017,8 @@ public class YBLBankingPage extends BasePage {
 						waitUntilElementIsVisible(aepsTxnScreen);
 						System.out.println("Txn screen displayed");
 						assertionOnBalanceEnquiryFailedScreen(usrData);
-						if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenDoneButton);
-							System.out.println("Done button clicked");
-						} else {
-							waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
-							System.out.println("Exit button clicked");
-						}
+						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenExitButton);
+						System.out.println("Exit button clicked");
 					}
 					if (usrData.get("ASSERTION").contains("FCM")) {
 						assertionOnBalanceEnquiryFCM(usrData);
@@ -929,6 +1029,148 @@ public class YBLBankingPage extends BasePage {
 					balanceEnquiryClear.click();
 					System.out.println("Clear button clicked");
 					waitUntilElementIsVisible(balanceEnquiryDropdown);
+					System.out.println("Data cleared");
+				}
+			}
+		}
+	}
+
+	// Mini Statement transaction
+	public void miniStatementTxns(Map<String, String> usrData, double walletBalance)
+			throws ClassNotFoundException, InterruptedException, ParseException, AWTException {
+		commonUtils.waitForSpinner();
+		waitUntilElementIsClickableAndClickTheElement(miniStatementTab);
+		System.out.println("Mini Statement tab clicked");
+		waitUntilElementIsClickableAndClickTheElement(miniStatementDropdown);
+		System.out.println("Dropdown clicked");
+		waitUntilElementIsClickableAndClickTheElement(dropdownSearch);
+		System.out.println(usrData.get("BANKNAME") + " entered");
+		dropdownSelect(usrData);
+		System.out.println(usrData.get("BANKNAME") + " selected");
+		waitUntilElementIsClickableAndClickTheElement(miniStatementMobNum);
+		miniStatementMobNum.sendKeys(usrData.get("MOBNUM"));
+		System.out.println("Mobile number " + usrData.get("MOBNUM") + " entered");
+		miniStatementAadhaarNum.click();
+
+		// Field level validation in Amount field
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank MN")) {
+			waitUntilElementIsVisible(miniStatementMobNumError);
+			Assert.assertEquals(miniStatementMobNumError.getText(), "Required Field");
+			System.out.println(miniStatementMobNumError.getText());
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("MN < 10 digits")
+				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid MN")) {
+			waitUntilElementIsVisible(miniStatementMobNumError);
+			Assert.assertEquals(miniStatementMobNumError.getText(), "Invalid mobile number");
+			System.out.println(miniStatementMobNumError.getText());
+		}
+
+		miniStatementAadhaarNum.sendKeys(usrData.get("AADHAAR"));
+		System.out.println("Aadhaar number " + usrData.get("AADHAAR") + " entered");
+		miniStatementMobNum.click();
+
+		// Field level validation in Amount field
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank Aadhaar")) {
+			waitUntilElementIsVisible(miniStatementAadhaarNumError);
+			Assert.assertEquals(miniStatementAadhaarNumError.getText(), "Required Field");
+			System.out.println(miniStatementAadhaarNumError.getText());
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
+			waitUntilElementIsVisible(miniStatementAadhaarNumError);
+			Assert.assertEquals(miniStatementAadhaarNumError.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
+			System.out.println(miniStatementAadhaarNumError.getText());
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
+			waitUntilElementIsVisible(miniStatementAadhaarNumError2);
+			Assert.assertEquals(miniStatementAadhaarNumError2.getText(), "Enter a valid Aadhaar number or VID");
+			System.out.println(miniStatementAadhaarNumError2.getText());
+		}
+
+		// Field level validation in checkbox field
+		if (usrData.get("ASSERTION").equalsIgnoreCase("No Checkbox")) {
+			Robot robot = new Robot();
+			robot.keyPress(KeyEvent.VK_ENTER);
+			waitUntilElementIsVisible(miniStatementConsentError);
+			Assert.assertEquals(miniStatementConsentError.getText(), "Required Field");
+			System.out.println(miniStatementConsentError.getText());
+		} else {
+			miniStatementConsentCheckbox.click();
+			System.out.println("Checkbox selected");
+		}
+
+		if (usrData.get("SCAN").equalsIgnoreCase("Yes")) {
+			Assert.assertEquals("Click to scan fingerprint", miniStatementFingerprintUnscanned.getText());
+			miniStatementScanFingerprint.click();
+			System.out.println("Scan fingerprint button clicked");
+			waitUntilElementIsVisible(miniStatementScanSuccessScreen);
+			Assert.assertEquals("Fingerprints scanned successfully", miniStatementFingerprintSuccess.getText());
+			System.out.println(miniStatementFingerprintSuccess.getText());
+			miniStatementFingerprintScreenOkButton.click();
+			System.out.println("Ok button clicked");
+			waitUntilElementIsVisible(miniStatementFingerprintGreen);
+			Assert.assertEquals("Fingerprint scanned successfully!", miniStatementFingerprintGreen.getText());
+		}
+
+		if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
+			Thread.sleep(1000);
+			waitUntilElementIsVisible(miniStatementSubmit);
+			miniStatementSubmit.click();
+			System.out.println("Submit button clicked");
+			commonUtils.processingScreen();
+
+			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
+				waitUntilElementIsVisible(processInBackgroundButton);
+				processInBackgroundButton.click();
+				System.out.println("Process in Background button clicked");
+			} else {
+				waitUntilElementIsVisible(miniStatementTxnScreen);
+				System.out.println("Txn screen displayed");
+
+				if (miniStatementTxnScreen.getText().equalsIgnoreCase("Success!")) {
+					if (miniStatementTxnScreenType.getAttribute("class").contains("completed")) {
+						assertionOnMiniStatementSuccessScreen(usrData);
+						if (usrData.get("TXNSCREENBUTTON").equals("Save")) {
+							waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenSaveButton);
+							System.out.println("Save button clicked");
+						} else if (usrData.get("TXNSCREENBUTTON").equals("Print")) {
+							waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenPrintButton);
+							System.out.println("Print button clicked");
+						}
+						waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenDoneButton);
+						System.out.println("Done button clicked");
+						if (usrData.get("ASSERTION").contains("FCM")) {
+							assertionOnMiniStatementFCM(usrData);
+						}
+						commonUtils.refreshBalance();
+						verifyUpdatedBalanceAfterMiniStatementSuccessTxn(usrData, walletBalance);
+					}
+				} else if (miniStatementTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+					assertionOnMiniStatementFailedScreen(usrData);
+					if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+						waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenExitButton);
+						System.out.println("Exit button clicked");
+					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
+						waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenDoneButton);
+						System.out.println("Done button clicked");
+					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+						waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenRetryButton);
+						System.out.println("Retry button clicked");
+						Thread.sleep(1000);
+						miniStatementSubmit.click();
+						System.out.println("Submit button clicked");
+						commonUtils.processingScreen();
+						waitUntilElementIsVisible(miniStatementTxnScreen);
+						System.out.println("Txn screen displayed");
+						assertionOnMiniStatementFailedScreen(usrData);
+						waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenExitButton);
+						System.out.println("Exit button clicked");
+					}
+					if (usrData.get("ASSERTION").contains("FCM")) {
+						assertionOnMiniStatementFCM(usrData);
+					}
+					commonUtils.refreshBalance();
+					verifyUpdatedBalanceAfterMiniStatementFailTxn(usrData, walletBalance);
+				} else {
+					miniStatementClear.click();
+					System.out.println("Clear button clicked");
+					waitUntilElementIsVisible(miniStatementDropdown);
 					System.out.println("Data cleared");
 				}
 			}
@@ -1217,7 +1459,67 @@ public class YBLBankingPage extends BasePage {
 				+ usrData.get("AADHAAR").substring(8, 12) + " as on " + dbUtils.aepsTxnDate()
 				+ " IST is Led Bal: 1576.26, Ava Bal: 1576.26 Response code: (00) SUCCESS Reference No: "
 				+ txnDetailsFromIni("GetTxnRefNo", "");
-		String failFCMContent = "Balance Enquiry for customer with Aadhaar XXXX XXXX "
+		String failFCMContent = "Balance Enquiry for customer with Aadhaar/VID XXXX XXXX "
+				+ usrData.get("AADHAAR").substring(8, 12) + " has failed : Failed to perform transaction(M3)";
+
+		switch (usrData.get("ASSERTION")) {
+		case "Success FCM":
+			fcmMethod(successFCMHeading, successFCMContent);
+			break;
+		case "Failed FCM":
+			fcmMethod(failFCMHeading, failFCMContent);
+			break;
+		}
+	}
+
+	// Verify details on success screen
+	public void assertionOnMiniStatementSuccessScreen(Map<String, String> usrData)
+			throws ClassNotFoundException, ParseException, InterruptedException {
+		Assert.assertEquals(miniStatementTxnScreenMessage.getText(), "Mini Statement generated Successfully");
+		System.out.println(miniStatementTxnScreenMessage.getText());
+		txnDetailsFromIni("StoreTxnRefNo", miniStatementRefNo.getText());
+		try {
+			System.out.println("Customer A/C Balance: " + replaceSymbols(miniStatementCustAcBalance.getText()));
+		} catch (Exception e) {
+			System.out.println("Customer A/C Balance not visible");
+		}
+		Assert.assertTrue(miniStatementTxnScreenDisabledDoneButton.isDisplayed());
+		System.out.println("Done button is disabled");
+	}
+
+	// Verify details on failure screen
+	public void assertionOnMiniStatementFailedScreen(Map<String, String> usrData)
+			throws ClassNotFoundException, ParseException, InterruptedException {
+		Assert.assertEquals(miniStatementTxnScreenFailureReason.getText(), "Failed to perform transaction(M3)");
+		System.out.println(miniStatementTxnScreenFailureReason.getText());
+	}
+
+	// Assertion after success screen is displayed
+	public void verifyUpdatedBalanceAfterMiniStatementSuccessTxn(Map<String, String> usrData,
+			double initialWalletBalance) throws ClassNotFoundException {
+		String newWalletBalance = df.format(initialWalletBalance);
+		Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
+		System.out.println("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+	}
+
+	// Assertion after failure screen is displayed
+	public void verifyUpdatedBalanceAfterMiniStatementFailTxn(Map<String, String> usrData, double initialWalletBalance)
+			throws ClassNotFoundException {
+		String newWalletBalance = df.format(initialWalletBalance);
+		Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
+		System.out.println("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+	}
+
+	// FCM assertion
+	public void assertionOnMiniStatementFCM(Map<String, String> usrData) throws ClassNotFoundException {
+		String successFCMHeading = "Mini Statement: SUCCESS";
+		String failFCMHeading = "Mini Statement: FAIL";
+
+		String successFCMContent = "Mini Statement for " + usrData.get("BANKNAME")
+				+ " a/c linked with Aadhaar/VID XXXX XXXX " + usrData.get("AADHAAR").substring(8, 12) + " as on "
+				+ dbUtils.aepsTxnDate() + " IST is successful.Response code: (00) SUCCESS Reference No: "
+				+ txnDetailsFromIni("GetTxnRefNo", "");
+		String failFCMContent = "Mini Statement for customer account linked with Aadhaar/VID XXXX XXXX "
 				+ usrData.get("AADHAAR").substring(8, 12) + " has failed : Failed to perform transaction(M3)";
 
 		switch (usrData.get("ASSERTION")) {
