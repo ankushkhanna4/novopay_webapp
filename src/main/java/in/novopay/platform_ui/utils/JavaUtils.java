@@ -1178,6 +1178,32 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
 	}
+	
+	public String readValue(String key) {
+		// if key is a number then use the as is
+		if (java.util.regex.Pattern.matches("\\d+", key)) {
+			return key;
+		} else if (key.equalsIgnoreCase("Random")) {
+			return generateRandomNo(10);
+		} else {
+			return readIniValue("CONFIG", key);
+		}
+	}
+	
+	public String readIniValue(String sectionName, String key) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			Ini.Section section = ini.get(sectionName);
+			String value = section.get(key);
+			return value;
+		} catch (InvalidFileFormatException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public String getTodaysDate(String format) {
 		Format formatter = new SimpleDateFormat(format);
