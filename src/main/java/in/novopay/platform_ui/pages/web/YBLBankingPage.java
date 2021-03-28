@@ -263,64 +263,64 @@ public class YBLBankingPage extends BasePage {
 	@FindBy(xpath = "//a[contains(text(),'Mini Statement')]")
 	WebElement miniStatementTab;
 
-	@FindBy(xpath = "//rbl-mini-statement//span[contains(text(),'Select...')]/parent::span")
+	@FindBy(xpath = "//ybl-mini-statement//span[contains(text(),'Select...')]/parent::span")
 	WebElement miniStatementDropdown;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-mobile-number']")
+	@FindBy(xpath = "//ybl-mini-statement//input[@id='money-transfer-mobile-number']")
 	WebElement miniStatementMobNum;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-mobile-number']/parent::div//li")
+	@FindBy(xpath = "//ybl-mini-statement//input[@id='money-transfer-mobile-number']/parent::div//li")
 	WebElement miniStatementMobNumError;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[@id='aeps-deposit-aadhar-number']")
+	@FindBy(xpath = "//ybl-mini-statement//input[@id='aeps-deposit-aadhar-number']")
 	WebElement miniStatementAadhaarNum;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[@id='aeps-deposit-aadhar-number']/parent::div//li")
+	@FindBy(xpath = "//ybl-mini-statement//input[@id='aeps-deposit-aadhar-number']/parent::div//li")
 	WebElement miniStatementAadhaarNumError;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[@id='aeps-deposit-aadhar-number']/parent::div/following-sibling::ul/li")
+	@FindBy(xpath = "//ybl-mini-statement//input[@id='aeps-deposit-aadhar-number']/parent::div/following-sibling::ul/li")
 	WebElement miniStatementAadhaarNumError2;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-amount-to-be-transferred']")
+	@FindBy(xpath = "//ybl-mini-statement//input[@id='money-transfer-amount-to-be-transferred']")
 	WebElement miniStatementAmount;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
+	@FindBy(xpath = "//ybl-mini-statement//input[@id='money-transfer-amount-to-be-transferred']/parent::div//li")
 	WebElement miniStatementAmountError;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
+	@FindBy(xpath = "//ybl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]")
 	WebElement miniStatementConsentCheckbox;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p")
+	@FindBy(xpath = "//ybl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p")
 	WebElement miniStatementConsentMessage;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p/a")
+	@FindBy(xpath = "//ybl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/p/a")
 	WebElement miniStatementConsentLink;
 
-	@FindBy(xpath = "//rbl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::ul/li")
+	@FindBy(xpath = "//ybl-mini-statement//input[contains(@id,'aadhaarDataConsent') and contains(@class,'ng-invalid')]/parent::span/following-sibling::ul/li")
 	WebElement miniStatementConsentError;
 
-	@FindBy(xpath = "//rbl-mini-statement//div[contains(@class,'scan_finger_container')]")
+	@FindBy(xpath = "//ybl-mini-statement//div[contains(@class,'scan_finger_container')]")
 	WebElement miniStatementScanFingerprint;
 
-	@FindBy(xpath = "//rbl-mini-statement//h4[contains(text(),'Success!')]")
+	@FindBy(xpath = "//ybl-mini-statement//h4[contains(text(),'Success!')]")
 	WebElement miniStatementScanSuccessScreen;
 
-	@FindBy(xpath = "//rbl-mini-statement//div[contains(text(),'Fingerprints scanned successfully')]")
+	@FindBy(xpath = "//ybl-mini-statement//div[contains(text(),'Fingerprints scanned successfully')]")
 	WebElement miniStatementFingerprintSuccess;
 
-	@FindBy(xpath = "//rbl-mini-statement//span[contains(text(),'Fingerprint scanned successfully!')]")
+	@FindBy(xpath = "//ybl-mini-statement//span[contains(text(),'Fingerprint scanned successfully!')]")
 	WebElement miniStatementFingerprintGreen;
 
-	@FindBy(xpath = "//rbl-mini-statement//span[contains(text(),'Click to scan fingerprint')]")
+	@FindBy(xpath = "//ybl-mini-statement//span[contains(text(),'Click to scan fingerprint')]")
 	WebElement miniStatementFingerprintUnscanned;
 
-	@FindBy(xpath = "//rbl-mini-statement//button[contains(text(),'Ok')]")
+	@FindBy(xpath = "//ybl-mini-statement//button[contains(text(),'Ok')]")
 	WebElement miniStatementFingerprintScreenOkButton;
 
-	@FindBy(xpath = "//rbl-mini-statement/div//button[contains(text(),'Submit')]")
+	@FindBy(xpath = "//ybl-mini-statement/div//button[contains(text(),'Submit')]")
 	WebElement miniStatementSubmit;
 
-	@FindBy(xpath = "//rbl-mini-statement/div//button[contains(text(),'Clear')]")
+	@FindBy(xpath = "//ybl-mini-statement/div//button[contains(text(),'Clear')]")
 	WebElement miniStatementClear;
 
 	@FindBy(xpath = "//*[@type='search']")
@@ -403,6 +403,9 @@ public class YBLBankingPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Done')]")
 	WebElement miniStatementTxnScreenDoneButton;
+
+	@FindBy(xpath = "//ybl-mini-statement-modal//button[contains(@class,'button-disabled')][contains(text(),'Done')]")
+	WebElement doneButtonDisabled;
 
 	@FindBy(xpath = "//div[contains(@class,'mini-statement-modal')]//button[contains(text(),'Done')][contains(@class,'disabled')]")
 	WebElement miniStatementTxnScreenDisabledDoneButton;
@@ -1126,15 +1129,18 @@ public class YBLBankingPage extends BasePage {
 				if (miniStatementTxnScreen.getText().equalsIgnoreCase("Success!")) {
 					if (miniStatementTxnScreenType.getAttribute("class").contains("completed")) {
 						assertionOnMiniStatementSuccessScreen(usrData);
-						if (usrData.get("TXNSCREENBUTTON").equals("Save")) {
-							waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenSaveButton);
-							System.out.println("Save button clicked");
-						} else if (usrData.get("TXNSCREENBUTTON").equals("Print")) {
-							waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenPrintButton);
-							System.out.println("Print button clicked");
+						waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenPrintButton);
+						System.out.println("Print button clicked");
+						try {
+							while (doneButtonDisabled.isDisplayed() == true) {
+								miniStatementTxnScreenDoneButton.getText();
+							}
+							waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenDoneButton);
+							System.out.println("Done button clicked");
+						} catch (Exception e) {
+							waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenDoneButton);
+							System.out.println("Done button clicked");
 						}
-						waitUntilElementIsClickableAndClickTheElement(miniStatementTxnScreenDoneButton);
-						System.out.println("Done button clicked");
 						if (usrData.get("ASSERTION").contains("FCM")) {
 							assertionOnMiniStatementFCM(usrData);
 						}

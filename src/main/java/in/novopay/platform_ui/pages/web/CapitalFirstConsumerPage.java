@@ -325,10 +325,10 @@ public class CapitalFirstConsumerPage extends BasePage {
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 		String successSMS = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("CfAmount", "")
 				+ " for IDFC FIRST Bank Ltd. Loan ID - " + cmsDetailsFromIni("CfBatchId", "") + " is received at "
-				+ dbUtils.cfcDate() + ", transaction ID: " + dbUtils.cfcRefNum() + ".";
+				+ dbUtils.cfcDate() + " at Novopay outlet. Trxn ID: " + dbUtils.cfcRefNum() + ".";
 		String failSMS = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("CfAmount", "")
 				+ " for IDFC FIRST Bank Ltd. Loan ID - " + cmsDetailsFromIni("CfBatchId", "") + " failed at "
-				+ dbUtils.cfcDate() + ", transaction ID: " + dbUtils.cfcRefNum() + ".";
+				+ dbUtils.cfcDate() + " at Novopay outlet. Trxn ID: " + dbUtils.cfcRefNum() + ".";
 		Thread.sleep(5000);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
 			Assert.assertEquals(successSMS, dbUtils.sms());

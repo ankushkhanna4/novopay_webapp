@@ -1608,7 +1608,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String doTransferDateWithIncreasedTime() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npActor"));
@@ -1631,7 +1631,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public void updateOrgSettlementInfo(String mode, String status, String enabled, String remarks, String mobNum)
 			throws ClassNotFoundException {
 		try {
@@ -1773,6 +1773,7 @@ public class DBUtils extends JavaUtils {
 			org_code.add("equitas");
 			org_code.add("indusind");
 			org_code.add("np_loans");
+			org_code.add("np_chatbot");
 
 			for (String code : org_code) {
 				String insertQuery = "INSERT INTO `contract` (`organization`, `partner_organization`) "
@@ -1839,7 +1840,7 @@ public class DBUtils extends JavaUtils {
 		}
 	}
 
-	public void updateWalletManagedByBank(String partner, String mobNum) throws ClassNotFoundException {
+	public void updateAepsPartner(String partner, String mobNum) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));
 			String query = "UPDATE master.organization_attribute SET attr_value = '" + partner
@@ -2074,6 +2075,41 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Updating RBL EKYC Status as " + value);
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
+	}
+
+	public String getOrgAttributeValue(String mobNum, String key) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npPaymentGateway"));
+			String query = "SELECT attr_value FROM master.organization_attribute WHERE attr_key = '" + key + "'"
+					+ " AND orgnization_id = (SELECT organization FROM master.user WHERE id IN (SELECT user_id FROM "
+					+ "master.user_attribute WHERE attr_value = '" + mobNum + "') AND `status` = 'ACTIVE');";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+
+	public void insertIntoOrgAttribute(String mobNum, String key, String value) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "INSERT INTO master.master.organization_attribute (`attr_key`, `attr_value`, `orgnization_id`) "
+					+ "VALUES('" + key + "','" + value + "',(SELECT organization FROM master.user "
+					+ "WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
+					+ "') AND `status` = 'ACTIVE');";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Inserting attribute key as " + key + " and value as " + value);
 		} catch (SQLException sqe) {
 			System.out.println("Error executing query");
 			sqe.printStackTrace();

@@ -218,8 +218,7 @@ public class SettlementPage extends BasePage {
 //				dbUtils.updateOrgSettlementInfo("TO_BANK", "6", "0", "(NULL)", mobileNumFromIni());
 			}
 
-			dbUtils.updateWalletManagedByBank(usrData.get("PARTNER").toUpperCase(),
-					getLoginMobileFromIni("RetailerMobNum"));
+			dbUtils.updateAepsPartner(usrData.get("PARTNER").toUpperCase(), getLoginMobileFromIni("RetailerMobNum"));
 
 			if (usrData.get("TYPE").equalsIgnoreCase("NEFT")) {
 				dbUtils.updateSettlementModeInPlatformMasterData("Y", usrData.get("PARTNER"));
@@ -417,7 +416,7 @@ public class SettlementPage extends BasePage {
 						}
 					}
 
-					dbUtils.updateWalletManagedByBank("RBL", getLoginMobileFromIni("RetailerMobNum"));
+					dbUtils.updateAepsPartner("RBL", getLoginMobileFromIni("RetailerMobNum"));
 					dbUtils.updateSetllementStartAndEndTime(usrData.get("PARTNER"), "'00:00:00'", "'23:59:59'");
 
 				} else if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")) {
@@ -444,7 +443,11 @@ public class SettlementPage extends BasePage {
 			Assert.assertEquals(settlementTxnScreenMessage.getText().substring(29),
 					"Please check your bank account after 4 hours for updated balance.");
 		} else if (usrData.get("TYPE").equalsIgnoreCase("IMPS")) {
-			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request successful.");
+			if (usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
+				Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request successful.");
+			} else if (usrData.get("PARTNER").equalsIgnoreCase("YBL")) {
+				Assert.assertEquals(settlementTxnScreenMessage.getText(), "");
+			}
 		}
 		System.out.println(settlementTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenRequestedAmount.getText()),

@@ -218,7 +218,7 @@ public class LoginPage extends BasePage {
 						waitUntilElementIsClickableAndClickTheElement(otp);
 						otp.clear();
 						System.out.println("entering OTP");
-						otp.sendKeys(getAuthfromIni("LoginOTP"));
+						otp.sendKeys(getAuthfromIni("ForgotMpinOTP"));
 						System.out.println("clicking on PROCEED button");
 						waitUntilElementIsClickableAndClickTheElement(proceedOTP);
 						waitUntilElementIsClickableAndClickTheElement(newpin);

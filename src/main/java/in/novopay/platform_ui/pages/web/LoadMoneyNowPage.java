@@ -231,6 +231,10 @@ public class LoadMoneyNowPage extends BasePage {
 				Thread.sleep(1000);
 				iFrame.sendKeys(Keys.TAB);
 				Thread.sleep(1000);
+				iFrame.sendKeys(usrData.get("UPIID"));
+				Thread.sleep(1000);
+				iFrame.sendKeys(Keys.TAB);
+				Thread.sleep(1000);
 				iFrame.sendKeys(Keys.ENTER);
 				Thread.sleep(1000);
 				iFrame.sendKeys(Keys.ENTER);

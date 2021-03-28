@@ -98,6 +98,9 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//button[@class='toast-close-button']")
 	WebElement toastCloseButton;
+	
+	@FindBy(id = "site-search")
+	WebElement searchBiller;
 
 	public CommonUtils(WebDriver wdriver) {
 		super(wdriver);
@@ -338,9 +341,19 @@ public class CommonUtils extends BasePage {
 
 	public void selectCmsBiller() {
 		waitForSpinner();
+		waitUntilElementIsClickableAndClickTheElement(searchBiller);
+		searchBiller.sendKeys(cmsDetailsFromIni("CmsBiller",""));
 		String billerXpath = "//form[@id='money-transfer-credit-card-form']//div[contains(text(),'"
 				+ cmsDetailsFromIni("CmsBiller","") + "')]";
 		WebElement biller = wdriver.findElement(By.xpath(billerXpath));
 		waitUntilElementIsClickableAndClickTheElement(biller);
+	}
+	
+	public void verifyAndInsertValueInOrgAttribute(String key, String value) throws ClassNotFoundException {
+		if (dbUtils.getOrgAttributeValue(mobileNumFromIni(), key) != null) {
+			System.out.println(key + " with the value " + value + " is already present");
+		} else {
+			dbUtils.insertIntoOrgAttribute(mobileNumFromIni(), key, value);
+		}
 	}
 }

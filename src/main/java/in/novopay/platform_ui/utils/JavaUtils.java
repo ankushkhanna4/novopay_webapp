@@ -119,7 +119,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.host.ip", "192.168.150.7");
 				ini.put("Common", "server.host.port", "22");
 				ini.put("Common", "server.username", "akhanna");
-				ini.put("Common", "server.password", "qaonenovopay");
+				ini.put("Common", "server.password", "systemqa1");
 				configProperties.put("env", "qa1");
 				configProperties.put("webAppUrl", "https://qa1-retailer.novopay.in/");
 				configProperties.put("finOpsUrl", "https://qa1-finance-portal.novopay.in");
@@ -135,7 +135,7 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.ip", "192.168.150.7");
 				configProperties.put("server.host.port", "22");
 				configProperties.put("server.username", "akhanna");
-				configProperties.put("server.password", "qaonenovopay");
+				configProperties.put("server.password", "systemqa1");
 			} else if (env.equalsIgnoreCase("QA2")) {
 				ini.put("Common", "env", "qa2");
 				ini.put("Common", "webAppUrl", "https://qa2-retailer.novopay.in/");
@@ -251,7 +251,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.host.ip", "192.168.150.7");
 				ini.put("Common", "server.host.port", "22");
 				ini.put("Common", "server.username", "akhanna");
-				ini.put("Common", "server.password", "qazxsw123");
+				ini.put("Common", "server.password", "qaonenovopay");
 				configProperties.put("env", "aws-qa1");
 				configProperties.put("webAppUrl", "https://aws-qa1-retailer.novopay.in/");
 				configProperties.put("finOpsUrl", "https://aws-qa1-finance-portal.novopay.in");
@@ -267,7 +267,7 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.ip", "192.168.150.7");
 				configProperties.put("server.host.port", "22");
 				configProperties.put("server.username", "akhanna");
-				configProperties.put("server.password", "qazxsw123");
+				configProperties.put("server.password", "qaonenovopay");
 			}
 			ini.store();
 			BasePage.wdriver = null;

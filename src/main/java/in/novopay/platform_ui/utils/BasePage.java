@@ -345,6 +345,8 @@ public class BasePage extends JavaUtils {
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
 	
+	
+	
 	/**
 	 * Wait until rbl account validation element is visible
 	 */

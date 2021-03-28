@@ -23,6 +23,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import in.novopay.platform_ui.utils.BasePage;
+import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.JavaUtils;
 import in.novopay.platform_ui.utils.Log;
@@ -36,6 +37,7 @@ public class FlowMapper {
 	private String sheetName = "FLOWMAPPER";
 	private JavaUtils javaUtils = new JavaUtils();
 	private DBUtils dbUtils = new DBUtils();
+	private CommonUtils commonUtils = new CommonUtils(wdriver);
 	MongoDBUtils mongoDbUtils = new MongoDBUtils();
 	private Map<String, String> usrData;
 	private Object obj;
@@ -59,14 +61,26 @@ public class FlowMapper {
 		Log.info("Executing --> " + usrData.get("TCID"));
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
 			dbUtils.modifyContract(usrData.get("CONTRACT"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
+		} else if (usrData.get("CONTRACT").equalsIgnoreCase("ALL")) {
+			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
-		if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
+		if (usrData.get("FEATURE").equalsIgnoreCase("Money Transfer")) {
+			dbUtils.updateDmtBcAgentId("NOV1000704", mobileNumFromIni());
+		} else if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
 			dbUtils.updateRBLEKYCStatus("APPROVED", mobileNumFromIni());
+			dbUtils.updateAepsPartner(usrData.get("CONTRACT"), mobileNumFromIni());
+			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_TERMINAL_ID","567765667126757");
+			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_ID","NOV112200");
+			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_DEVICE_ID","UP000102");
+			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_PASSWORD","40bd001563085fc35165329ea1ff5c5ecbdbbeef");
 		} else if (usrData.get("FEATURE").equalsIgnoreCase("EKYC")) {
+			dbUtils.updateAepsPartner("RBL", mobileNumFromIni());
 			dbUtils.updateRBLEKYCStatus("PENDING", mobileNumFromIni());
+			dbUtils.updateDmtBcAgentId("NOV2160858", mobileNumFromIni());
 		} else if (usrData.get("CONTRACT").equalsIgnoreCase("CMS")) {
-			mongoDbUtils.updateCMSBillerOrder(usrData.get("FEATURE"), "1");
 			javaUtils.cmsDetailsFromIni("StoreCmsBiller", usrData.get("FEATURE"));
+		} else if (usrData.get("CONTRACT").equalsIgnoreCase("BILLPAY")) {
+			commonUtils.verifyAndInsertValueInOrgAttribute("BILL_AVENUE_AGENT_ID","123456");
 		}
 
 		javaUtils.getWalletFromIni("StoreWallet", usrData.get("WALLET"));
@@ -184,9 +198,6 @@ public class FlowMapper {
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
 			System.out.println("Inserting all contracts");
 			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
-		}
-		if (usrData.get("CONTRACT").equalsIgnoreCase("CMS")) {
-			mongoDbUtils.updateCMSBillerOrder(usrData.get("FEATURE"), "2");
 		}
 	}
 

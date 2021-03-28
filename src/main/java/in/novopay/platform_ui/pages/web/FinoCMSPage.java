@@ -100,7 +100,7 @@ public class FinoCMSPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div")
 	WebElement cmsTxnScreenType;
 
-	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div/following-sibling::div/div[2]")
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div/following-sibling::div/div[1]")
 	WebElement cmsTxnScreenMessage;
 
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Txn ID')]/parent::span/parent::div/following-sibling::div//span")
@@ -378,7 +378,7 @@ public class FinoCMSPage extends BasePage {
 			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 		}
 		double amount = Double.parseDouble(cmsDetailsFromIni("FinoCMSAmount", ""));
-		double comm = amount * 2 / 1000;
+		double comm = amount * 15 / 10000;
 		double commission = Math.round(comm * 100.0) / 100.0;
 		double taxDS = commission * Double.parseDouble(dbUtils.getTDSPercentage(mobileNumFromIni())) / 10000;
 		double tds = Math.round(taxDS * 100.0) / 100.0;

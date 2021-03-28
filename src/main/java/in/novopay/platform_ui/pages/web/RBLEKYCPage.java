@@ -230,8 +230,6 @@ public class RBLEKYCPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
-			dbUtils.updateDmtBcAgentId("NOV2160858", mobileNumFromIni());
-
 			commonUtils.selectFeatureFromMenu2(banking, pageTitle);
 
 			// Refresh wallet balances whenever required

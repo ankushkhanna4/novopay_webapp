@@ -44,7 +44,7 @@ public class CapitalFirstAgentPage extends BasePage {
 
 	@FindBy(xpath = "//h1[contains(text(),'Cash Services')]")
 	WebElement pageTitle;
-
+	
 	@FindBy(xpath = "//span[contains(text(),'Capital First Agent')]")
 	WebElement capitalFirstIcon;
 	
@@ -141,6 +141,7 @@ public class CapitalFirstAgentPage extends BasePage {
 
 			// Click on capital first icon
 //			waitUntilElementIsClickableAndClickTheElement(capitalFirstIcon);
+			
 			commonUtils.selectCmsBiller();
 			System.out.println("Capital First icon clicked");
 

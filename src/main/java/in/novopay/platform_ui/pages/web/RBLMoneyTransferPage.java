@@ -623,9 +623,15 @@ public class RBLMoneyTransferPage extends BasePage {
 				try {
 					waitUntilSubmitIsClickableAndClickTheElement(moneyTransferSubmitButton);
 				} catch (Exception e) {
-					System.out.println("Submit button not visible. Pressing Tab");
+					System.out.println("Submit button not visible");
 					Thread.sleep(1000);
-					deleteBeneButton.sendKeys(Keys.TAB);
+					try {
+						deleteBeneButton.sendKeys(Keys.TAB);
+						System.out.println("Pressing Tab on Delete Bene button");
+					} catch (Exception f) {
+						addBeneButton.sendKeys(Keys.TAB);
+						System.out.println("Pressing Tab on Add Bene button");
+					}
 					waitUntilElementIsClickableAndClickTheElement(moneyTransferSubmitButton);
 				}
 				System.out.println("Submit button clicked");
@@ -1343,7 +1349,15 @@ public class RBLMoneyTransferPage extends BasePage {
 	// Check limit remaining
 	public void limitCheck(Map<String, String> usrData) throws NumberFormatException, ClassNotFoundException {
 		if (usrData.get("LIMITCHECK").equalsIgnoreCase("YES")) {
-			waitUntilElementIsVisible(limitRem);
+			try {
+				waitUntilElementIsVisible(limitRem);
+				System.out.println("Limit fetched");
+			} catch (Exception e) {
+				custMobNum.clear();
+				custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
+				waitUntilElementIsVisible(limitRem);
+				System.out.println("Limit fetched in 2nd attempt");
+			}
 			Assert.assertEquals(limitRemaining(usrData, "", "actual"),
 					limitRemaining(usrData, getCustomerDetailsFromIni("ExistingNum"), "expected"));
 			System.out.println(limitRem.getText());
