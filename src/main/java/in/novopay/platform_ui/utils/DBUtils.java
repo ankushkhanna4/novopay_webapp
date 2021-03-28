@@ -169,7 +169,8 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public String getOnDemandSettlementCharges(String mode, String partner) throws ClassNotFoundException {
+	public String getOnDemandSettlementCharges(String mode, String partner, String amount)
+			throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("limitCharges"));
 			String code = "";
@@ -181,9 +182,14 @@ public class DBUtils extends JavaUtils {
 				code = "MRCHNT_ON_DEMAND_CASHOUT_YBL_BANK_NEFT_SETTLEMENT_AMOUNT";
 			} else if (mode.equalsIgnoreCase("IMPS") && partner.equalsIgnoreCase("YBL")) {
 				code = "MRCHNT_ON_DEMAND_CASHOUT_YBL_BANK_IMPS_SETTLEMENT_DEFAULT_CHRG_IMPS";
+			} else if (mode.equalsIgnoreCase("NEFT") && partner.equalsIgnoreCase("FINO")) {
+				code = "MRCHNT_ON_DEMAND_CASHOUT_RAZORPAY_NEFT_SETTLEMENT_DEFAULT_CHRG_NEFT";
+			} else if (mode.equalsIgnoreCase("IMPS") && partner.equalsIgnoreCase("FINO")) {
+				code = "MRCHNT_ON_DEMAND_CASHOUT_RAZORPAY_IMPS_SETTLEMENT_DEFAULT_CHRG_IMPS";
 			}
 			String query = "SELECT ROUND(`base_charge`/100,2) FROM `limit_charges`.`charge_category_slabs` "
-					+ "WHERE `category_code`='" + code + "'";
+					+ "WHERE `category_code`='" + code + "' AND " + amount
+					+ " BETWEEN `slab_from_amount`/100+1 AND `slab_to_amount`/100;";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {

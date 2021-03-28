@@ -454,8 +454,8 @@ public class SettlementPage extends BasePage {
 				usrData.get("AMOUNT") + ".00");
 		System.out.println("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
 		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
-		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()),
-				dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER")));
+		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()), dbUtils
+				.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"), usrData.get("AMOUNT")));
 		System.out.println("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
@@ -495,8 +495,8 @@ public class SettlementPage extends BasePage {
 				usrData.get("AMOUNT") + ".00");
 		System.out.println("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
 		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
-		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()),
-				dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER")));
+		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()), dbUtils
+				.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"), usrData.get("AMOUNT")));
 		System.out.println("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
@@ -530,7 +530,8 @@ public class SettlementPage extends BasePage {
 		System.out.println("Verifying charges");
 		Assert.assertEquals(replaceSymbols(applicableTxnAmount.getText()), usrData.get("AMOUNT") + ".00");
 		System.out.println("Transaction Amount: " + replaceSymbols(applicableTxnAmount.getText()));
-		String chrges = dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"));
+		String chrges = dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"),
+				usrData.get("AMOUNT"));
 		Assert.assertEquals(replaceSymbols(applicableCharges.getText()), chrges);
 		System.out.println("Charges: " + replaceSymbols(applicableCharges.getText()));
 
