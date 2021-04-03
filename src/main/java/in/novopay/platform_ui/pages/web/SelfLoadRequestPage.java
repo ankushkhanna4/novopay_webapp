@@ -146,16 +146,16 @@ public class SelfLoadRequestPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 
 		try {
-			if (usrData.get("ASSERTION").equalsIgnoreCase("BALANCE")) {
+			if (usrData.get("ASSERTION").contains("Balance")) {
 				commonUtils.refreshBalance(); // refresh wallet balances
-				verifyUpdatedBalanceAfterSuccessTxn(usrData,
+				verifyUpdatedBalanceAfterTxn(usrData,
 						Double.parseDouble(getWalletBalanceFromIni("GetRetailer", "")));
 			} else {
 				commonUtils.displayInitialBalance("retailer"); // display main wallet balance
 				commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
 				commonUtils.selectFeatureFromMenu1(manageWalletButton, pageTitle);
-				
+
 				dbUtils.updateWalletTopupRequest();
 
 				waitUntilElementIsClickableAndClickTheElement(selfLoadRequestTab);
@@ -219,6 +219,8 @@ public class SelfLoadRequestPage extends BasePage {
 				amount.sendKeys(usrData.get("AMOUNT"));
 				txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
 				System.out.println("Amount entered");
+				
+				getCodeFromIni(usrData.get("CODE"));
 
 				waitUntilElementIsClickableAndClickTheElement(date);
 				String dayMonth = "";
@@ -228,6 +230,7 @@ public class SelfLoadRequestPage extends BasePage {
 					dayMonth = getTodaysDateOfMonth(0);
 				}
 				date.sendKeys(dayMonth);
+				date.sendKeys(getTodaysMonth());
 				System.out.println("DATE entered");
 
 				commonUtils.uploadFile(uploadFile);
@@ -318,11 +321,17 @@ public class SelfLoadRequestPage extends BasePage {
 	}
 
 	// Assertion after success or orange screen is displayed
-	public void verifyUpdatedBalanceAfterSuccessTxn(Map<String, String> usrData, double initialWalletBalance)
+	public void verifyUpdatedBalanceAfterTxn(Map<String, String> usrData, double initialWalletBalance)
 			throws ClassNotFoundException {
 		double totalAmount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
+		double charges = Double.parseDouble(
+				dbUtils.getSelfWalletLoadCharges(getCodeFromIni("GetCode"), txnDetailsFromIni("GetTxfAmount", "")));
 		double newWalletBal = 0.00;
-		newWalletBal = initialWalletBalance + totalAmount - 0.35*totalAmount/100;
+		if (usrData.get("ASSERTION").equalsIgnoreCase("Success Balance")) {
+			newWalletBal = initialWalletBalance + totalAmount - charges;
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Fail Balance")) {
+			newWalletBal = initialWalletBalance;
+		}
 		String newWalletBalance = df.format(newWalletBal);
 		Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 		System.out.println("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));

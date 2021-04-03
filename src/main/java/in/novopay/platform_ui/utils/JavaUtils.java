@@ -570,6 +570,23 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
+	
+	public String getCodeFromIni(String name) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (name.equalsIgnoreCase("GetCode")) {
+				return ini.get("SelfLoadRequestData", "Code");
+			} else {
+				ini.put("SelfLoadRequestData", "Code", name);
+				ini.store();
+				return ini.get("SelfLoadRequestData", "Code");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	public String getPartner(String name) {
 		Ini ini;

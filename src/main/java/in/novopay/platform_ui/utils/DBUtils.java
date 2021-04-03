@@ -42,7 +42,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return conn;
 	}
-	
+
 	public Connection createConnection3(String dbSchemaName) throws ClassNotFoundException {
 
 		String dbSchema = configProperties.get("dbUrl3.0") + dbSchemaName;
@@ -1982,7 +1982,7 @@ public class DBUtils extends JavaUtils {
 	public void updateCdmWalletLoad() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("npOps"));
-			String query = "UPDATE np_ops.`cdm_wallet_load` SET `status` = 'APPROVED' WHERE `status` = 'PENDING'";
+			String query = "UPDATE np_ops.`cdm_wallet_load` SET `status` = 'COMPLETED' WHERE `status` = 'PENDING'";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Updating status of cdm_wallet_load to APPROVED");
@@ -2165,5 +2165,25 @@ public class DBUtils extends JavaUtils {
 			System.out.println("Error executing query");
 			sqe.printStackTrace();
 		}
+	}
+
+	public String getSelfWalletLoadCharges(String code, String amount) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("npPaymentGateway"));
+			String query = "SELECT ROUND(`base_charge`/100,2)+percentage*" + amount
+					+ "/10000 FROM `limit_charges`.`charge_category_slabs` WHERE `category_code`="
+					+ "'SELF_WALLET_LOAD_VIA_" + code + "_CHARGE_CASH_MODE' AND " + amount
+					+ " BETWEEN `slab_from_amount`/100+1 AND `slab_to_amount`/100;";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
 	}
 }

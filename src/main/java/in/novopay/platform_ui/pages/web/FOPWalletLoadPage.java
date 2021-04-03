@@ -57,18 +57,30 @@ public class FOPWalletLoadPage extends BasePage {
 
 	@FindBy(xpath = "//select[@name='txnType']")
 	WebElement txnType;
-	
+
 	@FindBy(xpath = "//h5[contains(text(),'Bank Statements')]/parent::div/following-sibling::div//tr[@class='table-row']")
 	WebElement bankStatementRow;
-	
+
 	@FindBy(xpath = "//h5[contains(text(),'Requests')]/parent::div/following-sibling::div//tr[@class='table-row']")
 	WebElement requestRow;
-	
+
 	@FindBy(xpath = "//h5[contains(text(),'Bank')]/parent::div/following-sibling::div//tr[@class='table-row']/td[2]")
 	WebElement description;
-	
+
 	@FindBy(xpath = "//button[contains(text(),'Action')]")
 	WebElement actionButton;
+
+	@FindBy(xpath = "//*[@id='action-approve']/parent::span")
+	WebElement approveRadioButton;
+
+	@FindBy(xpath = "//*[@id='action-reject']/parent::span")
+	WebElement rejectRadioButton;
+
+	@FindBy(xpath = "//select2[contains(@id,'ifsc-search-bank')]/parent::div")
+	WebElement rejectReasonDropdown;
+
+	@FindBy(xpath = "//li[contains(text(),'Duplicate Request')]")
+	WebElement rejectReasonValue;
 
 	@FindBy(xpath = "//h4[contains(text(),'Wallet Load Action')]")
 	WebElement actionScreen;
@@ -88,11 +100,21 @@ public class FOPWalletLoadPage extends BasePage {
 			commonUtils.selectFeatureFromMenu3(finance, walletLoad, walletLoadTitle);
 			commonUtils.waitForSpinner();
 
-			String desc = "CASH DEPOSIT-"+getTermNumberFromIni("GetTerm")+"/"+getTxnNumberFromIni("GetTxn")+"-Bengaluru";
-			
+			String desc = "CASH DEPOSIT-" + getTermNumberFromIni("GetTerm") + "/" + getTxnNumberFromIni("GetTxn")
+					+ "-Bengaluru";
+
 			dbUtils.updateCdmWalletLoad();
-			dbUtils.insertCdmWalletLoadEntries(usrData.get("PARTNER"), getTermNumberFromIni("GetTerm"),
-					getTermNumberFromIni("GetTxn"), txnDetailsFromIni("GetTxfAmount", "")+"00", usrData.get("OPTIONS"), desc);
+			if (usrData.get("PARTNER").equals("AXIS")) {
+				dbUtils.insertCdmWalletLoadEntries(usrData.get("PARTNER"), getTermNumberFromIni("GetTerm"),
+						getTxnNumberFromIni("GetTxn"), txnDetailsFromIni("GetTxfAmount", "") + "00",
+						usrData.get("TYPE"), desc);
+			} else if (usrData.get("PARTNER").equals("FED")) {
+				dbUtils.insertCdmWalletLoadEntries(usrData.get("PARTNER"), "EROOR", getTxnNumberFromIni("GetTxn"),
+						txnDetailsFromIni("GetTxfAmount", "") + "00", usrData.get("TYPE"), desc);
+			} else {
+				dbUtils.insertCdmWalletLoadEntries(usrData.get("PARTNER"), "(NULL)", "(NULL)",
+						txnDetailsFromIni("GetTxfAmount", "") + "00", usrData.get("TYPE"), desc);
+			}
 
 			if (usrData.get("TAB").equalsIgnoreCase("Pending with Bank Statement")) {
 				waitUntilElementIsClickableAndClickTheElement(pendingBankStmntTab);
@@ -106,26 +128,37 @@ public class FOPWalletLoadPage extends BasePage {
 			Select type = new Select(txnType);
 			type.selectByVisibleText(usrData.get("OPTIONS"));
 			commonUtils.waitForSpinner();
-			
+
 			waitUntilElementIsClickable(bankStatementRow);
 			Assert.assertEquals(description.getText(), desc);
 			waitUntilElementIsClickableAndClickTheElement(bankStatementRow);
 			commonUtils.waitForSpinner();
-			
+
 			waitUntilElementIsVisible(requestRow);
 
 			waitUntilElementIsClickableAndClickTheElement(actionButton);
 			System.out.println("Action button clicked");
 
 			waitUntilElementIsVisible(actionScreen);
+			if (usrData.get("ACTION").equalsIgnoreCase("Approve")) {
+				waitUntilElementIsClickableAndClickTheElement(approveRadioButton);
+				System.out.println("Approve radio button selected");
+			} else if (usrData.get("ACTION").equalsIgnoreCase("Reject")) {
+				waitUntilElementIsClickableAndClickTheElement(rejectRadioButton);
+				System.out.println("Reject radio button selected");
+
+				waitUntilElementIsClickableAndClickTheElement(rejectReasonDropdown);
+				System.out.println("Reject reason dowpdown clicked");
+
+				waitUntilElementIsClickableAndClickTheElement(rejectReasonValue);
+				System.out.println("Reject Reason selected");
+			}
 			waitUntilElementIsClickableAndClickTheElement(submitButton);
 			System.out.println("Submit button clicked");
 
-//			commonUtils.processingScreen();
-
 			waitUntilElementIsVisible(toastMessage);
 			System.out.println(toastMessage.getText());
-			
+
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
