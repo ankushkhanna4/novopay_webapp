@@ -227,6 +227,7 @@ public class LoginPage extends BasePage {
 						waitUntilElementIsClickableAndClickTheElement(reenterpin);
 						System.out.println("Re-entering PIN");
 						reenterpin.sendKeys(usrData.get("REENTERPIN"));
+						dbUtils.deleteMpinHistory(getLoginMobileFromIni(mobNumFromSheet));
 						System.out.println("clicking on FINISH button");
 						waitUntilElementIsClickableAndClickTheElement(finish);
 						waitUntilElementIsVisible(toasterMsg);

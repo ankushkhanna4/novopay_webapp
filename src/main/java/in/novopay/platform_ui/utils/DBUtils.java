@@ -42,6 +42,23 @@ public class DBUtils extends JavaUtils {
 		}
 		return conn;
 	}
+	
+	public Connection createConnection3(String dbSchemaName) throws ClassNotFoundException {
+
+		String dbSchema = configProperties.get("dbUrl3.0") + dbSchemaName;
+		String jdbcDriver = configProperties.get("jdbcDriver");
+		try {
+			if ((null == conn) || (!conn.getCatalog().equalsIgnoreCase(dbSchemaName))) {
+				Class.forName(jdbcDriver);
+				conn = DriverManager.getConnection(dbSchema, configProperties.get("dbUserName3.0"),
+						configProperties.get("dbPassword3.0"));
+				stmt = conn.createStatement();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return conn;
+	}
 
 	public void closeConnection(Connection conn) {
 
@@ -2116,6 +2133,34 @@ public class DBUtils extends JavaUtils {
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Inserting attribute key as " + key + " and value as " + value);
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void updateSettlementStatus(String status, String txnId) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "UPDATE `simulator_settlement`.`settlement_simulator_txn` SET `status` = '" + status
+					+ "' WHERE txn_id = '" + txnId + "'";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Updating Settlement Status as " + status);
+		} catch (SQLException sqe) {
+			System.out.println("Error executing query");
+			sqe.printStackTrace();
+		}
+	}
+
+	public void deleteMpinHistory(String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection3(configProperties.get("npretail_actor"));
+			String query = "DELETE FROM `npretail_actor`.`user_auth_value_history` WHERE user_id = (SELECT user_id "
+					+ "FROM `npretail_actor`.`user_handle` WHERE `value` = '" + mobNum + "' AND is_deleted = '0')";
+			stmt = conn.createStatement();
+			stmt.executeUpdate(query);
+			System.out.println("Deleted MPIN history for " + mobNum);
 		} catch (SQLException sqe) {
 			System.out.println("Error executing query");
 			sqe.printStackTrace();

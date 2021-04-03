@@ -86,6 +86,9 @@ public class BasePage extends JavaUtils {
 		} else if (urlApp.equalsIgnoreCase("FinOps Portal")) {
 			url = configProperties.get("finOpsUrl");
 			System.out.println("Hitting FinOps Portal url");
+		} else if (urlApp.equalsIgnoreCase("RazorpayX Portal")) {
+			url = configProperties.get("razorpayXUrl");
+			System.out.println("Hitting RazorpayX Portal url");
 		}
 
 		((JavascriptExecutor) wdriver).executeScript("window.open()"); // open new tab
@@ -93,6 +96,7 @@ public class BasePage extends JavaUtils {
 		Thread.sleep(1000);
 		wdriver.switchTo().window(tabs.get(1)); // switch to new tab
 		wdriver.get(url); // hit url
+		System.out.println("Opened URL " + url);
 	}
 
 	/**

@@ -110,6 +110,9 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.7:3306/");
 				ini.put("Common", "dbUserName", "akhanna");
 				ini.put("Common", "dbPassword", "akhanna123$");
+				ini.put("Common", "dbUrl3.0", "jdbc:mysql://192.168.150.50:3306/");
+				ini.put("Common", "dbUserName3.0", "rakesh.t");
+				ini.put("Common", "dbPassword3.0", "la2yMetal$24");
 				ini.put("Common", "mongoDbUrl", "192.168.150.7:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "nodecms");
 				ini.put("Common", "mongoDbPasswordCms", "Novopay#987");
@@ -126,6 +129,9 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.7:3306/");
 				configProperties.put("dbUserName", "akhanna");
 				configProperties.put("dbPassword", "akhanna123$");
+				configProperties.put("dbUrl3.0", "jdbc:mysql://192.168.150.50:3306/");
+				configProperties.put("dbUserName3.0", "rakesh.t");
+				configProperties.put("dbPassword3.0", "la2yMetal$24");
 				configProperties.put("mongoDbUrl", "192.168.150.7:37017/");
 				configProperties.put("mongoDbUserNameCms", "nodecms");
 				configProperties.put("mongoDbPasswordCms", "Novopay#987");
@@ -143,6 +149,9 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "dbUrl", "jdbc:mysql://192.168.150.24:3306/");
 				ini.put("Common", "dbUserName", "akhanna");
 				ini.put("Common", "dbPassword", "akhanna123$");
+				ini.put("Common", "dbUrl3.0", "jdbc:mysql://192.168.150.19:3306/");
+				ini.put("Common", "dbUserName3.0", "rakesh.t");
+				ini.put("Common", "dbPassword3.0", "la2yMetal$24");
 				ini.put("Common", "mongoDbUrl", "192.168.150.24:37017/");
 				ini.put("Common", "mongoDbUserNameCms", "nodecms");
 				ini.put("Common", "mongoDbPasswordCms", "Novopay#987");
@@ -159,6 +168,9 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("dbUrl", "jdbc:mysql://192.168.150.24:3306/");
 				configProperties.put("dbUserName", "akhanna");
 				configProperties.put("dbPassword", "akhanna123$");
+				configProperties.put("dbUrl3.0", "jdbc:mysql://192.168.150.19:3306/");
+				configProperties.put("dbUserName3.0", "rakesh.t");
+				configProperties.put("dbPassword3.0", "la2yMetal$24");
 				configProperties.put("mongoDbUrl", "192.168.150.24:37017/");
 				configProperties.put("mongoDbUserNameCms", "nodecms");
 				configProperties.put("mongoDbPasswordCms", "Novopay#987");
