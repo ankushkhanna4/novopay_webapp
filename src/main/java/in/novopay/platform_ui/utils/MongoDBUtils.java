@@ -171,6 +171,22 @@ public class MongoDBUtils extends JavaUtils {
 		return arr.get(0);
 	}
 	
+	public String getCmsTxnStatus(String refNum) {
+
+		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "transaction_audit");
+
+		// Performing a read operation on the collection.
+		FindIterable<Document> fi = coll.find(new BasicDBObject("novopayReferenceNumber", refNum));
+		MongoCursor<Document> cursor = fi.iterator();
+		ArrayList<String> arr = new ArrayList<String>();
+		String str;
+		while (cursor.hasNext()) {
+			str = (String) cursor.next().get("transactionStatus");
+			arr.add(str);
+		}
+		return arr.get(0);
+	}
+	
 	public void updateRechargeVendor(String operator, String vendor) {
 
 		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");

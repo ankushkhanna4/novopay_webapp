@@ -44,10 +44,10 @@ public class CapitalFirstAgentPage extends BasePage {
 
 	@FindBy(xpath = "//h1[contains(text(),'Cash Services')]")
 	WebElement pageTitle;
-	
+
 	@FindBy(xpath = "//span[contains(text(),'Capital First Agent')]")
 	WebElement capitalFirstIcon;
-	
+
 	@FindBy(xpath = "//label[@for='appsService-sfdc']")
 	WebElement encollectRadioButton;
 
@@ -102,6 +102,12 @@ public class CapitalFirstAgentPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div/following-sibling::div/div[1]")
 	WebElement cmsTxnScreenMessage;
 
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Reference ID:')]/parent::div/following-sibling::div")
+	WebElement cmsTxnScreenRefId;
+
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
+	WebElement cmsTxnScreenAmount;
+
 	@FindBy(xpath = "//button[contains(text(),'Exit')]")
 	WebElement exitButton;
 
@@ -141,7 +147,7 @@ public class CapitalFirstAgentPage extends BasePage {
 
 			// Click on capital first icon
 //			waitUntilElementIsClickableAndClickTheElement(capitalFirstIcon);
-			
+
 			commonUtils.selectCmsBiller();
 			System.out.println("Capital First icon clicked");
 
@@ -315,6 +321,9 @@ public class CapitalFirstAgentPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to IDFC First success.");
 		System.out.println(cmsTxnScreenMessage.getText());
+		txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
+		Assert.assertEquals(replaceSymbols(cmsTxnScreenAmount.getText()), cmsDetailsFromIni("Amount", "") + ".00");
+		System.out.println(cmsTxnScreenAmount.getText());
 	}
 
 	// Verify details on failed screen
@@ -325,16 +334,17 @@ public class CapitalFirstAgentPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
-			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to IDFC failed.");
+			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to IDFC First failed.");
+			txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
 	// SMS assertion
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
-		String successSMS = "Success! Deposit of Rs " + cmsDetailsFromIni("CfAmount", "") + " for BATCH-ID "
+		String successSMS = "Success! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for BATCH-ID "
 				+ cmsDetailsFromIni("CfBatchId", "") + " was successful at Novopay outlet.";
-		String failSMS = "Failure! Deposit of Rs " + cmsDetailsFromIni("CfAmount", "") + " for BATCH-ID "
+		String failSMS = "Failure! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for BATCH-ID "
 				+ cmsDetailsFromIni("CfBatchId", "") + " failed at Novopay outlet.";
 		Thread.sleep(5000);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
@@ -351,9 +361,9 @@ public class CapitalFirstAgentPage extends BasePage {
 		String successFCMHeading = "Capital First: SUCCESS";
 		String failFCMHeading = "Capital First: FAIL";
 
-		String successFCM = "Success! Deposit of Rs " + cmsDetailsFromIni("CfAmount", "") + " for BATCH-ID "
+		String successFCM = "Success! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for BATCH-ID "
 				+ cmsDetailsFromIni("CfBatchId", "") + " was successful.";
-		String failFCM = "Failure! Deposit of Rs " + cmsDetailsFromIni("CfAmount", "") + " for BATCH-ID "
+		String failFCM = "Failure! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for BATCH-ID "
 				+ cmsDetailsFromIni("CfBatchId", "") + " failed.";
 
 		switch (usrData.get("ASSERTION")) {
@@ -381,7 +391,7 @@ public class CapitalFirstAgentPage extends BasePage {
 		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
 			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 		}
-		double amount = Double.parseDouble(cmsDetailsFromIni("CfAmount", ""));
+		double amount = Double.parseDouble(cmsDetailsFromIni("Amount", ""));
 		double comm = amount * 2 / 1000;
 		double commission = Math.round(comm * 100.0) / 100.0;
 		double taxDS = commission * Double.parseDouble(dbUtils.getTDSPercentage(mobileNumFromIni())) / 10000;

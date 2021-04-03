@@ -86,6 +86,12 @@ public class SwiggyPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div/following-sibling::div/div[1]")
 	WebElement cmsTxnScreenMessage;
+	
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Reference ID:')]/parent::div/following-sibling::div")
+	WebElement cmsTxnScreenRefId;
+
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
+	WebElement cmsTxnScreenAmount;
 
 	@FindBy(xpath = "//button[contains(text(),'Exit')]")
 	WebElement exitButton;
@@ -282,6 +288,9 @@ public class SwiggyPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Swiggy successful.");
 		System.out.println(cmsTxnScreenMessage.getText());
+		txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
+		Assert.assertEquals(replaceSymbols(cmsTxnScreenAmount.getText()), cmsDetailsFromIni("Amount", "") + ".00");
+		System.out.println(cmsTxnScreenAmount.getText());
 	}
 
 	// Verify details on failed screen
@@ -293,15 +302,16 @@ public class SwiggyPage extends BasePage {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to Swiggy failed.");
+			txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
 	// SMS assertion
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
-		String successSMS = "Success! Deposit of Rs " + cmsDetailsFromIni("SwiggyAmount", "") + " for MSISDN "
+		String successSMS = "Success! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for MSISDN "
 				+ usrData.get("MOBILENUMBER") + " was successful.";
-		String failSMS = "Failure! Deposit of Rs " + cmsDetailsFromIni("SwiggyAmount", "") + " for MSISDN "
+		String failSMS = "Failure! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for MSISDN "
 				+ usrData.get("MOBILENUMBER") + " failed.";
 		Thread.sleep(5000);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
@@ -318,9 +328,9 @@ public class SwiggyPage extends BasePage {
 		String successFCMHeading = "Swiggy: SUCCESS";
 		String failFCMHeading = "Swiggy: FAIL";
 
-		String successFCM = "Success! Deposit of Rs " + cmsDetailsFromIni("SwiggyAmount", "") + " for MSISDN "
+		String successFCM = "Success! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for MSISDN "
 				+ usrData.get("MOBILENUMBER") + " was successful.";
-		String failFCM = "Failure! Deposit of Rs " + cmsDetailsFromIni("SwiggyAmount", "") + " for MSISDN "
+		String failFCM = "Failure! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for MSISDN "
 				+ usrData.get("MOBILENUMBER") + " failed.";
 
 		switch (usrData.get("ASSERTION")) {
@@ -348,7 +358,7 @@ public class SwiggyPage extends BasePage {
 		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
 			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 		}
-		double amount = Double.parseDouble(cmsDetailsFromIni("SwiggyAmount", ""));
+		double amount = Double.parseDouble(cmsDetailsFromIni("Amount", ""));
 		double comm = amount * 2 / 1000;
 		double commission = Math.round(comm * 100.0) / 100.0;
 		double taxDS = commission * Double.parseDouble(dbUtils.getTDSPercentage(mobileNumFromIni())) / 10000;

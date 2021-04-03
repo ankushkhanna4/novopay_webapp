@@ -64,24 +64,27 @@ public class FlowMapper {
 		} else if (usrData.get("CONTRACT").equalsIgnoreCase("ALL")) {
 			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
-		if (usrData.get("FEATURE").equalsIgnoreCase("Money Transfer")) {
-			dbUtils.updateDmtBcAgentId("NOV1000704", mobileNumFromIni());
-		} else if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
-			dbUtils.updateRBLEKYCStatus("APPROVED", mobileNumFromIni());
-			dbUtils.updateAepsPartner(usrData.get("CONTRACT"), mobileNumFromIni());
-			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_TERMINAL_ID","567765667126757");
-			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_ID","NOV112200");
-			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_DEVICE_ID","UP000102");
-			commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_PASSWORD","40bd001563085fc35165329ea1ff5c5ecbdbbeef");
-		} else if (usrData.get("FEATURE").equalsIgnoreCase("EKYC")) {
+		if (usrData.get("FEATURE").equalsIgnoreCase("EKYC")) {
 			dbUtils.updateAepsPartner("RBL", mobileNumFromIni());
 			dbUtils.updateRBLEKYCStatus("PENDING", mobileNumFromIni());
 			dbUtils.updateDmtBcAgentId("NOV2160858", mobileNumFromIni());
-		} else if (usrData.get("CONTRACT").equalsIgnoreCase("CMS")) {
-			javaUtils.cmsDetailsFromIni("StoreCmsBiller", usrData.get("FEATURE"));
-		} else if (usrData.get("CONTRACT").equalsIgnoreCase("BILLPAY")) {
-			commonUtils.verifyAndInsertValueInOrgAttribute("BILL_AVENUE_AGENT_ID","123456");
+		} else {
+			dbUtils.updateRBLEKYCStatus("APPROVED", mobileNumFromIni());
+			if (usrData.get("FEATURE").equalsIgnoreCase("Money Transfer")) {
+				dbUtils.updateDmtBcAgentId("NOV1000704", mobileNumFromIni());
+			} else if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
+				dbUtils.updateAepsPartner(usrData.get("CONTRACT"), mobileNumFromIni());
+				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_TERMINAL_ID","567765667126757");
+				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_ID","NOV112200");
+				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_DEVICE_ID","UP000102");
+				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_PASSWORD","40bd001563085fc35165329ea1ff5c5ecbdbbeef");
+			} else if (usrData.get("CONTRACT").equalsIgnoreCase("CMS")) {
+				javaUtils.cmsDetailsFromIni("StoreCmsBiller", usrData.get("FEATURE"));
+			} else if (usrData.get("CONTRACT").equalsIgnoreCase("BILLPAY")) {
+				commonUtils.verifyAndInsertValueInOrgAttribute("BILL_AVENUE_AGENT_ID","123456");
+			}
 		}
+		
 
 		javaUtils.getWalletFromIni("StoreWallet", usrData.get("WALLET"));
 

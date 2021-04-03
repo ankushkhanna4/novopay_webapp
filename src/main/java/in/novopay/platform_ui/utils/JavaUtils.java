@@ -660,35 +660,29 @@ public class JavaUtils extends LoadableComponent {
 			} else if (key.equalsIgnoreCase("CfBatchId")) {
 				return ini.get("CmsData", "CfBatchId");
 			} else if (key.equalsIgnoreCase("StoreCfAmount")) {
-				ini.put("CmsData", "CfAmount", value);
+				ini.put("CmsData", "Amount", value);
 				ini.store();
-			} else if (key.equalsIgnoreCase("CfAmount")) {
-				return ini.get("CmsData", "CfAmount");
 			} else if (key.equalsIgnoreCase("StoreSwiggyAmount")) {
-				ini.put("CmsData", "SwiggyAmount", value);
+				ini.put("CmsData", "Amount", value);
 				ini.store();
-			} else if (key.equalsIgnoreCase("SwiggyAmount")) {
-				return ini.get("CmsData", "SwiggyAmount");
 			} else if (key.equalsIgnoreCase("StoreSwiggyDueAmount")) {
 				ini.put("CmsData", "SwiggyDueAmount", value);
 				ini.store();
 			} else if (key.equalsIgnoreCase("SwiggyDueAmount")) {
 				return ini.get("CmsData", "SwiggyDueAmount");
 			} else if (key.equalsIgnoreCase("StoreFtAmount")) {
-				ini.put("CmsData", "FtAmount", value);
+				ini.put("CmsData", "Amount", value);
 				ini.store();
-			} else if (key.equalsIgnoreCase("FtAmount")) {
-				return ini.get("CmsData", "FtAmount");
 			} else if (key.equalsIgnoreCase("StoreFtDueAmount")) {
 				ini.put("CmsData", "FtDueAmount", value);
 				ini.store();
 			} else if (key.equalsIgnoreCase("FtDueAmount")) {
 				return ini.get("CmsData", "FtDueAmount");
 			} else if (key.equalsIgnoreCase("StoreFinoCMSAmount")) {
-				ini.put("CmsData", "FinoCMSAmount", value);
+				ini.put("CmsData", "Amount", value);
 				ini.store();
-			} else if (key.equalsIgnoreCase("FinoCMSAmount")) {
-				return ini.get("CmsData", "FinoCMSAmount");
+			} else if (key.equalsIgnoreCase("Amount")) {
+				return ini.get("CmsData", "Amount");
 			} else if (key.equalsIgnoreCase("StoreFinoCMSMobNum")) {
 				ini.put("CmsData", "FinoCMSMobNum", value);
 				ini.store();

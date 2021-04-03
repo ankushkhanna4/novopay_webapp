@@ -92,6 +92,12 @@ public class CapitalFirstConsumerPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div/following-sibling::div/div[1]")
 	WebElement cmsTxnScreenMessage;
+	
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Reference ID:')]/parent::div/following-sibling::div")
+	WebElement cmsTxnScreenRefId;
+
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
+	WebElement cmsTxnScreenAmount;
 
 	@FindBy(xpath = "//button[contains(text(),'Exit')]")
 	WebElement exitButton;
@@ -306,6 +312,9 @@ public class CapitalFirstConsumerPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Deposit to IDFC First success.");
 		System.out.println(cmsTxnScreenMessage.getText());
+		txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
+		Assert.assertEquals(replaceSymbols(cmsTxnScreenAmount.getText()), cmsDetailsFromIni("Amount", "") + ".00");
+		System.out.println(cmsTxnScreenAmount.getText());
 	}
 
 	// Verify details on failed screen
@@ -317,16 +326,17 @@ public class CapitalFirstConsumerPage extends BasePage {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Insufficient balance");
 		} else {
 			Assert.assertEquals(cmsTxnScreenMessage.getText(), "Record already exists.");
+			txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
 	}
 
 	// SMS assertion
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
-		String successSMS = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("CfAmount", "")
+		String successSMS = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("Amount", "")
 				+ " for IDFC FIRST Bank Ltd. Loan ID - " + cmsDetailsFromIni("CfBatchId", "") + " is received at "
 				+ dbUtils.cfcDate() + " at Novopay outlet. Trxn ID: " + dbUtils.cfcRefNum() + ".";
-		String failSMS = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("CfAmount", "")
+		String failSMS = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("Amount", "")
 				+ " for IDFC FIRST Bank Ltd. Loan ID - " + cmsDetailsFromIni("CfBatchId", "") + " failed at "
 				+ dbUtils.cfcDate() + " at Novopay outlet. Trxn ID: " + dbUtils.cfcRefNum() + ".";
 		Thread.sleep(5000);
@@ -344,10 +354,10 @@ public class CapitalFirstConsumerPage extends BasePage {
 		String successFCMHeading = "Capital First Customer: SUCCESS";
 		String failFCMHeading = "Capital First Customer: FAIL";
 
-		String successFCM = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("CfAmount", "")
+		String successFCM = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("Amount", "")
 				+ " for IDFC FIRST Bank Ltd. Loan ID - " + cmsDetailsFromIni("CfBatchId", "") + " is received at "
 				+ dbUtils.cfcDate() + ", transaction ID: " + dbUtils.cfcRefNum() + ".";
-		String failFCM = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("CfAmount", "")
+		String failFCM = "Dear Customer, Deposit of Rs. " + cmsDetailsFromIni("Amount", "")
 				+ " for IDFC FIRST Bank Ltd. Loan ID - " + cmsDetailsFromIni("CfBatchId", "") + " failed at "
 				+ dbUtils.cfcDate() + ", transaction ID: " + dbUtils.cfcRefNum() + ".";
 
@@ -376,7 +386,7 @@ public class CapitalFirstConsumerPage extends BasePage {
 		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
 			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 		}
-		double amount = Double.parseDouble(cmsDetailsFromIni("CfAmount", ""));
+		double amount = Double.parseDouble(cmsDetailsFromIni("Amount", ""));
 		double comm = amount * 2 / 1000;
 		double commission = Math.round(comm * 100.0) / 100.0;
 		double taxDS = commission * Double.parseDouble(dbUtils.getTDSPercentage(mobileNumFromIni())) / 10000;

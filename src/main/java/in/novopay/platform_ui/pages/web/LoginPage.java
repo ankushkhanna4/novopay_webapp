@@ -75,6 +75,9 @@ public class LoginPage extends BasePage {
 
 	@FindBy(xpath = "//*[@id='panNumber']/parent::div/ul/li")
 	WebElement panErrorMsg;
+	
+	@FindBy(xpath = "//*[@id='reenterpin']/parent::div/ul/li")
+	WebElement mpinErrorMsg;
 
 	@FindBy(xpath = "//*[contains(text(),'Go back to login')]")
 	WebElement goBackToLogin;
@@ -212,41 +215,40 @@ public class LoginPage extends BasePage {
 				panNumber.sendKeys(pan);
 				System.out.println("clicking on PROCEED button");
 				waitUntilElementIsClickableAndClickTheElement(proceedPan);
+				commonUtils.waitForSpinner();
+				waitUntilElementIsClickableAndClickTheElement(otp);
+				otp.clear();
+				System.out.println("entering OTP");
+				otp.sendKeys(getAuthfromIni("ForgotMpinOTP"));
+				System.out.println("clicking on PROCEED button");
+				waitUntilElementIsClickableAndClickTheElement(proceedOTP);
+				waitUntilElementIsClickableAndClickTheElement(newpin);
+				System.out.println("entering New PIN");
+				newpin.sendKeys(usrData.get("NEWPIN"));
+				waitUntilElementIsClickableAndClickTheElement(reenterpin);
+				System.out.println("Re-entering PIN");
+				reenterpin.sendKeys(usrData.get("REENTERPIN"));
+				dbUtils.deleteMpinHistory(getLoginMobileFromIni(mobNumFromSheet));
+				System.out.println("clicking on FINISH button");
+				waitUntilElementIsClickableAndClickTheElement(finish);
+				waitUntilElementIsVisible(toasterMsg);
 				if (panValidation(pan).equalsIgnoreCase("valid")) {
 					if (pan.equalsIgnoreCase(dbUtils.getPanNumber(getLoginMobileFromIni(mobNumFromSheet)))) {
-						commonUtils.waitForSpinner();
-						waitUntilElementIsClickableAndClickTheElement(otp);
-						otp.clear();
-						System.out.println("entering OTP");
-						otp.sendKeys(getAuthfromIni("ForgotMpinOTP"));
-						System.out.println("clicking on PROCEED button");
-						waitUntilElementIsClickableAndClickTheElement(proceedOTP);
-						waitUntilElementIsClickableAndClickTheElement(newpin);
-						System.out.println("entering New PIN");
-						newpin.sendKeys(usrData.get("NEWPIN"));
-						waitUntilElementIsClickableAndClickTheElement(reenterpin);
-						System.out.println("Re-entering PIN");
-						reenterpin.sendKeys(usrData.get("REENTERPIN"));
-						dbUtils.deleteMpinHistory(getLoginMobileFromIni(mobNumFromSheet));
-						System.out.println("clicking on FINISH button");
-						waitUntilElementIsClickableAndClickTheElement(finish);
-						waitUntilElementIsVisible(toasterMsg);
 						if (usrData.get("NEWPIN").equals(usrData.get("REENTERPIN"))) {
 							System.out.println(toasterMsg.getText());
 							toastCloseButton.click();
 							waitUntilElementIsVisible(mobNum);
 						} else {
-							Assert.assertEquals(toasterMsg.getText(), "New MPIN and Re-entered MPIN does not match.");
-							System.out.println(toasterMsg.getText());
-							toastCloseButton.click();
+							Assert.assertEquals(mpinErrorMsg.getText(), "mpin doesn't match!");
+							System.out.println(mpinErrorMsg.getText());
 							waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 						}
 					} else {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(toasterMsg);
-						Assert.assertEquals(toasterMsg.getText(), "incorrect POI value entered.");
+						Assert.assertEquals(toasterMsg.getText(),
+								"Entered document id not matching with our records. Please try again.");
 						System.out.println(toasterMsg.getText());
-						waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
 					}
 				} else if (panValidation(usrData.get("PAN")).equalsIgnoreCase("invalid")) {
 					waitUntilElementIsVisible(panErrorMsg);

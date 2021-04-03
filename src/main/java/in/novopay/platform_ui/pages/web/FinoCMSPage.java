@@ -102,6 +102,12 @@ public class FinoCMSPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]/div/div/div/following-sibling::div/div[1]")
 	WebElement cmsTxnScreenMessage;
+	
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Reference ID:')]/parent::div/following-sibling::div")
+	WebElement cmsTxnScreenRefId;
+
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
+	WebElement cmsTxnScreenAmount;
 
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Txn ID')]/parent::span/parent::div/following-sibling::div//span")
 	WebElement finoCMSRefNo;
@@ -306,6 +312,9 @@ public class FinoCMSPage extends BasePage {
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		Assert.assertEquals(cmsTxnScreenMessage.getText(), "Transaction completed successfully");
 		System.out.println(cmsTxnScreenMessage.getText());
+		txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
+		Assert.assertEquals(replaceSymbols(cmsTxnScreenAmount.getText()), cmsDetailsFromIni("Amount", "") + ".00");
+		System.out.println(cmsTxnScreenAmount.getText());
 	}
 
 	// Verify details on failed screen
@@ -318,19 +327,20 @@ public class FinoCMSPage extends BasePage {
 		} else {
 			try {
 				Assert.assertEquals(cmsTxnScreenMessage.getText(), "Failed");
+				txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
 			} catch (AssertionError e) {
 				Assert.assertEquals(cmsTxnScreenMessage.getText(), "Token Generation Failed");
+				txnDetailsFromIni("StoreTxnRefNo", cmsTxnScreenRefId.getText());
 			}
 		}
 		System.out.println(cmsTxnScreenMessage.getText());
-		txnDetailsFromIni("StoreTxnRefNo", finoCMSRefNo.getText());
 	}
 
 	// SMS assertion
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
-		String successSMS = "Success! Deposit of Rs " + cmsDetailsFromIni("FinoCMSAmount", "") + " for MSISDN "
+		String successSMS = "Success! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for MSISDN "
 				+ usrData.get("MOBILENUMBER") + " was successful.";
-		String failSMS = "Failure! Deposit of Rs " + cmsDetailsFromIni("FinoCMSAmount", "") + " for MSISDN "
+		String failSMS = "Failure! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for MSISDN "
 				+ usrData.get("MOBILENUMBER") + " failed.";
 		Thread.sleep(5000);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
@@ -347,9 +357,9 @@ public class FinoCMSPage extends BasePage {
 		String successFCMHeading = "CMS Payment";
 		String failFCMHeading = "CMS Payment";
 
-		String successFCM = "Success! Deposit of Rs " + cmsDetailsFromIni("FinoCMSAmount", "") + " for FINO CMS "
+		String successFCM = "Success! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for FINO CMS "
 				+ usrData.get("MOBILENUMBER") + " was successful.";
-		String failFCM = "Failure! Deposit of Rs " + cmsDetailsFromIni("FinoCMSAmount", "") + " for FINO CMS by "
+		String failFCM = "Failure! Deposit of Rs " + cmsDetailsFromIni("Amount", "") + " for FINO CMS by "
 				+ usrData.get("MOBILENUMBER") + " has failed.";
 
 		switch (usrData.get("ASSERTION")) {
@@ -377,7 +387,7 @@ public class FinoCMSPage extends BasePage {
 		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
 			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 		}
-		double amount = Double.parseDouble(cmsDetailsFromIni("FinoCMSAmount", ""));
+		double amount = Double.parseDouble(cmsDetailsFromIni("Amount", ""));
 		double comm = amount * 15 / 10000;
 		double commission = Math.round(comm * 100.0) / 100.0;
 		double taxDS = commission * Double.parseDouble(dbUtils.getTDSPercentage(mobileNumFromIni())) / 10000;
