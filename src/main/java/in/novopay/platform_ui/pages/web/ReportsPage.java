@@ -23,7 +23,7 @@ public class ReportsPage extends BasePage {
 	CommonUtils commonUtils = new CommonUtils(wdriver);
 	DBUtils dbUtils = new DBUtils();
 
-	@FindBy(xpath = "//span[contains(text(),'Report')]")
+	@FindBy(xpath = "//span[contains(text(),'Reports')]")
 	WebElement reports;
 
 	@FindBy(xpath = "//*[@class='slimScrollBar']")

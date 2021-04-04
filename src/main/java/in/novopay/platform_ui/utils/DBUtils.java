@@ -2186,4 +2186,23 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
+
+	public String getOrgCodeFromMobNum(String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "SELECT o.code FROM `master`.`user` u JOIN `master`.`user_attribute` ua ON u.`id`="
+					+ "ua.`user_id` JOIN master.organization o ON u.organization = o.id WHERE ua.`attr_value` = '"
+					+ mobNum + "' AND u.`status` = 'ACTIVE' AND o.`status` = 'ACTIVE';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
 }
