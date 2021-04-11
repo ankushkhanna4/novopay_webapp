@@ -57,6 +57,12 @@ public class SettlementPage extends BasePage {
 	@FindBy(xpath = "//*[contains(@id,'select2')]/li[contains(text(),'Bank account')]")
 	WebElement bankAccountDropDownValue;
 
+	@FindBy(xpath = "//*[contains(@id,'select2')]/li[contains(text(),'Bank account')][1]")
+	WebElement bankAccountDropDownValue1;
+
+	@FindBy(xpath = "//*[contains(@id,'select2')]/li[contains(text(),'Bank account')][2]")
+	WebElement bankAccountDropDownValue2;
+
 	@FindBy(xpath = "//*[contains(@id,'select2')]/li[contains(text(),'Wallet Balance')]")
 	WebElement retailerCreditDropDownValue;
 
@@ -198,16 +204,21 @@ public class SettlementPage extends BasePage {
 			// Updating org_stlmnt_info table as per test case
 			if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567890", "NOW()");
+				if (usrData.get("ASSERTION").contains("off 2 accounts")) {
+					dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567890",
+							"NOW()");
+					dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567891",
+							"NOW()");
+				} else {
+					dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567890",
+							"NOW()");
+				}
 			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
 				dbUtils.insertOrgSettlementInfo("TO_BANK", "1", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
 			} else if (usrData.get("MODE").equalsIgnoreCase("Rejected")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
 				dbUtils.insertOrgSettlementInfo("TO_BANK", "3", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
-			} else if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
-				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "4", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
 			} else if (usrData.get("MODE").equalsIgnoreCase("Deleted")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
 				dbUtils.insertOrgSettlementInfo("TO_BANK", "6", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
@@ -242,25 +253,27 @@ public class SettlementPage extends BasePage {
 
 			commonUtils.waitForSpinner();
 
-			if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
+			if (usrData.get("MODE").equalsIgnoreCase("Pending") || usrData.get("MODE").equalsIgnoreCase("Rejected")
+					|| usrData.get("MODE").equalsIgnoreCase("Deleted")) {
 				waitUntilElementIsVisible(blockedMessage);
 				Assert.assertEquals(blockedMessage.getText(),
 						"Not allowed as settlement is blocked. Please contact customer support.");
-				System.out.println(blockedMessage.getText());
-			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")
-					|| usrData.get("MODE").equalsIgnoreCase("Rejected")) {
-				waitUntilElementIsVisible(blockedMessage);
-				Assert.assertEquals(blockedMessage.getText(),
-						"Settlement not allowed as your settlement details have either been rejected or "
-								+ "pending for verification. Please contact customer support for further assistance.");
 				System.out.println(blockedMessage.getText());
 			} else if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
 				waitUntilElementIsVisible(cashoutBalanceField);
 				waitUntilElementIsClickableAndClickTheElement(toDropDown);
 				System.out.println("Drop down clicked");
 
-				bankAccountDropDownValue.click();
-				System.out.println(usrData.get("TODROPDOWN") + " selected");
+				if (usrData.get("ASSERTION").equalsIgnoreCase("1st off 2 accounts")) {
+					bankAccountDropDownValue1.click();
+					System.out.println("1st Bank account selected");
+				} else if (usrData.get("ASSERTION").equalsIgnoreCase("2nd off 2 accounts")) {
+					bankAccountDropDownValue2.click();
+					System.out.println("2nd Bank account selected");
+				} else {
+					bankAccountDropDownValue.click();
+					System.out.println("Bank account selected");
+				}
 
 				waitUntilElementIsClickableAndClickTheElement(amountField);
 				amountField.sendKeys(usrData.get("AMOUNT"));
