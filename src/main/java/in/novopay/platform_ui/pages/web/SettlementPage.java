@@ -198,24 +198,19 @@ public class SettlementPage extends BasePage {
 			// Updating org_stlmnt_info table as per test case
 			if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1");
-//				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567890", "NOW()");
 			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "1", "1", mobileNumFromIni(), "0");
-//				dbUtils.updateOrgSettlementInfo("TO_BANK", "1", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "1", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
 			} else if (usrData.get("MODE").equalsIgnoreCase("Rejected")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "3", "1", mobileNumFromIni(), "0");
-//				dbUtils.updateOrgSettlementInfo("TO_BANK", "3", "1", "(NULL)", mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "3", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
 			} else if (usrData.get("MODE").equalsIgnoreCase("Blocked")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "4", "1", mobileNumFromIni(), "0");
-//				dbUtils.updateOrgSettlementInfo("TO_BANK", "4", "0", "Incorrect bank details", mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "4", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
 			} else if (usrData.get("MODE").equalsIgnoreCase("Deleted")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "6", "1", mobileNumFromIni(), "0");
-//				dbUtils.updateOrgSettlementInfo("TO_BANK", "6", "0", "(NULL)", mobileNumFromIni());
+				dbUtils.insertOrgSettlementInfo("TO_BANK", "6", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
 			}
 
 			dbUtils.updateAepsPartner(usrData.get("PARTNER").toUpperCase(), getLoginMobileFromIni("RetailerMobNum"));

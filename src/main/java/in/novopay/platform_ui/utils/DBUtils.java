@@ -1689,8 +1689,8 @@ public class DBUtils extends JavaUtils {
 		return null;
 	}
 
-	public void insertOrgSettlementInfo(String mode, String status, String enabled, String mobNum, String primary)
-			throws ClassNotFoundException {
+	public void insertOrgSettlementInfo(String mode, String status, String enabled, String mobNum, String primary,
+			String accNum, String date) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));
 			stmt = conn.createStatement();
@@ -1700,11 +1700,12 @@ public class DBUtils extends JavaUtils {
 					+ " `update_remark`, `updated_on`, `created_by`, `inspected_by`, `inspected_on`, `status`,"
 					+ " `inspection_comments`, `validation_remarks`, `enabled`, `blocking_remarks`) VALUES((SELECT "
 					+ "organization FROM master.user WHERE id IN (SELECT user_id FROM master.user_attribute WHERE "
-					+ "attr_key = 'MSISDN' AND attr_value = '" + mobNum + "' AND `status` = 'ACTIVE')),'1234567890'"
-					+ ",'HDFC BANK','HDFC0000240','Ankush Khanna','TO_BANK','" + primary + "','MRCHNT_MDR_DEFAULT',"
+					+ "attr_key = 'MSISDN' AND attr_value = '" + mobNum + "' AND `status` = 'ACTIVE')),'" + accNum + "'"
+					+ ",'HDFC BANK','HDFC0000240','Ankush Khanna','" + mode + "','" + primary
+					+ "','MRCHNT_MDR_DEFAULT',"
 					+ "'MICRO','DAILY',NULL,'dce3aa24-479c-4069-a8df-c14197896531',NULL,NOW(),NULL,'ACCOUNT_DETAILS',"
 					+ "'1234567890, HDFC BANK',NOW(),'f4124888-6d00-4005-a6cf-778dea9f89d7','ankush_1608216767690',"
-					+ "NOW(),'2',NULL,NULL,'1',NULL);";
+					+ date + ",'" + status + "',NULL,NULL,'" + enabled + "',NULL);";
 			stmt.executeUpdate(insertQuery);
 		} catch (SQLException sqe) {
 			System.out.println("Error connecting DB!! Update failed..!");
@@ -1872,7 +1873,7 @@ public class DBUtils extends JavaUtils {
 					+ "') AND `status` = 'ACTIVE') AND attr_key = 'AEPS_PARTNER';";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
-			System.out.println("Updating wallet managed by bank as " + partner);
+			System.out.println("Updating AEPS Partner as " + partner);
 		} catch (SQLException sqe) {
 			System.out.println("Error executing query");
 			sqe.printStackTrace();
@@ -2193,6 +2194,58 @@ public class DBUtils extends JavaUtils {
 			String query = "SELECT o.code FROM `master`.`user` u JOIN `master`.`user_attribute` ua ON u.`id`="
 					+ "ua.`user_id` JOIN master.organization o ON u.organization = o.id WHERE ua.`attr_value` = '"
 					+ mobNum + "' AND u.`status` = 'ACTIVE' AND o.`status` = 'ACTIVE';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+	
+	public String getDeleteAccountDays() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "SELECT prop_value FROM `config`.`configuration` WHERE "
+					+ "prop_key = 'novopay.min.allowed.days.to.delete.settlement.info';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+	
+	public String getSettlementCharge() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "SELECT `value` FROM np_actor.`platform_master_data` WHERE `code` = 'ACCOUNT_VALIDATION_CHARGE';";
+			stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException sqe) {
+			System.out.println("Error connecting DB..!");
+			sqe.printStackTrace();
+
+		}
+		return null;
+	}
+	
+	public String getMaxAccounts() throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String query = "SELECT `value` FROM np_actor.`platform_master_data` WHERE `code` = 'MAX_ALLOWED_SETTLEMENT_ACCOUNTS';";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {

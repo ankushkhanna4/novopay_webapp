@@ -120,6 +120,15 @@ public class SettingsPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'settlementTxn-modal')]/div/div/div/h4[contains(text(),'Success')]")
 	WebElement multiAccountSuccessScreen;
 
+	@FindBy(xpath = "//div[contains(@class,'settlement-modal')]//div[contains(@class,'failed')]")
+	WebElement multiAccountFailedScreen;
+
+	@FindBy(xpath = "//div[contains(@class,'settlement-modal')]//div[contains(@class,'failed')]/h4")
+	WebElement multiAccountFailedHeader;
+
+	@FindBy(xpath = "//div[contains(@class,'settlement-modal')]//div[contains(@class,'failed')]/following-sibling::div//span")
+	WebElement multiAccountFailedMessage;
+
 	@FindBy(xpath = "//div[contains(@class,'settlementTxn-modal')]/div/div/div")
 	WebElement multiAccountScreenType;
 
@@ -135,6 +144,21 @@ public class SettingsPage extends BasePage {
 	@FindBy(xpath = "//button[contains(text(),'Done')]")
 	WebElement doneButton;
 
+	@FindBy(xpath = "//button[contains(text(),'Yes')]")
+	WebElement yesButton;
+
+	@FindBy(xpath = "//input[not(@disabled)]/following-sibling::span[@class='checkmark']")
+	WebElement primaryButtonEnabled;
+
+	@FindBy(xpath = "//input[@disabled]/following-sibling::span[@class='checkmark']")
+	WebElement primaryButtonDisabled;
+
+	@FindBy(xpath = "//input[not(@disabled)]/following-sibling::span[@class='checkmark']/parent::label/parent::div/preceding-sibling::div/label[contains(@class,'retailer-account-number')]")
+	WebElement accNumForEnabledPrimary;
+
+	@FindBy(xpath = "//input[@disabled]/following-sibling::span[@class='checkmark']/parent::label/parent::div/preceding-sibling::div/label[contains(@class,'retailer-account-number')]")
+	WebElement accNumForDisabledPrimary;
+
 	@FindBy(xpath = "//div[contains(@class,'toast-message')]")
 	WebElement toasterMsg;
 
@@ -149,6 +173,15 @@ public class SettingsPage extends BasePage {
 
 	@FindBy(xpath = "//button[contains(text(),'OK')]")
 	WebElement okButton;
+
+	@FindBy(xpath = "//button[contains(text(),'Delete')]")
+	WebElement deleteButton;
+
+	@FindBy(xpath = "//h4[contains(text(),'Deleting an Account')]")
+	WebElement deleteModal;
+
+	@FindBy(xpath = "//div[contains(@class,'deleteView')]")
+	WebElement deleteRejectButton;
 
 	@FindBy(id = "settlement-mode-retailer-name")
 	WebElement accHolderName;
@@ -204,6 +237,12 @@ public class SettingsPage extends BasePage {
 	@FindBy(xpath = "//span[contains(@class,'custom-ul-errormessage')]/span[contains(text(),'Branch')]")
 	WebElement validateIFSC;
 
+	@FindBy(xpath = "//h1[contains(text(),'Bank Account Details')]/ancestor::div[@class='mainHeading']/following-sibling::div//div[contains(@class,'non-editable-field')]")
+	WebElement bankDetailsCards;
+
+	@FindBy(xpath = "//h1[contains(text(),'Bank Account Details')]/ancestor::div[@class='mainHeading']/following-sibling::div//div[contains(@class,'non-editable-field')][2]//label[2]")
+	WebElement card2Status;
+
 	@FindBy(xpath = "//li[1][contains(@class,'notifications')]//strong")
 	WebElement fcmHeading;
 
@@ -222,167 +261,231 @@ public class SettingsPage extends BasePage {
 
 		try {
 			commonUtils.waitForSpinner();
+			commonUtils.displayInitialBalance("cashout");
 
 			// Updating org_stlmnt_info table as per test case
-			if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
+			if (usrData.get("TYPE").equalsIgnoreCase("Mode")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", mobileNumFromIni(), "1");
-//				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
-			} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
-				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1");
-//				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
-			} else if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
-				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1");
-//				dbUtils.updateOrgSettlementInfo("TO_BANK", "2", "1", "(NULL)", mobileNumFromIni());
-			} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
+				dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "1", "1234567890",
+						"NOW()");
+			} else if (usrData.get("TYPE").equalsIgnoreCase("Details")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
 				if (usrData.get("ACCOUNT").equalsIgnoreCase("No exisitng account")) {
-					System.out.println("No new entry added");
+					System.out.println("No new entry inserted");
+				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One pending account")) {
+					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "1", "1", mobileNumFromIni(), "0",
+							"1234567890", "NOW()");
+					System.out.println("One pending and non-primary account inserted");
+				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One deleted account")) {
+					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "6", "1", mobileNumFromIni(), "0",
+							"1234567890", "NOW()");
+					System.out.println("One deleted account inserted");
+				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One rejected account")) {
+					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "3", "1", mobileNumFromIni(), "0",
+							"1234567890", "NOW()");
+					System.out.println("One rejected account inserted");
+				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("Two verified accounts")) {
+					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "1",
+							"1234567890", "NOW()");
+					if (usrData.get("ASSERTION").equalsIgnoreCase("Delete Older")) {
+						dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "0",
+								"1234567891", "CURDATE()-" + dbUtils.getDeleteAccountDays());
+					} else {
+						dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "0",
+								"1234567891", "NOW()");
+					}
+					System.out.println("Two verified accounts inserted");
+				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("Max verified accounts")) {
+					int count = Integer.parseInt(dbUtils.getMaxAccounts()), accNum = 0;
+					for (int i = 1; i <= count; i++) {
+						accNum = 123456789 + i;
+						String accountNum = String.valueOf(accNum);
+						dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "0",
+								accountNum, "NOW()");
+					}
+					System.out.println(count + " verified accounts inserted");
 				} else {
-					dbUtils.insertOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", mobileNumFromIni(), "1");
-//					dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "2", "1", "(NULL)", mobileNumFromIni());
+					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "1",
+							"1234567890", "NOW()");
+					System.out.println("One verified and primary account inserted");
 				}
 			}
 
-			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
-				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "1", "1", "(NULL)", mobileNumFromIni());
-			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
-				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "3", "1", "(NULL)", mobileNumFromIni());
-			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-				dbUtils.updateOrgSettlementInfo("DO_NOT_SETTLE", "4", "0", "Incorrect bank details",
-						mobileNumFromIni());
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
+				dbUtils.updateWalletBalance(mobileNumFromIni(), "cashout", "0");
+				clickElement(menu);
+				commonUtils.refreshBalance();
+				clickElement(menu);
 			}
 
 			commonUtils.selectFeatureFromMenu1(settings, pageTitle);
 			commonUtils.waitForSpinner();
 
-			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
+			// Changing mode
+			if (usrData.get("TYPE").contains("Mode")) {
+				if (usrData.get("MODE").equalsIgnoreCase("DO_NOT_SETTLE")) {
+					Thread.sleep(1000);
+					waitUntilElementIsClickableAndClickTheElement(bankAccountRadioButton);
+				} else if (usrData.get("MODE").equalsIgnoreCase("TO_BANK")) {
+					Thread.sleep(1000);
+					waitUntilElementIsClickableAndClickTheElement(doNotSettleRadioButton);
+				}
+				System.out.println("Radio button clicked");
+				Thread.sleep(1000);
+				waitUntilElementIsClickableAndClickTheElement(saveChangesButton);
+				System.out.println("Save changes button clicked");
+			}
+
+			if (usrData.get("ACCOUNT").equalsIgnoreCase("One pending account")) {
 				waitUntilElementIsVisible(accountStatus);
-				Assert.assertEquals(accountStatus.getText(), "PENDINGVERIFICATION");
+				Assert.assertEquals(accountStatus.getText(), "PENDING VERIFICATION");
 				System.out.println("The status is " + accountStatus.getText());
-			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
+			} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One verified account")) {
+				waitUntilElementIsVisible(accountStatus);
+				Assert.assertEquals(accountStatus.getText(), "VERIFIED");
+				System.out.println("The status is " + accountStatus.getText());
+			} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One deleted account")) {
+				waitUntilElementIsClickableAndClickTheElement(deleteRejectButton);
+				System.out.println("Delete/Reject account button clicked");
+				waitUntilElementIsVisible(accountStatus);
+				Assert.assertEquals(accountStatus.getText(), "DELETED");
+				System.out.println("The status is " + accountStatus.getText());
+			} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One rejected account")) {
+				waitUntilElementIsClickableAndClickTheElement(deleteRejectButton);
+				System.out.println("Delete/Reject account button clicked");
 				waitUntilElementIsVisible(accountStatus);
 				Assert.assertEquals(accountStatus.getText(), "REJECTED");
 				System.out.println("The status is " + accountStatus.getText());
-			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-				waitUntilElementIsVisible(blockedIcon);
-				System.out.println("The status is blocked");
-
 			}
 
-			if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")
-					|| usrData.get("ASSERTION").equalsIgnoreCase("Blocked")) {
-				System.out.println("No edit is allowed on this page");
-			} else {
-				// Changing mode
-				if (usrData.get("MODE").contains("Change")) {
-					if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
-						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(bankAccountRadioButton);
-					} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
-						Thread.sleep(1000);
-						waitUntilElementIsClickableAndClickTheElement(doNotSettleRadioButton);
-					}
-					System.out.println("Radio button clicked");
+			// Adding Bank Details
+			if (usrData.get("TYPE").contains("Details")) {
+				if (usrData.get("ACCOUNT").equalsIgnoreCase("No exisitng account")) {
+					waitUntilElementIsVisible(noBankAccountMsg);
+					System.out.println(noBankAccountMsg.getText());
 					Thread.sleep(1000);
-					waitUntilElementIsClickableAndClickTheElement(saveChangesButton);
-					System.out.println("Save changes button clicked");
+					try {
+						Assert.assertTrue(noBankAccountMsg.getText().contains("There are no saved accounts"));
+					} catch (Exception e) {
+						Assert.assertTrue(noBankAccountMsg.getText()
+								.contains("Unable to fetch the Account Details"));
+					}
+				} else if (usrData.get("ACCOUNT").contains("One")) {
+					Assert.assertEquals(cardsCount(), 1);
+					System.out.println("One account displayed");
+				} else if (usrData.get("ACCOUNT").contains("Two")) {
+					Assert.assertEquals(cardsCount(), 2);
+					System.out.println("Two accounts displayed");
+				} else if (usrData.get("ACCOUNT").contains("Max")) {
+					Assert.assertEquals(cardsCount(), Integer.parseInt(dbUtils.getMaxAccounts()));
+					System.out.println(dbUtils.getMaxAccounts() + " accounts displayed");
 				}
-
-				if (usrData.get("MODE").contains("Keep")) {
-					if (usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")) {
-						waitUntilElementIsClickableAndClickTheElement(addButton);
-						waitUntilElementIsVisible(settingsTxnScreen);
-						System.out.println("Txn screen displayed");
-						assertionOnInfoScreen(usrData);
-						waitUntilElementIsClickableAndClickTheElement(okButton);
-						System.out.println("Ok button clicked");
-					} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
-						waitUntilElementIsVisible(noBankAccountMsg);
-						System.out.println(noBankAccountMsg.getText());
+				if (usrData.get("ASSERTION").equalsIgnoreCase("Primary")) {
+					waitUntilElementIsVisible(accNumForDisabledPrimary);
+					Assert.assertEquals(accNumForDisabledPrimary.getText(), "1234567890");
+					System.out.println("Primary account is 1234567890");
+					Assert.assertEquals(accNumForEnabledPrimary.getText(), "1234567891");
+					System.out.println("Non-primary account is 1234567891");
+					waitUntilElementIsClickableAndClickTheElement(primaryButtonEnabled);
+					System.out.println("Primary radio button selected");
+					waitUntilElementIsClickableAndClickTheElement(yesButton);
+					System.out.println("Yes button clicked");
+					commonUtils.waitForSpinner();
+					Assert.assertEquals(accNumForDisabledPrimary.getText(), "1234567891");
+					System.out.println("Primary account is 1234567891");
+					Assert.assertEquals(accNumForEnabledPrimary.getText(), "1234567890");
+					System.out.println("Non-primary account is 1234567890");
+				} else if (usrData.get("ASSERTION").contains("Delete") && !usrData.get("ASSERTION").contains("View")) {
+					waitUntilElementIsClickableAndClickTheElement(deleteButton);
+					System.out.println("Delete button clicked");
+					if (usrData.get("ASSERTION").equalsIgnoreCase("Delete Older")) {
+						waitUntilElementIsVisible(deleteModal);
+						System.out.println("Delete modal displayed");
+						waitUntilElementIsClickableAndClickTheElement(yesButton);
+						System.out.println("Yes button clicked");
+						commonUtils.waitForSpinner();
+						waitUntilElementIsVisible(deleteRejectButton);
+						System.out.println("Delete/Reject account button visible");
+						Assert.assertEquals(cardsCount(), 1);
+						System.out.println("One account deleted");
+					}
+				} else if (!usrData.get("ASSERTION").contains("View")) {
+					waitUntilElementIsClickableAndClickTheElement(addButton);
+					if (!usrData.get("ACHOLDERNAME").equalsIgnoreCase("SKIP")) {
 						Thread.sleep(1000);
-						Assert.assertTrue(noBankAccountMsg.getText().contains("There are no saved accounts."));
-						waitUntilElementIsClickableAndClickTheElement(addButton);
+						Assert.assertEquals(debitInfo.getText(), "Rs. " + dbUtils.getAccountValidationCharge()
+								+ " will be deducted from Cashout Wallet for Account details submission.");
+						System.out.println(debitInfo.getText());
 
-						if (!usrData.get("ACHOLDERNAME").equalsIgnoreCase("SKIP")) {
-							Thread.sleep(1000);
+						waitUntilElementIsClickableAndClickTheElement(accHolderName);
+						accHolderName.clear();
+						accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
+						System.out.println("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
 
-							Assert.assertEquals(debitInfo.getText(), "Rs. " + dbUtils.getAccountValidationCharge()
-									+ " will be deducted from Cashout Wallet for Account details submission.");
-							System.out.println(debitInfo.getText());
+						waitUntilElementIsClickableAndClickTheElement(accNumber);
+						accNumber.clear();
+						accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
+						System.out.println("Account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 
-							waitUntilElementIsClickableAndClickTheElement(accHolderName);
-							accHolderName.clear();
-							accHolderName.sendKeys(getBeneNameFromIni(usrData.get("ACHOLDERNAME")));
-							System.out.println("Account holder name '" + usrData.get("ACHOLDERNAME") + "' entered");
+						waitUntilElementIsClickableAndClickTheElement(confirmAccNumber);
+						confirmAccNumber.clear();
+						confirmAccNumber.sendKeys(usrData.get("ACNUMBER"));
+						System.out.println("Confirm Account number '" + usrData.get("ACNUMBER") + "' entered");
 
-							waitUntilElementIsClickableAndClickTheElement(accNumber);
-							accNumber.clear();
-							accNumber.sendKeys(getAccountNumberFromIni(usrData.get("ACNUMBER")));
-							System.out.println("Account number '" + getAccountNumberFromIni("GetNum") + "' entered");
-
-							waitUntilElementIsClickableAndClickTheElement(confirmAccNumber);
-							confirmAccNumber.clear();
-							confirmAccNumber.sendKeys(usrData.get("ACNUMBER"));
-							System.out.println("Confirm Account number '" + usrData.get("ACNUMBER") + "' entered");
-
-							if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
-								waitUntilElementIsClickableAndClickTheElement(ifscCode);
-								ifscCode.clear();
-								ifscCode.sendKeys(usrData.get("IFSCCODE"));
-								System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
-							} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Search Screen")) {
-								waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
-								System.out.println("IFSC search icon clicked");
-								waitUntilElementIsVisible(ifscSearchScreen);
-								waitUntilElementIsVisible(ifscSearchBankList);
-								ifscSearchBankList.click();
-								System.out.println("IFSC bank drop down clicked");
-								String ifscBank = "//li[contains(text(),'"
-										+ dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank") + "')]";
-								WebElement ifscSearchBank = wdriver.findElement(By.xpath(ifscBank));
-								ifscSearchBank.click();
-								System.out.println("IFSC bank selected");
-								ifscSearchStateList.click();
-								System.out.println("IFSC state drop down clicked");
-								String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "state");
-								String stateCapitalized = stateFromDB.toUpperCase();
-								String ifscState = "//li[contains(text(),'" + stateCapitalized + "')]";
-								WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
-								ifscSearchState.click();
-								System.out.println("IFSC state selected");
-								ifscSearchDistrict
-										.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "district"));
-								System.out.println("IFSC district entered");
-								ifscSearchBranch.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "branch"));
-								System.out.println("IFSC branch entered");
-								ifscSearchButton.click();
-								System.out.println("Search button clicked");
-								commonUtils.waitForSpinner();
-								waitUntilElementIsVisible(ifscSearchBack);
-								String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
-										+ usrData.get("IFSCCODE") + "')]/parent::li";
-								WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-								waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-								System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
-								ifscSearchOK.click();
-								System.out.println("OK button clicked");
-							} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Drop Down")) {
-								waitUntilElementIsClickableAndClickTheElement(ifscCode);
-								ifscCode.clear();
-								String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
-										+ usrData.get("IFSCCODE") + "')]/parent::li";
-								WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-								waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-								System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
-							}
-							getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
-							waitUntilElementIsVisible(validateIFSC); // wait for Branch name
-							System.out.println(validateIFSC.getText());
+						if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
+							waitUntilElementIsClickableAndClickTheElement(ifscCode);
+							ifscCode.clear();
+							ifscCode.sendKeys(usrData.get("IFSCCODE"));
+							System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+						} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Search Screen")) {
+							waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
+							System.out.println("IFSC search icon clicked");
+							waitUntilElementIsVisible(ifscSearchScreen);
+							waitUntilElementIsVisible(ifscSearchBankList);
+							ifscSearchBankList.click();
+							System.out.println("IFSC bank drop down clicked");
+							String ifscBank = "//li[contains(text(),'"
+									+ dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank") + "')]";
+							WebElement ifscSearchBank = wdriver.findElement(By.xpath(ifscBank));
+							ifscSearchBank.click();
+							System.out.println("IFSC bank selected");
+							ifscSearchStateList.click();
+							System.out.println("IFSC state drop down clicked");
+							String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "state");
+							String stateCapitalized = stateFromDB.toUpperCase();
+							String ifscState = "//li[contains(text(),'" + stateCapitalized + "')]";
+							WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
+							ifscSearchState.click();
+							System.out.println("IFSC state selected");
+							ifscSearchDistrict.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "district"));
+							System.out.println("IFSC district entered");
+							ifscSearchBranch.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "branch"));
+							System.out.println("IFSC branch entered");
+							ifscSearchButton.click();
+							System.out.println("Search button clicked");
+							commonUtils.waitForSpinner();
+							waitUntilElementIsVisible(ifscSearchBack);
+							String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
+									+ usrData.get("IFSCCODE") + "')]/parent::li";
+							WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
+							waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
+							System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+							ifscSearchOK.click();
+							System.out.println("OK button clicked");
+						} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Drop Down")) {
+							waitUntilElementIsClickableAndClickTheElement(ifscCode);
+							ifscCode.clear();
+							String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
+									+ usrData.get("IFSCCODE") + "')]/parent::li";
+							WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
+							waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
+							System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' selected");
 						}
-
+						getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
+						waitUntilElementIsVisible(validateIFSC); // wait for Branch name
+						System.out.println(validateIFSC.getText());
+					}
+					if (!usrData.get("ASSERTION").equalsIgnoreCase("Max accounts")) {
 						String buttonName = usrData.get("SETTINGSBUTTON");
 						String buttonXpath = "//button[contains(text(),'" + buttonName + "')]";
 						WebElement button = wdriver.findElement(By.xpath(buttonXpath));
@@ -396,122 +499,119 @@ public class SettingsPage extends BasePage {
 						}
 					}
 				}
-				if (usrData.get("ASSERTION").equalsIgnoreCase("Same Data")) {
-					Assert.assertEquals(toasterMsg.getText(),
-							"The Bank detail provided already exists in our system, kindly check and update");
-					System.out.println(toasterMsg.getText());
-				} else if (!usrData.get("MODE").equalsIgnoreCase("Keep Bank Account")
-						&& !usrData.get("SETTINGSBUTTON").equalsIgnoreCase("Clear")) {
-					waitUntilElementIsVisible(MPINScreen);
-					System.out.println("MPIN screen displayed");
-					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-						enterMPIN.sendKeys("9999");
-					}
-					System.out.println("MPIN entered");
+			}
+			if (!usrData.get("MPIN").equalsIgnoreCase("SKIP")) {
+				waitUntilElementIsVisible(MPINScreen);
+				System.out.println("MPIN screen displayed");
+				waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+				if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+					enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+				} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+					enterMPIN.sendKeys("9999");
+				}
+				System.out.println("MPIN entered");
 
-					String mpinButtonName = usrData.get("MPINSCREENBUTTON");
-					String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
-							+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName
-							+ "')]";
-					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-					System.out.println(mpinButtonName + " button clicked");
-					if (mpinButtonName.equalsIgnoreCase("Cancel")) {
-						System.out.println("Cancel button clicked");
-					} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
-						if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
-							commonUtils.waitForSpinner();
-
-							// Verify the details on transaction screen
-							if (settingsTxnScreen.getText().equalsIgnoreCase("Success!")) {
+				String mpinButtonName = usrData.get("MPINSCREENBUTTON");
+				String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
+						+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName
+						+ "')]";
+				WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
+				waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
+				System.out.println(mpinButtonName + " button clicked");
+				if (mpinButtonName.equalsIgnoreCase("Cancel")) {
+					System.out.println("Cancel button clicked");
+				} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
+					if (usrData.get("TXNSCREEN").equalsIgnoreCase("Success")) {
+						commonUtils.waitForSpinner();
+						assertionOnSuccessScreen(usrData);
+						waitUntilElementIsClickableAndClickTheElement(doneButton);
+						System.out.println("Done button clicked");
+						if (usrData.get("ASSERTION").contains("FCM")) {
+							commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
+							assertionOnFCM(usrData);
+						}
+//						verifyUpdatedBalance(usrData);
+					} else if (usrData.get("TXNSCREEN").equalsIgnoreCase("Failed")) {
+						waitUntilElementIsVisible(multiAccountFailedScreen);
+						System.out.println("Failed modal displayed");
+						assertionOnFailedScreen(usrData);
+						if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+							exitButton.click();
+							System.out.println("Exit button clicked");
+						} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+							retryButton.click();
+							waitUntilElementIsVisible(MPINScreen);
+							System.out.println("MPIN screen displayed");
+							Thread.sleep(1000);
+							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+							System.out.println("MPIN entered");
+							waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+							System.out.println("Submit button clicked");
+							if (usrData.get("TYPE").equalsIgnoreCase("Mode")) {
+								commonUtils.waitForSpinner();
 								assertionOnSuccessScreen(usrData);
 								waitUntilElementIsClickableAndClickTheElement(doneButton);
 								System.out.println("Done button clicked");
-								if (usrData.get("ASSERTION").contains("FCM")) {
-									commonUtils.selectFeatureFromMenu1(moneyTransfer, pageTitle2);
-									assertionOnFCM(usrData);
-								}
-							} else if (settingsTxnScreen.getText().equalsIgnoreCase("Failed!")) {
-								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-									assertionOnFailedScreen(usrData);
-									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-										System.out.println("Clicking exit button");
-									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-										retryButton.click();
-										waitUntilElementIsVisible(MPINScreen);
-										System.out.println("MPIN screen displayed");
-										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-										System.out.println("MPIN entered");
-										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-										System.out.println("Submit button clicked");
-										commonUtils.waitForSpinner();
-										waitUntilElementIsVisible(settingsTxnScreen);
-										System.out.println("Txn screen displayed");
-										assertionOnFailedScreen(usrData);
-									}
-									waitUntilElementIsClickableAndClickTheElement(exitButton);
-									System.out.println("Exit button clicked");
-								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-									waitUntilElementIsVisible(settingsTxnScreenMessage);
-									System.out.println(settingsTxnScreenMessage.getText());
-									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-										exitButton.click();
-										System.out.println("Exit button clicked");
-									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-										retryButton.click();
-										waitUntilElementIsVisible(MPINScreen);
-										System.out.println("MPIN screen displayed");
-										Thread.sleep(1000);
-										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-										System.out.println("MPIN entered");
-										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-										System.out.println("Submit button clicked");
-										commonUtils.waitForSpinner();
-										waitUntilElementIsVisible(settingsTxnScreen);
-										System.out.println("Txn screen displayed");
-										assertionOnSuccessScreen(usrData);
-										waitUntilElementIsClickableAndClickTheElement(doneButton);
-										System.out.println("Done button clicked");
-									}
-								}
+							} else if (usrData.get("TYPE").equalsIgnoreCase("Details")) {
+								commonUtils.pendingScreen();
+								waitUntilRblAccountValElementIsVisible(additionalInfoModal);
+								System.out.println("Need Additional Info modal displayed");
+								waitUntilElementIsClickableAndClickTheElement(cancelButton);
+								System.out.println("Cancel button clicked");
 							}
 						} else {
-							commonUtils.pendingScreen();
-
-							waitUntilRblAccountValElementIsVisible(additionalInfoModal);
-							System.out.println("Need Additional Info modal displayed");
-
-							commonUtils.uploadFile(uploadFile);
-							System.out.println("Image selected");
-
-							waitUntilElementIsVisible(toasterMsg);
-							Assert.assertEquals(toasterMsg.getText(), "Image Upload success !!");
-
-							while (okButton.getCssValue("background-color").equals("rgba(0, 150, 197, 1)") == false) {
-								okButton.click();
-							}
-							okButton.click();
-							System.out.println("Ok button clicked");
-
-							waitUntilElementIsVisible(multiAccountPendingScreen);
-							System.out.println("Pending screen displayed");
-
-							assertionOnPendingScreen(usrData);
 							waitUntilElementIsClickableAndClickTheElement(okButton);
 							System.out.println("OK button clicked");
 						}
-					} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
-						clearButton.click();
-						System.out.println("Clear button clicked");
+					} else if (usrData.get("TXNSCREEN").equalsIgnoreCase("Pending")) {
+						commonUtils.pendingScreen();
+
+						waitUntilRblAccountValElementIsVisible(additionalInfoModal);
+						System.out.println("Need Additional Info modal displayed");
+
+						commonUtils.uploadFile(uploadFile);
+						System.out.println("Image selected");
+
+						waitUntilElementIsVisible(toasterMsg);
+						Assert.assertEquals(toasterMsg.getText(), "Image Upload success !!");
+
+						while (okButton.getCssValue("background-color").equals("rgba(0, 150, 197, 1)") == false) {
+							okButton.click();
+						}
+						okButton.click();
+						System.out.println("Ok button clicked");
+
+						waitUntilElementIsVisible(multiAccountPendingScreen);
+						System.out.println("Pending screen displayed");
+
+						assertionOnPendingScreen(usrData);
+						waitUntilElementIsClickableAndClickTheElement(okButton);
+						System.out.println("OK button clicked");
+
+						if (usrData.get("ACCOUNT").equalsIgnoreCase("No exisitng account")) {
+							waitUntilElementIsVisible(accountStatus);
+							Assert.assertEquals(accountStatus.getText(), "PENDING VERIFICATION");
+							System.out.println("One account added");
+						} else {
+							waitUntilElementIsVisible(card2Status);
+							if (usrData.get("ACCOUNT").equalsIgnoreCase("One pending account")) {
+								Assert.assertEquals(card2Status.getText(), "PENDING VERIFICATION");
+							} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One verified account")) {
+								Assert.assertEquals(card2Status.getText(), "PENDING VERIFICATION");
+							}
+							System.out.println("Another account added");
+						}
+//						verifyUpdatedBalance(usrData);
 					}
+				} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
+					clearButton.click();
+					System.out.println("Clear button clicked");
 				}
 			}
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			wdriver.navigate().refresh();
 			e.printStackTrace();
 			System.out.println("Test Case Failed");
@@ -522,18 +622,16 @@ public class SettingsPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		if (usrData.get("MODE").equalsIgnoreCase("Change to Bank Account")) {
+		if (usrData.get("TYPE").equalsIgnoreCase("MODE") && usrData.get("MODE").equalsIgnoreCase("DO_NOT_SETTLE")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
 					"Your end of the day withdrawable amount will now be credited to your Primary bank account.");
 			System.out.println(settingsTxnScreenMessage.getText());
-		} else if (usrData.get("MODE").equalsIgnoreCase("Change to Do Not Settle")) {
+		} else if (usrData.get("TYPE").equalsIgnoreCase("MODE") && usrData.get("MODE").equalsIgnoreCase("TO_BANK")) {
 			Assert.assertEquals(settingsTxnScreenMessage.getText(),
 					"You can now use your withdrawable amount for transaction purposes.");
 			System.out.println(settingsTxnScreenMessage.getText());
-		} else if (usrData.get("MODE").equalsIgnoreCase("Keep Do Not Settle")) {
-			Assert.assertEquals(settingsTxnScreenMessage.getText(),
-					"The bank account details have been submitted for verification. "
-							+ "Amount shall not be settled to older account.");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Verified")) {
+			Assert.assertEquals(settingsTxnScreenMessage.getText(), "Bank account details successfully verified");
 			System.out.println(settingsTxnScreenMessage.getText());
 		}
 	}
@@ -551,7 +649,23 @@ public class SettingsPage extends BasePage {
 	public void assertionOnFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid MPIN")) {
-			Assert.assertEquals(settingsTxnScreenMessage.getText(), "Authentication Failed Invalid MPIN");
+			Assert.assertEquals(multiAccountFailedMessage.getText(), "Authentication Failed Invalid MPIN");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
+			Assert.assertEquals(multiAccountFailedHeader.getText(), "Minimum Balance");
+			Assert.assertEquals(multiAccountFailedMessage.getText(), "Rs. " + dbUtils.getSettlementCharge()
+					+ " minimum balance is not present in Cashout Wallet. Can not proceed further.");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Same Details")) {
+			Assert.assertEquals(multiAccountFailedHeader.getText(), "Duplicate Submission");
+			Assert.assertEquals(multiAccountFailedMessage.getText(),
+					"Account Number and IFSC Code of the HDFC BANK already added.");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Max accounts")) {
+			Assert.assertEquals(multiAccountFailedHeader.getText(), "Maximum Accounts");
+			Assert.assertEquals(multiAccountFailedMessage.getText(),
+					"Maximum numbers of accounts added. Please Delete accounts to add new account");
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Delete New")) {
+			Assert.assertEquals(multiAccountFailedHeader.getText(), "Alert!");
+			Assert.assertEquals(multiAccountFailedMessage.getText(),
+					"You can delete the bank account details ONLY after 5 days of addition to your Novopay Profile");
 		}
 		System.out.println(settingsTxnScreenMessage.getText());
 	}
@@ -562,6 +676,28 @@ public class SettingsPage extends BasePage {
 		Assert.assertEquals(settingsTxnScreenMessage.getText(),
 				"Please change settlement mode to 'Do Not Settle' before updating bank details");
 		System.out.println(settingsTxnScreenMessage.getText());
+	}
+
+	public int cardsCount() {
+		waitUntilElementIsVisible(bankDetailsCards);
+		int cards = wdriver.findElements(
+				By.xpath("//h1[contains(text(),'Bank Account Details')]/ancestor::div[@class='mainHeading']"
+						+ "/following-sibling::div//div[contains(@class,'non-editable-field')]"))
+				.size();
+		return cards;
+	}
+
+	// Assertion after success or orange screen is displayed
+	public void verifyUpdatedBalance(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
+		clickElement(menu);
+		commonUtils.refreshBalance();
+		double initialWalletBalance = Double.parseDouble(commonUtils.getWalletBalanceFromIni("GetCashout", ""));
+		double charges = Double.parseDouble(dbUtils.getSettlementCharge());
+		double newWalletBal = 0.00;
+		newWalletBal = initialWalletBalance - charges;
+		String newWalletBalance = df.format(newWalletBal);
+		Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
+		System.out.println("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
 	}
 
 	// FCM assertion
