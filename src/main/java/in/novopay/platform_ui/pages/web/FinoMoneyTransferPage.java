@@ -1,6 +1,5 @@
 package in.novopay.platform_ui.pages.web;
 
-import java.awt.AWTException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -67,10 +66,10 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//*[contains(text(),'Edit')]")
 	WebElement editButton;
 
-	@FindBy(id = "money-transfer-customer-name")
+	@FindBy(id = "customerName")
 	WebElement custName;
 
-	@FindBy(id = "money-transfer-customer-dob")
+	@FindBy(id = "customerDob")
 	WebElement dob;
 
 	@FindBy(xpath = "//label[@for='customer-gender-male']")
@@ -79,13 +78,13 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//label[@for='customerGender-female']")
 	WebElement genderFemale;
 
-	@FindBy(id = "money-transfer-beneficiary-list")
+	@FindBy(id = "beneficiaryList")
 	WebElement beneList;
 
 	@FindBy(xpath = "//span[contains(@class,'add-beneficiary')]/parent::li")
 	WebElement addNewBene;
 
-	@FindBy(id = "money-transfer-beneficiary-name")
+	@FindBy(id = "beneficiaryName")
 	WebElement beneName;
 
 	@FindBy(id = "money-transfer-beneficiary-mobile-number")
@@ -94,10 +93,10 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(id = "money-transfer-beneficiary-bank-ifsc-list")
 	WebElement ifscCode;
 
-	@FindBy(id = "money-transfer-beneficiary-account-number")
+	@FindBy(id = "beneficiaryAccountNumber")
 	WebElement beneACNum;
 
-	@FindBy(xpath = "//button[contains(text(),'Add Beneficiary')]")
+	@FindBy(xpath = "//button[contains(text(),'Register Beneficiary')]")
 	WebElement addBeneButton;
 
 	@FindBy(xpath = "//button[contains(text(),'Verify Beneficiary')]")
@@ -124,7 +123,7 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(id = "money-transfer-amount-to-be-transferred")
 	WebElement amount;
 
-	@FindBy(xpath = "//*[@id='money-transfer-amount-to-be-transferred']/following-sibling::ul/li")
+	@FindBy(xpath = "//*[@id='money-transfer-amount-to-be-transferred']/parent::div/following-sibling::div/ul/li")
 	WebElement amountErrorMsg;
 
 	@FindBy(xpath = "//span[contains(@class,'custom-ul-errormessage')]/span[contains(text(),'Branch')]")
@@ -163,7 +162,7 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//h5[contains(text(),'Enter Bene. Registration OTP')]")
 	WebElement OTPScreen;
 
-	@FindBy(xpath = "//button[@class='charges-label']")
+	@FindBy(xpath = "//button[contains(@class,'btn-icon')]")
 	WebElement applicableChargesButton;
 
 	@FindBy(xpath = "//h4[contains(text(),'Applicable charges')]")
@@ -184,8 +183,14 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//*[contains(text(),'Confirm the details')]")
 	WebElement confirmScreen;
 
-	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div/div[7]//strong")
+	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div//span[contains(text(),'Transfer Amount')]/parent::div/following-sibling::div//strong")
 	WebElement confirmScreenAmount;
+
+	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div//span[contains(text(),'Charges')]/parent::div/following-sibling::div//strong")
+	WebElement confirmScreenCharges;
+
+	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div//strong[contains(text(),'Beneficiary Status')]/parent::span/parent::div/following-sibling::div/span")
+	WebElement confirmScreenStatus;
 
 	@FindBy(xpath = "//h4[contains(text(),'Confirm the details')]/../following-sibling::div[2]/button[contains(text(),'Submit')]")
 	WebElement confirmScreenSubmit;
@@ -223,46 +228,49 @@ public class FinoMoneyTransferPage extends BasePage {
 	@FindBy(xpath = "//button[contains(text(),'Process in Background')]")
 	WebElement processInBackgroundButton;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]/div/div/div/h4[contains(text(),'!')]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//h4[contains(text(),'!')]")
 	WebElement remittanceTxnScreen;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]/div/div/div")
+	@FindBy(xpath = "//div[contains(@class,'show')]/div/div/div")
 	WebElement remittanceTxnScreenType;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]/div/div/div/following-sibling::div/div[1]")
+	@FindBy(xpath = "//div[contains(@class,'show')]/div/div/div/following-sibling::div/div[1]")
 	WebElement remittanceTxnScreenMessage;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(text(),'Transferred Amount:')]/parent::div/following-sibling::div")
+	@FindBy(xpath = "//div[contains(@class,'show')]//span")
+	WebElement remittanceFailureTxnScreenMessage;
+
+	@FindBy(xpath = "//div[contains(@class,'show')]//span[contains(text(),'Transferred Amount:')]/parent::div/following-sibling::div")
 	WebElement remittanceTxnScreenTxnAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(text(),'Transaction Amount:')]/parent::div/following-sibling::div")
+	@FindBy(xpath = "//div[contains(@class,'show')]//span[contains(text(),'Transaction Amount:')]/parent::div/following-sibling::div")
 	WebElement remittanceWarnScreenTxnAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(text(),'Charges:')]/parent::div/following-sibling::div")
+	@FindBy(xpath = "//div[contains(@class,'show')]//span[contains(text(),'Charges:')]/parent::div/following-sibling::div")
 	WebElement remittanceTxnScreenCharges;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(text(),'Failed Amount:')]/parent::div/following-sibling::div")
+	@FindBy(xpath = "//div[contains(@class,'show')]//span[contains(text(),'Failed Amount:')]/parent::div/following-sibling::div")
 	WebElement remittanceTxnScreenFailedAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
 	WebElement remittanceTxnScreenTotalAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//span[contains(@class,'font-size-12 failure-cross')]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//span[contains(@class,'font-size-12 failure-cross')]")
 	WebElement remittanceTxnScreenFailureReason;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//button[contains(text(),'Done')]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//button[contains(text(),'Done')]")
 	WebElement remittanceTxnScreenDoneButton;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//button[contains(text(),'Exit')]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//button[contains(text(),'Exit')]")
 	WebElement remittanceTxnScreenExitButton;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//button[contains(text(),'Retry')]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//button[contains(text(),'Retry')]")
 	WebElement remittanceTxnScreenRetryButton;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//button[contains(text(),'Save')]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//button[contains(text(),'Save')]")
 	WebElement remittanceTxnScreenSaveButton;
 
-	@FindBy(xpath = "//div[contains(@class,'remittancetxn-modal')]//button[contains(text(),'Print')]")
+	@FindBy(xpath = "//div[contains(@class,'show')]//button[contains(text(),'Print')]")
 	WebElement remittanceTxnScreenPrintButton;
 
 	@FindBy(xpath = "//h5[contains(text(),'Beneficiary Validation')]")
@@ -366,19 +374,17 @@ public class FinoMoneyTransferPage extends BasePage {
 
 	// Perform action on page based on given commands
 	public void finoMoneyTransfer(Map<String, String> usrData)
-			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
+			throws InterruptedException, IOException, ClassNotFoundException {
 
 		try {
 			commonUtils.waitForSpinner();
-
-			if (!usrData.get("REFRESH").equalsIgnoreCase("Never")) {
-				commonUtils.selectFeatureFromMenu1(moneyTransferMenu, pageTitle);
-				Thread.sleep(4000);
-			}
-
 			// Update wallet balance as per the scenarios
 			updateWalletBalance(usrData);
 
+			if (usrData.get("SELECTMENU").equalsIgnoreCase("YES")) {
+				commonUtils.selectFeatureFromMenu1(moneyTransferMenu, pageTitle);
+				Thread.sleep(2000);
+			}
 			// Refresh wallet balances whenever required
 			if (usrData.get("REFRESH").equalsIgnoreCase("YES")) {
 				clickElement(menu);
@@ -416,38 +422,35 @@ public class FinoMoneyTransferPage extends BasePage {
 			// Provide beneficiary details based on user data
 			if (usrData.get("BENE").equalsIgnoreCase("New")) { // when beneficiary is new
 				Thread.sleep(2000);
-				waitUntilElementIsClickableForFinoAndClickTheElement(beneList);
+				waitUntilElementIsClickableAndClickTheElement(beneList);
 				System.out.println("Clicked on bene list drop down");
 				beneList.sendKeys("add new beneficiary");
 				try {
-					waitUntilElementIsClickableForFinoAndClickTheElement(addNewBene);
+					waitUntilElementIsClickableAndClickTheElement(addNewBene);
 				} catch (Exception e) {
 					customerDetails(usrData);
 					Thread.sleep(2000);
-					waitUntilElementIsClickableForFinoAndClickTheElement(beneList);
+					waitUntilElementIsClickableAndClickTheElement(beneList);
 					System.out.println("Clicked on bene list drop down");
 					beneList.sendKeys("add new beneficiary");
-					waitUntilElementIsClickableForFinoAndClickTheElement(addNewBene);
+					waitUntilElementIsClickableAndClickTheElement(addNewBene);
 				}
 				System.out.println("'Add New Beneficiary' selected");
-				waitUntilElementIsClickableForFinoAndClickTheElement(beneName);
+				waitUntilElementIsClickableAndClickTheElement(beneName);
 				beneName.sendKeys(getBeneNameFromIni(usrData.get("BENENAME")));
 				System.out.println("Bene name '" + usrData.get("BENENAME") + "' entered");
-//				waitUntilElementIsClickableForFinoAndClickTheElement(beneMobNum);
-//				beneMobNum.sendKeys(getBeneNumberFromIni(usrData.get("BENENUMBER")));
-//				System.out.println("Bene mobile number '" + getBeneNumberFromIni("GetNum") + "' entered");
-				waitUntilElementIsClickableForFinoAndClickTheElement(beneACNum);
+				waitUntilElementIsClickableAndClickTheElement(beneACNum);
 				beneACNum.sendKeys(getAccountNumberFromIni(usrData.get("BENEACNUM")));
 				System.out.println("Bene account number '" + getAccountNumberFromIni("GetNum") + "' entered");
 				if (usrData.get("BENEIFSCTYPE").equalsIgnoreCase("Manual")) {
-					waitUntilElementIsClickableForFinoAndClickTheElement(ifscCode);
+					waitUntilElementIsClickableAndClickTheElement(ifscCode);
 					ifscCode.sendKeys(usrData.get("BENEIFSC"));
 					System.out.println("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 				} else if (usrData.get("BENEIFSCTYPE").equalsIgnoreCase("Search Screen")) {
-					waitUntilElementIsClickableForFinoAndClickTheElement(ifscSearchIcon);
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
 					System.out.println("IFSC search icon clicked");
-					waitUntilElementIsVisibleForFino(ifscSearchScreen);
-					waitUntilElementIsClickableForFinoAndClickTheElement(ifscSearchBankList);
+					waitUntilElementIsVisible(ifscSearchScreen);
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchBankList);
 					System.out.println("IFSC bank drop down clicked");
 					String ifscBank = "//li[contains(text(),'"
 							+ dbUtils.ifscCodeDetails(usrData.get("BENEIFSC"), "bank") + "')]";
@@ -469,24 +472,31 @@ public class FinoMoneyTransferPage extends BasePage {
 					ifscSearchButton.click();
 					System.out.println("Search button clicked");
 					commonUtils.waitForSpinner();
-					waitUntilElementIsVisibleForFino(ifscSearchBack);
+					waitUntilElementIsVisible(ifscSearchBack);
 					String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
 							+ usrData.get("BENEIFSC") + "')]/parent::li";
 					WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-					waitUntilElementIsClickableForFinoAndClickTheElement(ifscSearchCode);
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
 					System.out.println("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 					ifscSearchOK.click();
 					System.out.println("OK button clicked");
 				} else if (usrData.get("BENEIFSCTYPE").equalsIgnoreCase("Drop Down")) {
-					waitUntilElementIsClickableForFinoAndClickTheElement(ifscCode);
+					waitUntilElementIsClickableAndClickTheElement(ifscCode);
 					String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
 							+ usrData.get("BENEIFSC") + "')]/parent::li";
 					WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
-					waitUntilElementIsClickableForFinoAndClickTheElement(ifscSearchCode);
+					waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
 					System.out.println("IFSC code '" + usrData.get("BENEIFSC") + "' entered");
 				}
 				getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("BENEIFSC"), "bank"));
-				waitUntilElementIsVisibleForFino(validateIFSC); // wait for Branch name to be displayed
+				try {
+					waitUntilElementIsClickableFor5secAndClickTheElement(validateIFSC); // wait for Branch name to be displayed
+					System.out.println("Branch not visible. Pressing Tab");
+					Thread.sleep(1000);
+				} catch (Exception e) {
+					ifscCode.sendKeys(Keys.TAB);
+				}
+				waitUntilElementIsClickableFor5secAndClickTheElement(validateIFSC);
 				System.out.println(validateIFSC.getText());
 
 				// Validate beneficiary before registration
@@ -497,7 +507,7 @@ public class FinoMoneyTransferPage extends BasePage {
 
 			else if (usrData.get("BENE").equalsIgnoreCase("Existing")) { // when beneficiary is existing
 				Thread.sleep(2000);
-				waitUntilElementIsClickableForFinoAndClickTheElement(beneList);
+				waitUntilElementIsClickableAndClickTheElement(beneList);
 				System.out.println("Clicked on bene list drop down");
 				beneList.sendKeys(usrData.get("BENENAME"));
 				Thread.sleep(1000);
@@ -514,7 +524,7 @@ public class FinoMoneyTransferPage extends BasePage {
 					WebElement beneNickNameName = wdriver.findElement(By.xpath(beneNickNameXpath));
 					String accountHolderNameXpath = beneXpath + "/span[2]";
 					WebElement accountHolderName = wdriver.findElement(By.xpath(accountHolderNameXpath));
-					waitUntilElementIsVisibleForFino(beneValIcon);
+					waitUntilElementIsVisible(beneValIcon);
 					System.out.println("Validate icon visible");
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Icon + Name (Same)")) {
 						Assert.assertEquals(beneNickNameName.getText().trim(), getBeneNameFromBank("GetBeneName", ""));
@@ -528,25 +538,26 @@ public class FinoMoneyTransferPage extends BasePage {
 						System.out.println("Bene nickname and Account Holder Name are different");
 					}
 				}
-				waitUntilElementIsClickableForFinoAndClickTheElement(wdriver.findElement(By.xpath(beneXpath)));
+				waitUntilElementIsClickableAndClickTheElement(wdriver.findElement(By.xpath(beneXpath)));
 				System.out.println(beneName + " beneficiary selected");
 			}
 
 			// Click on Add Bene button and provide necessary details
 			if (usrData.get("ADDBENE").equalsIgnoreCase("Indirectly")) {
-				waitUntilElementIsClickableForFinoAndClickTheElement(addBeneButton);
+				waitUntilElementIsClickableAndClickTheElement(addBeneButton);
 				System.out.println("Add Bene button clicked");
 				if (!usrData.get("ASSERTION").equalsIgnoreCase("Bene Limit")) {
 					commonUtils.waitForSpinner();
-					waitUntilElementIsVisibleForFino(OTPScreen);
+					waitUntilElementIsVisible(OTPScreen);
 					System.out.println("OTP screen displayed");
-					waitUntilElementIsClickableForFinoAndClickTheElement(enterOTP);
+					waitUntilElementIsClickableAndClickTheElement(enterOTP);
+					Thread.sleep(1000);
 					if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 						enterOTP.sendKeys("111111");
 					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-						waitUntilElementIsClickableForFinoAndClickTheElement(resendOTP);
+						waitUntilElementIsClickableAndClickTheElement(resendOTP);
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					}
 					System.out.println("OTP entered");
@@ -555,38 +566,39 @@ public class FinoMoneyTransferPage extends BasePage {
 							+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'"
 							+ buttonName + "')]";
 					WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
-					waitUntilElementIsClickableForFinoAndClickTheElement(otpScreenButton);
+					waitUntilElementIsClickableAndClickTheElement(otpScreenButton);
 					System.out.println(buttonName + " button clicked");
 					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
 						if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-							waitUntilElementIsVisibleForFino(toasterMsg);
+							waitUntilElementIsVisible(toasterMsg);
 							System.out.println(toasterMsg.getText());
 						} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
-							waitUntilElementIsVisibleForFino(addBeneFailedScreen);
+							waitUntilElementIsVisible(addBeneFailedScreen);
 							System.out.println(addBeneFailedMessage.getText());
 							String otpFailedScreenButtonName = usrData.get("OTPFAILEDSCREENBUTTON");
 							String otpFailedScreenButtonXpath = "//div[contains(@class,'add-bene-retry-modal')]//button[contains(text(),'"
 									+ otpFailedScreenButtonName + "')]";
 							WebElement otpFailedScreenButton = wdriver
 									.findElement(By.xpath(otpFailedScreenButtonXpath));
-							waitUntilElementIsClickableForFinoAndClickTheElement(otpFailedScreenButton);
+							waitUntilElementIsClickableAndClickTheElement(otpFailedScreenButton);
 							System.out.println(otpFailedScreenButtonName + " button clicked");
 							if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Retry")) {
 								commonUtils.waitForSpinner();
-								waitUntilElementIsClickableForFinoAndClickTheElement(enterOTP);
+								waitUntilElementIsClickableAndClickTheElement(enterOTP);
+								Thread.sleep(1000);
 								enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 								System.out.println("OTP entered");
-								waitUntilElementIsClickableForFinoAndClickTheElement(confirmOTP);
+								waitUntilElementIsClickableAndClickTheElement(confirmOTP);
 								System.out.println("Confirm button clicked");
 								commonUtils.waitForSpinner();
-								waitUntilElementIsVisibleForFino(toasterMsg);
+								waitUntilElementIsVisible(toasterMsg);
 								System.out.println(toasterMsg.getText());
 							}
 						}
 					}
 				} else {
-					waitUntilElementIsVisibleForFino(toasterMsg);
+					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "You have reached the maximum beneficiary count for 10. "
 							+ "Please delete any existing beneficiary to add a new one");
 					System.out.println(toasterMsg.getText());
@@ -612,36 +624,50 @@ public class FinoMoneyTransferPage extends BasePage {
 					System.out.println("NEFT mode auto-selected");
 				}
 
-				Thread.sleep(2000);
+				waitUntilElementIsClickableAndClickTheElement(amount);
+				Thread.sleep(1000);
+				amount.sendKeys(usrData.get("AMOUNT"));
+				System.out.println("amount entered");
+
 				try {
-					waitUntilSubmitIsClickableForFinoAndClickTheElement(moneyTransferSubmitButton);
+					waitUntilElementIsClickableFor5secAndClickTheElement(moneyTransferSubmitButton);
 				} catch (Exception e) {
 					System.out.println("Submit button not visible. Pressing Tab");
 					Thread.sleep(1000);
-					deleteBeneButton.sendKeys(Keys.TAB);
-					waitUntilElementIsClickableForFinoAndClickTheElement(moneyTransferSubmitButton);
+					try {
+						amount.sendKeys(Keys.TAB);
+						System.out.println("Pressing Tab on Amount button");
+						waitUntilElementIsClickableFor5secAndClickTheElement(moneyTransferSubmitButton);
+					} catch (Exception f) {
+						applicableChargesButton.sendKeys(Keys.TAB);
+						System.out.println("Pressing Tab on Applicable Charges button");
+						waitUntilElementIsClickableFor5secAndClickTheElement(moneyTransferSubmitButton);
+					}
 				}
 				System.out.println("Submit button clicked");
+
+				commonUtils.waitForSpinner();
+				confirmScreen(usrData);
 
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Main!=0 Cashout=0")) {
 					System.out.println("Cashout Balance is 0, hence money will be deducted from Main Wallet");
 				} else {
 					commonUtils.chooseWalletScreen(usrData);
 				}
-				confirmScreen(usrData);
 
 				// Provide OTP if beneficiary is to be added during money transfer
 				if (usrData.get("ADDBENE").equalsIgnoreCase("Directly")) {
 					commonUtils.waitForSpinner();
-					waitUntilElementIsVisibleForFino(OTPScreen);
+					waitUntilElementIsVisible(OTPScreen);
 					System.out.println("OTP screen displayed");
-					waitUntilElementIsClickableForFinoAndClickTheElement(enterOTP);
+					waitUntilElementIsClickableAndClickTheElement(enterOTP);
+					Thread.sleep(1000);
 					if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 						enterOTP.sendKeys("111111");
 					} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-						waitUntilElementIsClickableForFinoAndClickTheElement(resendOTP);
+						waitUntilElementIsClickableAndClickTheElement(resendOTP);
 						enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					}
 					System.out.println("OTP entered");
@@ -650,7 +676,7 @@ public class FinoMoneyTransferPage extends BasePage {
 							+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'"
 							+ buttonName + "')]";
 					WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
-					waitUntilElementIsClickableForFinoAndClickTheElement(otpScreenButton);
+					waitUntilElementIsClickableAndClickTheElement(otpScreenButton);
 					System.out.println(buttonName + " button clicked");
 					commonUtils.waitForSpinner();
 					if (buttonName.equalsIgnoreCase("Confirm")) {
@@ -661,18 +687,18 @@ public class FinoMoneyTransferPage extends BasePage {
 					moneyTransfer(usrData);
 				}
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("Clear")) {
-				waitUntilElementIsClickableForFinoAndClickTheElement(moneyTransferClearButton);
+				waitUntilElementIsClickableAndClickTheElement(moneyTransferClearButton);
 			} else if (usrData.get("SUBMIT").equalsIgnoreCase("No")) {
-//				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
-//					waitUntilElementIsClickableForFinoAndClickTheElement(amount);
-//					Thread.sleep(1000);
-//					amount.sendKeys(usrData.get("AMOUNT"));
-//					System.out.println("amount entered");
-//				}
+				if (!usrData.get("AMOUNT").equalsIgnoreCase("SKIP")) {
+					waitUntilElementIsClickableAndClickTheElement(amount);
+					Thread.sleep(1000);
+					amount.sendKeys(usrData.get("AMOUNT"));
+					System.out.println("amount entered");
+				}
 
 				// Field level validation in Amount field
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Both Wallets")) {
-					waitUntilElementIsVisibleForFino(amountErrorMsg);
+					waitUntilElementIsVisible(amountErrorMsg);
 					Assert.assertEquals(amountErrorMsg.getText(), "Insufficient wallet balance");
 					System.out.println(amountErrorMsg.getText());
 					dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
@@ -680,20 +706,21 @@ public class FinoMoneyTransferPage extends BasePage {
 				}
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Limit")
 						|| usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
-					waitUntilElementIsVisibleForFino(amountErrorMsg);
-					Assert.assertEquals(amountErrorMsg.getText().substring(0, 43),
-							"Amount entered exceeds your available limit");
+					waitUntilElementIsVisible(amountErrorMsg);
+					Assert.assertEquals(amountErrorMsg.getText().substring(0, 61),
+							"Please enter amount less than the available remitter limit of");
 					System.out.println(amountErrorMsg.getText());
 				} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
-					waitUntilElementIsVisibleForFino(amountErrorMsg);
-					Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹100.00");
+					waitUntilElementIsVisible(amountErrorMsg);
+					Assert.assertEquals(amountErrorMsg.getText(),
+							"Please enter amount greater than or equal to ₹100.00");
 					System.out.println(amountErrorMsg.getText());
 				}
 
 				// Verify applicable charges
 				if (usrData.get("CHARGES").equalsIgnoreCase("YES")) {
-					waitUntilElementIsClickableForFinoAndClickTheElement(applicableChargesButton);
-					waitUntilElementIsVisibleForFino(applicableChargesScreen);
+					waitUntilElementIsClickableAndClickTheElement(applicableChargesButton);
+					waitUntilElementIsVisible(applicableChargesScreen);
 					assertionOnApplicableCharges(usrData);
 					applicableChargesOkButton.click();
 					System.out.println("Charges verified");
@@ -710,15 +737,10 @@ public class FinoMoneyTransferPage extends BasePage {
 
 	public void customerDetails(Map<String, String> usrData)
 			throws InterruptedException, NumberFormatException, ClassNotFoundException {
-		try {
-			Thread.sleep(2000);
-			editButton.click();
-			System.out.println("Edit button clicked");
-		} catch (Exception e) {
-			System.out.println("Edit button not visible");
-		}
 		// Click on customer Mobile Number field
-		waitUntilElementIsClickableForFinoAndClickTheElement(custMobNum);
+		waitUntilElementIsClickableAndClickTheElement(custMobNum);
+		System.out.println("Mobile number field clicked");
+		Thread.sleep(1000);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
 		System.out.println("Customer mobile number " + getCustomerDetailsFromIni("ExistingNum") + " entered");
@@ -727,22 +749,11 @@ public class FinoMoneyTransferPage extends BasePage {
 		limitCheck(usrData); // check limit remaining
 		partnerErrorMessage(usrData); // check if partner error message is displayed
 		if (!usrData.get("ASSERTION").equalsIgnoreCase("All partners down")) {
-			custMobNum.sendKeys(Keys.TAB);
-
-			waitUntilElementIsClickableForFinoAndClickTheElement(amount);
-			Thread.sleep(1000);
-			amount.sendKeys(usrData.get("AMOUNT"));
-			System.out.println("amount entered");
-			Thread.sleep(1000);
-			waitUntilElementIsClickableForFinoAndClickTheElement(proceedButton);
-			System.out.println("Proceed button clicked");
-			commonUtils.waitForSpinner();
-			Thread.sleep(1000);
 			if (!partnerUrl(usrData).endsWith("paytm-transfer")) {
-
 				// Provide customer details based on user data
 				if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
 					System.out.println("Customer is new");
+					Thread.sleep(2000);
 					custName.sendKeys(getCustomerDetailsFromIni("NewName"));
 					System.out.println("Customer name " + getCustomerDetailsFromIni("ExistingName") + " entered");
 				} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
@@ -755,7 +766,7 @@ public class FinoMoneyTransferPage extends BasePage {
 	// Method to validate beneficiary based on user data
 	public void validateBene(Map<String, String> usrData, double initialWalletBalance)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		waitUntilElementIsClickableForFinoAndClickTheElement(validateBeneButton);
+		waitUntilElementIsClickableAndClickTheElement(validateBeneButton);
 		System.out.println("validating beneficiary");
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Main!=0 Cashout=0")) {
 			System.out.println("Cashout Balance is 0, hence money will be deducted from Main Wallet");
@@ -763,11 +774,11 @@ public class FinoMoneyTransferPage extends BasePage {
 			commonUtils.chooseWalletScreen(usrData);
 		}
 		commonUtils.waitForSpinner();
-		waitUntilElementIsVisibleForFino(beneValidationScreen);
+		waitUntilElementIsVisible(beneValidationScreen);
 		System.out.println(beneValidationMessage.getText());
 		assertionOnBeneValidationScreen(usrData, initialWalletBalance);
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Dont Update Bene")) {
-			waitUntilElementIsClickableForFinoAndClickTheElement(beneCheckbox);
+			waitUntilElementIsClickableAndClickTheElement(beneCheckbox);
 			System.out.println("Checkbox deselected");
 		}
 		try {
@@ -789,13 +800,13 @@ public class FinoMoneyTransferPage extends BasePage {
 	}
 
 	// Method to delete beneficiary based on user data
-	public void deleteBene(Map<String, String> usrData, String OTP) {
-		waitUntilElementIsClickableForFinoAndClickTheElement(deleteBeneButton);
+	public void deleteBene(Map<String, String> usrData, String OTP) throws InterruptedException {
+		waitUntilElementIsClickableAndClickTheElement(deleteBeneButton);
 		System.out.println("Del Bene button clicked");
-		waitUntilElementIsVisibleForFino(deleteBeneScreen);
+		waitUntilElementIsVisible(deleteBeneScreen);
 		System.out.println("Delete Bene screen displayed");
 		if (usrData.get("DELETEBENETYPE").equalsIgnoreCase("HARD")) {
-			waitUntilElementIsClickableForFinoAndClickTheElement(deleteBeneCheckbox);
+			waitUntilElementIsClickableAndClickTheElement(deleteBeneCheckbox);
 			System.out.println("Hard Deleting Bene");
 		} else {
 			System.out.println("Soft Deleting Bene");
@@ -803,15 +814,16 @@ public class FinoMoneyTransferPage extends BasePage {
 		deleteConfirmButton.click();
 		System.out.println("Confirm button clicked");
 		commonUtils.waitForSpinner();
-		waitUntilElementIsVisibleForFino(deleteBeneOTPScreen);
+		waitUntilElementIsVisible(deleteBeneOTPScreen);
 		System.out.println("OTP screen displayed");
-		waitUntilElementIsClickableForFinoAndClickTheElement(deleteBeneEnterOTP);
+		waitUntilElementIsClickableAndClickTheElement(deleteBeneEnterOTP);
+		Thread.sleep(1000);
 		if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
 			deleteBeneEnterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 		} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
 			deleteBeneEnterOTP.sendKeys("111111");
 		} else if (usrData.get("OTP").equalsIgnoreCase("Resend")) {
-			waitUntilElementIsClickableForFinoAndClickTheElement(deleteBeneResendOTP);
+			waitUntilElementIsClickableAndClickTheElement(deleteBeneResendOTP);
 			deleteBeneEnterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 		}
 		System.out.println("OTP entered");
@@ -819,31 +831,32 @@ public class FinoMoneyTransferPage extends BasePage {
 		String otpScreenButtonXpath = "//h5[contains(text(),'Enter Bene. Deletion OTP')]/parent::div/"
 				+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'" + buttonName + "')]";
 		WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
-		waitUntilElementIsClickableForFinoAndClickTheElement(otpScreenButton);
+		waitUntilElementIsClickableAndClickTheElement(otpScreenButton);
 		System.out.println(buttonName + " button clicked");
 		commonUtils.waitForSpinner();
 		if (buttonName.equalsIgnoreCase("Confirm")) {
 			if (usrData.get("OTP").equalsIgnoreCase("Valid")) {
-				waitUntilElementIsVisibleForFino(toasterMsg);
+				waitUntilElementIsVisible(toasterMsg);
 				System.out.println(toasterMsg.getText());
 			} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
-				waitUntilElementIsVisibleForFino(deleteBeneFailedScreen);
+				waitUntilElementIsVisible(deleteBeneFailedScreen);
 				System.out.println(deleteBeneFailedMessage.getText());
 				String otpFailedScreenButtonName = usrData.get("OTPFAILEDSCREENBUTTON");
 				String otpFailedScreenButtonXpath = "//div[contains(@class,'delete-bene-retry-modal')]//button[contains(text(),'"
 						+ otpFailedScreenButtonName + "')]";
 				WebElement otpFailedScreenButton = wdriver.findElement(By.xpath(otpFailedScreenButtonXpath));
-				waitUntilElementIsClickableForFinoAndClickTheElement(otpFailedScreenButton);
+				waitUntilElementIsClickableAndClickTheElement(otpFailedScreenButton);
 				System.out.println(otpFailedScreenButtonName + " button clicked");
 				if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Retry")) {
 					commonUtils.waitForSpinner();
-					waitUntilElementIsClickableForFinoAndClickTheElement(deleteBeneEnterOTP);
+					waitUntilElementIsClickableAndClickTheElement(deleteBeneEnterOTP);
+					Thread.sleep(1000);
 					deleteBeneEnterOTP.sendKeys(getAuthfromIni(otpFromIni()));
 					System.out.println("OTP entered");
-					waitUntilElementIsClickableForFinoAndClickTheElement(deleteBeneConfirmOTP);
+					waitUntilElementIsClickableAndClickTheElement(deleteBeneConfirmOTP);
 					System.out.println("Confirm button clicked");
 					commonUtils.waitForSpinner();
-					waitUntilElementIsVisibleForFino(toasterMsg);
+					waitUntilElementIsVisible(toasterMsg);
 					System.out.println(toasterMsg.getText());
 				}
 			}
@@ -852,10 +865,22 @@ public class FinoMoneyTransferPage extends BasePage {
 
 	// Confirm screen
 	public void confirmScreen(Map<String, String> usrData) throws InterruptedException, ClassNotFoundException {
-		waitUntilElementIsVisibleForFino(confirmScreen);
+		waitUntilElementIsVisible(confirmScreen);
 		System.out.println("Confirm the details screen displayed");
 		Assert.assertEquals(replaceSymbols(confirmScreenAmount.getText()), usrData.get("AMOUNT") + ".00");
-		waitUntilElementIsVisibleForFino(confirmScreenSubmit);
+		System.out.println("Transfer Amount: " + replaceSymbols(confirmScreenAmount.getText()));
+		String chrges = dbUtils.getRemittanceCharges(usrData.get("AMOUNT"),
+				dbUtils.getChargeCategory(mobileNumFromIni()), partner());
+		Assert.assertEquals(replaceSymbols(confirmScreenCharges.getText()), chrges);
+		System.out.println("Charges: " + replaceSymbols(confirmScreenCharges.getText()));
+		if (usrData.get("ASSERTION").contains("Icon + Name") || usrData.get("VALIDATEBENECASE").equals("1")
+				|| usrData.get("VALIDATEBENECASE").equals("2") || usrData.get("VALIDATEBENECASE").equals("3")) {
+			Assert.assertEquals(replaceSymbols(confirmScreenStatus.getText()), "Verified");
+		} else {
+			Assert.assertEquals(replaceSymbols(confirmScreenStatus.getText()), "Not Verified");
+		}
+		System.out.println("Beneficiary Status: " + replaceSymbols(confirmScreenStatus.getText()));
+		waitUntilElementIsVisible(confirmScreenSubmit);
 		confirmScreenSubmit.click();
 		Thread.sleep(2000);
 		System.out.println("Submit button clicked");
@@ -867,15 +892,9 @@ public class FinoMoneyTransferPage extends BasePage {
 	// Provide MPIN during money transfer and do assertion on txn screen
 	public void moneyTransfer(Map<String, String> usrData)
 			throws ClassNotFoundException, InterruptedException, ParseException {
-		double initialWalletBalance = 1000000.00;
-		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
-			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetRetailer", ""));
-		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
-			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
-		}
-		waitUntilElementIsVisibleForFino(MPINScreen);
+		waitUntilElementIsVisible(MPINScreen);
 		System.out.println("MPIN screen displayed");
-		waitUntilElementIsClickableForFinoAndClickTheElement(enterMPIN);
+		waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 		if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
 			enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 		} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
@@ -898,15 +917,15 @@ public class FinoMoneyTransferPage extends BasePage {
 		String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
 				+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName + "')]";
 		WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-		waitUntilElementIsClickableForFinoAndClickTheElement(mpinScreenButton);
+		waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
 		System.out.println(mpinButtonName + " button clicked");
 		if (mpinButtonName.equalsIgnoreCase("Cancel")) {
 			commonUtils.waitForSpinner();
 		} else if (mpinButtonName.equalsIgnoreCase("Submit")) {
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
-				waitUntilElementIsVisibleForFino(processingScreen);
+				waitUntilElementIsVisible(processingScreen);
 				System.out.println("Processing screen displayed");
-				waitUntilElementIsClickableForFinoAndClickTheElement(processInBackgroundButton);
+				waitUntilElementIsClickableAndClickTheElement(processInBackgroundButton);
 				System.out.println("Process in Background button clicked");
 			} else {
 				if (usrData.get("BLACKOUTCHECK").equalsIgnoreCase("Yes")
@@ -919,9 +938,9 @@ public class FinoMoneyTransferPage extends BasePage {
 				}
 				if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 						&& usrData.get("ADDBENE").equalsIgnoreCase("Directly")) {
-					waitUntilElementIsVisibleForFino(addBeneFailedScreen);
+					waitUntilElementIsVisible(addBeneFailedScreen);
 				} else {
-					waitUntilElementIsVisibleForFino(remittanceTxnScreen);
+					waitUntilElementIsVisible(remittanceTxnScreen);
 				}
 				System.out.println("Txn screen displayed");
 
@@ -944,26 +963,34 @@ public class FinoMoneyTransferPage extends BasePage {
 						System.out.println("Queuing auto-disabled");
 					}
 				}
-				if (!remittanceTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+				if (remittanceTxnScreen.getText().equalsIgnoreCase("Info!")) {
+					waitUntilElementIsVisible(blackout);
+					Assert.assertTrue(blackout.getText()
+							.contains("Similar transaction is under processing please try after 5 mins"));
+					System.out.println(blackout.getText());
+					waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
+					System.out.println("Exit button clicked");
+					dbUtils.updateBlackoutDuration("1");
+				} else if (!remittanceTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 					assertionOnSMS(usrData);
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Check Limit")) {
 						limitCheck(usrData); // check limit remaining
 					}
 					if (usrData.get("TXNSCREENBUTTON").equals("Save")) {
-						waitUntilElementIsClickableForFinoAndClickTheElement(remittanceTxnScreenSaveButton);
+						waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenSaveButton);
 						System.out.println("Save button clicked");
 					} else if (usrData.get("TXNSCREENBUTTON").equals("Print")) {
-						waitUntilElementIsClickableForFinoAndClickTheElement(remittanceTxnScreenPrintButton);
+						waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenPrintButton);
 						System.out.println("Print button clicked");
 					}
-					waitUntilElementIsClickableForFinoAndClickTheElement(remittanceTxnScreenDoneButton);
+					waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenDoneButton);
 					System.out.println("Done button clicked");
 					if (usrData.get("ASSERTION").contains("FCM")) {
 						assertionOnFCM(usrData);
 					}
 					if (!usrData.get("ASSERTION").equalsIgnoreCase("Processing")) {
 						commonUtils.refreshBalance();
-						verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
+						verifyUpdatedBalanceAfterAmountDeduction(usrData);
 					}
 				} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Failed!")) {
 					if (usrData.get("OTP").equalsIgnoreCase("Valid") && usrData.get("MPIN").equalsIgnoreCase("Valid")) {
@@ -973,79 +1000,96 @@ public class FinoMoneyTransferPage extends BasePage {
 						}
 						if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")
 								|| usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
-							waitUntilElementIsClickableForFinoAndClickTheElement(remittanceTxnScreenExitButton);
+							waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
 						} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 							remittanceTxnScreenRetryButton.click();
 							System.out.println("Retry button clickeda");
-							waitUntilElementIsVisibleForFino(MPINScreen);
+							waitUntilElementIsVisible(MPINScreen);
 							System.out.println("MPIN screen displayed");
-							waitUntilElementIsClickableForFinoAndClickTheElement(enterMPIN);
+							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 							System.out.println("MPIN entered");
 							Thread.sleep(1000);
-							waitUntilElementIsClickableForFinoAndClickTheElement(submitMPIN);
+							waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 							System.out.println("Submit button clicked");
 							commonUtils.processingScreen();
-							waitUntilElementIsVisibleForFino(remittanceTxnScreen);
+							waitUntilElementIsVisible(remittanceTxnScreen);
 							System.out.println("Txn screen displayed");
 							assertionOnFailedScreen(usrData);
-							waitUntilElementIsClickableForFinoAndClickTheElement(remittanceTxnScreenExitButton);
+							waitUntilElementIsClickableAndClickTheElement(remittanceTxnScreenExitButton);
 						}
 						System.out.println("Exit button clicked");
 						if (usrData.get("ASSERTION").contains("FCM")) {
 							assertionOnFCM(usrData);
 						}
 						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
-							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
+							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer",
+									getWalletBalanceFromIni("GetRetailer", ""));
 						} else {
 							commonUtils.refreshBalance();
-							verifyUpdatedBalanceAfterFailTxn(usrData, initialWalletBalance);
+//							verifyUpdatedBalanceAfterFailTxn(usrData);
 						}
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 							|| usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-						waitUntilElementIsVisibleForFino(remittanceTxnScreenMessage);
-						System.out.println(remittanceTxnScreenMessage.getText());
+						waitUntilElementIsVisible(remittanceFailureTxnScreenMessage);
+						System.out.println(remittanceFailureTxnScreenMessage.getText());
 						if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Exit")
 								|| usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Done")) {
-							remittanceTxnScreenDoneButton.click();
-							System.out.println("Done button clicked");
+							try {
+								remittanceTxnScreenExitButton.click();
+								System.out.println("Exit button clicked");
+							} catch (Exception e) {
+								remittanceTxnScreenDoneButton.click();
+								System.out.println("Done button clicked");
+							}
 						} else if (usrData.get("OTPFAILEDSCREENBUTTON").equalsIgnoreCase("Retry")
 								|| usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 							remittanceTxnScreenRetryButton.click();
 							System.out.println("Retry button clicked");
 							commonUtils.waitForSpinner();
 							Thread.sleep(1000);
-							waitUntilElementIsVisibleForFino(MPINScreen);
+							if (usrData.get("OTP").equalsIgnoreCase("Invalid")) {
+								waitUntilElementIsVisible(OTPScreen);
+								System.out.println("OTP screen displayed");
+								waitUntilElementIsClickableAndClickTheElement(enterOTP);
+								Thread.sleep(1000);
+								enterOTP.sendKeys(getAuthfromIni(otpFromIni()));
+								System.out.println("OTP entered");
+								String buttonName = usrData.get("OTPSCREENBUTTON");
+								String otpScreenButtonXpath = "//h5[contains(text(),'Enter Bene. Registration OTP')]/parent::div/"
+										+ "following-sibling::div/following-sibling::div/div[2]/button[contains(text(),'"
+										+ buttonName + "')]";
+								WebElement otpScreenButton = wdriver.findElement(By.xpath(otpScreenButtonXpath));
+								waitUntilElementIsClickableAndClickTheElement(otpScreenButton);
+								System.out.println(buttonName + " button clicked");
+							}
+							waitUntilElementIsVisible(MPINScreen);
 							System.out.println("MPIN screen displayed");
 							Thread.sleep(1000);
-							waitUntilElementIsClickableForFinoAndClickTheElement(enterMPIN);
+							waitUntilElementIsClickableAndClickTheElement(enterMPIN);
 							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
 							System.out.println("MPIN entered");
-							waitUntilElementIsClickableForFinoAndClickTheElement(submitMPIN);
+							waitUntilElementIsClickableAndClickTheElement(submitMPIN);
 							System.out.println("Submit button clicked");
 							commonUtils.processingScreen();
-							waitUntilElementIsVisibleForFino(remittanceTxnScreen);
+							waitUntilElementIsVisible(remittanceTxnScreen);
 							System.out.println("Txn screen displayed");
 							try {
+								assertionOnFailedScreen(usrData);
+								remittanceTxnScreenExitButton.click();
+								System.out.println("Exit button clicked");
+							} catch (Exception e) {
 								assertionOnSuccessScreen(usrData);
-							} catch (AssertionError e) {
-								assertionOnWarnScreen(usrData);
+								remittanceTxnScreenDoneButton.click();
+								System.out.println("Done button clicked");
 							}
-							remittanceTxnScreenDoneButton.click();
-							System.out.println("Done button clicked");
 							if (usrData.get("ASSERTION").contains("FCM")) {
 								assertionOnFCM(usrData);
 							}
 							commonUtils.refreshBalance();
-							verifyUpdatedBalanceAfterSuccessTxn(usrData, initialWalletBalance);
+//							verifyUpdatedBalanceAfterAmountDeduction(usrData);
 						}
 					}
-				} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Info!")) {
-					waitUntilElementIsVisibleForFino(blackout);
-					System.out.println(blackout.getText());
-					waitUntilElementIsClickableForFinoAndClickTheElement(remittanceTxnScreenExitButton);
-					System.out.println("Exit button clicked");
-					dbUtils.updateBlackoutDuration("1");
 				}
 			}
 		}
@@ -1082,8 +1126,13 @@ public class FinoMoneyTransferPage extends BasePage {
 	}
 
 	// Assertion after success or orange screen is displayed
-	public void verifyUpdatedBalanceAfterSuccessTxn(Map<String, String> usrData, double initialWalletBalance)
-			throws ClassNotFoundException {
+	public void verifyUpdatedBalanceAfterAmountDeduction(Map<String, String> usrData) throws ClassNotFoundException {
+		double initialWalletBalance = 0.00;
+		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
+			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetRetailer", ""));
+		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
+			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
+		}
 		double amount = Double.parseDouble(txnDetailsFromIni("GetTxfAmount", ""));
 		double charges = Double.parseDouble(txnDetailsFromIni("GetCharges", ""));
 		double totalAmount = amount + charges;
@@ -1105,7 +1154,8 @@ public class FinoMoneyTransferPage extends BasePage {
 	// Verify details on failed screen
 	public void assertionOnFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(remittanceTxnScreenMessage.getText(), "Funds Transfer Failed");
+		Assert.assertEquals(remittanceTxnScreenMessage.getText(),
+				"Funds Transfer failed. Please retry the transaction.");
 		System.out.println(remittanceTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(remittanceTxnScreenFailedAmount.getText()), usrData.get("AMOUNT") + ".00");
 		System.out.println("Failed Amount: " + replaceSymbols(remittanceTxnScreenFailedAmount.getText()));
@@ -1115,8 +1165,13 @@ public class FinoMoneyTransferPage extends BasePage {
 	}
 
 	// Assertion after success screen is displayed
-	public void verifyUpdatedBalanceAfterFailTxn(Map<String, String> usrData, double initialWalletBalance)
-			throws ClassNotFoundException {
+	public void verifyUpdatedBalanceAfterFailTxn(Map<String, String> usrData) throws ClassNotFoundException {
+		double initialWalletBalance = 0.00;
+		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
+			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetRetailer", ""));
+		} else if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Cashout")) {
+			initialWalletBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
+		}
 		String newWalletBalance = df.format(initialWalletBalance);
 		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
 			Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
@@ -1132,16 +1187,21 @@ public class FinoMoneyTransferPage extends BasePage {
 		if (dbUtils.verifyIfQueuingIsEnabled(partner()) == null
 				&& dbUtils.verifyIfTxnIsQueued(partner()).equalsIgnoreCase("Queued")) {
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
-					"Status of the Pending Transaction will be updated within 24-48 hours");
+					"Status of the Pending Transaction will be updated within 1-2 hours");
 			txnDetailsFromIni("StoreTxnRefNo", dbUtils.paymentRefCode(partner()));
-		} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Partial Success!")) {
+		} else if (usrData.get("ASSERTION").contains("Partial Success")) {
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
-					"Funds Transfer Partially Successful. Re-initiate failed transactions after sometime.");
+					"Funds Transfer Partially Successful. Retry failed transactions after sometime");
 			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
 			System.out.println("Failed Amount: " + replaceSymbols(remittanceTxnScreenFailedAmount.getText()));
-		} else {
+		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")
+				|| usrData.get("ASSERTION").equalsIgnoreCase("Success + Pending")) {
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
-					"Status of the Pending Transaction will be updated within 24-48 hours");
+					"Status of the Pending Transaction will be updated within 48 hours");
+			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
+		} else if (usrData.get("ASSERTION").contains("Pending + Failed")) {
+			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
+					"Retry failed transactions after sometime. Status of the Pending Transaction will be updated within 48 hours");
 			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
 		}
 		System.out.println(remittanceTxnScreenMessage.getText());
@@ -1222,9 +1282,11 @@ public class FinoMoneyTransferPage extends BasePage {
 		if (getWalletFromIni("GetWallet", "").equalsIgnoreCase("Main")) {
 			Assert.assertEquals(replaceSymbols(retailerWalletBalance.getText()), newWalletBalance);
 			System.out.println("Updated Retailer Wallet Balance: " + replaceSymbols(retailerWalletBalance.getText()));
+			getWalletBalanceFromIni("retailer", replaceSymbols(retailerWalletBalance.getText()));
 		} else {
 			Assert.assertEquals(replaceSymbols(cashoutWalletBalance.getText()), newWalletBalance);
 			System.out.println("Updated Cashout Wallet Balance: " + replaceSymbols(cashoutWalletBalance.getText()));
+			getWalletBalanceFromIni("cashout", replaceSymbols(cashoutWalletBalance.getText()));
 		}
 	}
 
@@ -1235,7 +1297,7 @@ public class FinoMoneyTransferPage extends BasePage {
 		System.out.println("	Amount	Ref No		Status");
 		for (i = 1; i <= rowCount; i++) {
 			System.out.print("Row " + i + ":	");
-			for (j = 1; j <= 4; j++) {
+			for (j = 1; j <= 5; j++) {
 				String tableElementXpath = "//table/tbody[" + i + "]/tr/div/div[" + j + "]";
 				WebElement tableElement = wdriver.findElement(By.xpath(tableElementXpath));
 				if (j == 1) {
@@ -1249,31 +1311,23 @@ public class FinoMoneyTransferPage extends BasePage {
 						System.out.print(refNo + "		");
 					}
 				}
-				if (j == 3) {
-					String status91ElementXpath = "//table/tbody[" + i + "]/tr/div/div[" + j + "]/label";
-					WebElement status91Element = wdriver.findElement(By.xpath(status91ElementXpath));
+				if (j == 4) {
+					WebElement statusElement;
+					try {
+						statusElement = wdriver.findElement(By.xpath(tableElementXpath + "/label/i"));
+					} catch (Exception e) {
+						statusElement = wdriver.findElement(By.xpath(tableElementXpath + "/label/img"));
+					}
 
-					if (!status91Element.getText().contains("(91)")) {
-						String statusElementXpath = "//table/tbody[" + i + "]/tr/div/div[" + j + "]/label";
-						WebElement statusElement;
-						try {
-							statusElement = wdriver.findElement(By.xpath(statusElementXpath + "/i"));
-						} catch (Exception e) {
-							statusElement = wdriver.findElement(By.xpath(statusElementXpath + "/img"));
-						}
-
-						if (statusElement.getAttribute("class").contains("success")) {
-							System.out.print("✔");
-						} else if (statusElement.getAttribute("class").contains("fail")) {
-							System.out.print("✖");
-						} else {
-							System.out.println("!");
-						}
-					} else if (status91Element.getText().contains("(91)")) {
-						System.out.print("(91)");
+					if (statusElement.getAttribute("class").contains("success")) {
+						System.out.print("✔");
+					} else if (statusElement.getAttribute("class").contains("fail")) {
+						System.out.print("✖");
+					} else {
+						System.out.print("!");
 					}
 				}
-				if (j == 4) {
+				if (j == 5) {
 					try {
 						String failReasonElementXpath = "//table/tbody[" + i + "]/tr/div/div[" + j + "]/span";
 						WebElement failReasonElement = wdriver.findElement(By.xpath(failReasonElementXpath));
@@ -1326,7 +1380,15 @@ public class FinoMoneyTransferPage extends BasePage {
 	// Check limit remaining
 	public void limitCheck(Map<String, String> usrData) throws NumberFormatException, ClassNotFoundException {
 		if (usrData.get("LIMITCHECK").equalsIgnoreCase("YES")) {
-			waitUntilElementIsVisibleForFino(limitRem);
+			try {
+				waitUntilElementIsVisible(limitRem);
+				System.out.println("Limit fetched");
+			} catch (Exception e) {
+				custMobNum.clear();
+				custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
+				waitUntilElementIsVisible(limitRem);
+				System.out.println("Limit fetched in 2nd attempt");
+			}
 			Assert.assertEquals(limitRemaining(usrData, "", "actual"),
 					limitRemaining(usrData, getCustomerDetailsFromIni("ExistingNum"), "expected"));
 			System.out.println(limitRem.getText());
@@ -1337,46 +1399,99 @@ public class FinoMoneyTransferPage extends BasePage {
 		if (usrData.get("ASSERTION").contains("down")) {
 			if (usrData.get("ASSERTION").equalsIgnoreCase("All partners down")) {
 				Assert.assertEquals(partnerErrorMsg.getText(),
-						"Note: It looks like all partner banks are temporarily not accepting any request. "
-								+ "Please try after sometime.");
-			} else if (usrData.get("ASSERTION").equalsIgnoreCase("One partner down")) {
-//				Assert.assertEquals(partnerErrorMsg.getText(),
-//						"Note: It looks like one partner bank is temporarily not accepting any request. "
-//								+ "We have stopped all transactions through the bank which is not accepting requests.");
-				Assert.assertEquals(partnerErrorMsg.getText(), "Note: .");
-			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Two partners down")) {
-//				Assert.assertEquals(partnerErrorMsg.getText(),
-//						"Note: It looks like two partner banks are temporarily not accepting any request. "
-//								+ "We have stopped all transactions through the bank which is not accepting requests.");
-				Assert.assertEquals(partnerErrorMsg.getText(), "Note: .");
+						"We are facing technical difficulty with Money transfer. Please retry after 15 minutes");
+				System.out.println(partnerErrorMsg.getText());
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("One partner down")
+					|| usrData.get("ASSERTION").equalsIgnoreCase("Two partners down")) {
+				commonUtils.waitForSpinner();
+				Assert.assertTrue(custName.isDisplayed());
+				System.out.println("No error message displayed");
 			}
-			System.out.println(partnerErrorMsg.getText());
 		}
 	}
 
 	public String partnerUrl(Map<String, String> usrData) throws NumberFormatException, ClassNotFoundException {
-		double limit1 = 0.0;
-//		double limit2 = 0.0, limit3 = 0.0;
+		double limit1 = 0.0, limit2 = 0.0, limit3 = 0.0;
 		if (usrData.get("P1STATUS").equals("1")) {
 			limit1 = Double.parseDouble(
 					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER1"))) / 100;
 		}
-//		if (usrData.get("P2STATUS").equals("1")) {
-//			limit2 = Double.parseDouble(
-//					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER2"))) / 100;
-//		}
-//		if (usrData.get("P3STATUS").equals("1")) {
-//			limit3 = Double.parseDouble(
-//					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER3"))) / 100;
-//		}
+		if (usrData.get("P2STATUS").equals("1")) {
+			limit2 = Double.parseDouble(
+					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER2"))) / 100;
+		}
+		if (usrData.get("P3STATUS").equals("1")) {
+			limit3 = Double.parseDouble(
+					dbUtils.getLimitRemaining(getCustomerDetailsFromIni("ExistingNum"), usrData.get("PARTNER3"))) / 100;
+		}
 		if (usrData.get("P1STATUS").equals("1") && usrData.get("P2STATUS").equals("1")
-				&& Double.parseDouble(usrData.get("AMOUNT")) > limit1) {
-			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+				&& usrData.get("P3STATUS").equals("1")) {
+			if (limit1 > limit2 && limit1 > limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			} else if (limit1 < limit2 && limit2 > limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+			} else if (limit1 < limit3 && limit2 < limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER3").toLowerCase() + "-transfer"));
+			} else if (limit1 == limit2 && limit2 == limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			} else if (limit1 == limit2 && limit3 < limit1) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			} else if (limit2 == limit3 && limit1 < limit2) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+			} else if (limit1 == limit3 && limit2 < limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			}
+		} else if ((usrData.get("P1STATUS").equals("0") || usrData.get("P1STATUS").isEmpty())
+				&& usrData.get("P2STATUS").equals("1") && usrData.get("P3STATUS").equals("1")) {
+			if (limit2 > limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+			} else if (limit2 < limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER3").toLowerCase() + "-transfer"));
+			} else if (limit2 == limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+			}
+		} else if (usrData.get("P1STATUS").equals("1")
+				&& (usrData.get("P2STATUS").equals("0") || usrData.get("P2STATUS").isEmpty())
+				&& usrData.get("P3STATUS").equals("1")) {
+			if (limit1 > limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			} else if (limit1 < limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER3").toLowerCase() + "-transfer"));
+			} else if (limit1 == limit3) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			}
 		} else if (usrData.get("P1STATUS").equals("1") && usrData.get("P2STATUS").equals("1")
-				&& Double.parseDouble(usrData.get("AMOUNT")) <= limit1) {
+				&& (usrData.get("P3STATUS").equals("0") || usrData.get("P3STATUS").isEmpty())) {
+			if (limit1 > limit2) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			} else if (limit1 < limit2) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
+			} else if (limit1 == limit2) {
+				Assert.assertTrue(
+						wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
+			}
+		} else if (usrData.get("P1STATUS").equals("1")
+				&& (usrData.get("P2STATUS").equals("0") || usrData.get("P2STATUS").isEmpty())
+				&& (usrData.get("P3STATUS").equals("0") || usrData.get("P3STATUS").isEmpty())) {
 			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER1").toLowerCase() + "-transfer"));
 		} else if ((usrData.get("P1STATUS").equals("0") || usrData.get("P1STATUS").isEmpty())
-				&& usrData.get("P2STATUS").equals("1")) {
+				&& usrData.get("P2STATUS").equals("1")
+				&& (usrData.get("P3STATUS").equals("0") || usrData.get("P3STATUS").isEmpty())) {
 			Assert.assertTrue(wdriver.getCurrentUrl().endsWith(usrData.get("PARTNER2").toLowerCase() + "-transfer"));
 		} else if ((usrData.get("P1STATUS").equals("0") || usrData.get("P1STATUS").isEmpty())
 				&& (usrData.get("P2STATUS").equals("0") || usrData.get("P2STATUS").isEmpty())

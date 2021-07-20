@@ -136,8 +136,7 @@ public class CapitalFirstConsumerPage extends BasePage {
 			commonUtils.displayInitialBalance("retailer"); // display main wallet balance
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
-			// Click on capital first icon
-//			waitUntilElementIsClickableAndClickTheElement(capitalFirstIcon);
+			// Click on capital first option
 			commonUtils.selectCmsBiller();
 			System.out.println("Capital First Consumer icon clicked");
 

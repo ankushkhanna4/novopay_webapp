@@ -122,7 +122,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.host.ip", "192.168.150.7");
 				ini.put("Common", "server.host.port", "22");
 				ini.put("Common", "server.username", "akhanna");
-				ini.put("Common", "server.password", "systemqa1");
+				ini.put("Common", "server.password", "novopayqa1");
 				configProperties.put("env", "qa1");
 				configProperties.put("webAppUrl", "https://qa1-retailer.novopay.in/");
 				configProperties.put("finOpsUrl", "https://qa1-finance-portal.novopay.in");
@@ -141,7 +141,7 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.ip", "192.168.150.7");
 				configProperties.put("server.host.port", "22");
 				configProperties.put("server.username", "akhanna");
-				configProperties.put("server.password", "systemqa1");
+				configProperties.put("server.password", "novopayqa1");
 			} else if (env.equalsIgnoreCase("QA2")) {
 				ini.put("Common", "env", "qa2");
 				ini.put("Common", "webAppUrl", "https://qa2-retailer.novopay.in/");
@@ -161,7 +161,7 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("Common", "server.host.ip", "192.168.150.24");
 				ini.put("Common", "server.host.port", "22");
 				ini.put("Common", "server.username", "akhanna");
-				ini.put("Common", "server.password", "qatwonovopay");
+				ini.put("Common", "server.password", "novopayqa2");
 				configProperties.put("env", "qa2");
 				configProperties.put("webAppUrl", "https://qa2-retailer.novopay.in/");
 				configProperties.put("finOpsUrl", "https://qa2-finance-portal.novopay.in");
@@ -180,7 +180,7 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.host.ip", "192.168.150.24");
 				configProperties.put("server.host.port", "22");
 				configProperties.put("server.username", "akhanna");
-				configProperties.put("server.password", "qatwonovopay");
+				configProperties.put("server.password", "novopayqa2");
 			} else if (env.equalsIgnoreCase("DEV1")) {
 				ini.put("Common", "env", "dev1");
 				ini.put("Common", "webAppUrl", "https://dev1-retailer.novopay.in/");
@@ -570,7 +570,7 @@ public class JavaUtils extends LoadableComponent {
 		}
 		return null;
 	}
-	
+
 	public String getCodeFromIni(String name) {
 		Ini ini;
 		try {
@@ -598,6 +598,23 @@ public class JavaUtils extends LoadableComponent {
 				ini.put("RetailerData", "Partner", name);
 				ini.store();
 				return ini.get("RetailerData", "Partner");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String getContract(String name) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (name.equalsIgnoreCase("GetContract")) {
+				return ini.get("RetailerData", "Contract");
+			} else {
+				ini.put("RetailerData", "Contract", name);
+				ini.store();
+				return ini.get("RetailerData", "Contract");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -710,6 +727,42 @@ public class JavaUtils extends LoadableComponent {
 				ini.store();
 			} else if (key.equalsIgnoreCase("CmsBiller")) {
 				return ini.get("CmsData", "Biller");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public String billpayDataFromIni(String key, String value) {
+		Ini ini;
+		try {
+			ini = new Ini(new File("./data.ini"));
+			if (key.equalsIgnoreCase("StoreMobNum")) {
+				ini.put("RechargeData", "MobNum", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetMobNum")) {
+				return ini.get("RechargeData", "MobNum");
+			} else if (key.equalsIgnoreCase("StoreCustomerId")) {
+				ini.put("RechargeData", "CustomerId", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetCustomerId")) {
+				return ini.get("RechargeData", "CustomerId");
+			} else if (key.equalsIgnoreCase("StoreAmount")) {
+				ini.put("RechargeData", "Amount", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("GetAmount")) {
+				return ini.get("RechargeData", "Amount");
+			} else if (key.equalsIgnoreCase("StoreBillpayBiller")) {
+				ini.put("BillpayData", "Biller", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("BillpayBiller")) {
+				return ini.get("BillpayData", "Biller");
+			} else if (key.equalsIgnoreCase("StoreBillpayCategory")) {
+				ini.put("BillpayData", "Category", value);
+				ini.store();
+			} else if (key.equalsIgnoreCase("BillpayCategory")) {
+				return ini.get("BillpayData", "Category");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -1201,7 +1254,7 @@ public class JavaUtils extends LoadableComponent {
 			throw new NullPointerException("Failed due to IOException" + e);
 		}
 	}
-	
+
 	public String readValue(String key) {
 		// if key is a number then use the as is
 		if (java.util.regex.Pattern.matches("\\d+", key)) {
@@ -1212,7 +1265,7 @@ public class JavaUtils extends LoadableComponent {
 			return readIniValue("CONFIG", key);
 		}
 	}
-	
+
 	public String readIniValue(String sectionName, String key) {
 		Ini ini;
 		try {
@@ -1400,15 +1453,15 @@ public class JavaUtils extends LoadableComponent {
 				Sheet worksheet = workbook.createSheet(configProperties.get("reportSheetName"));
 				Row headers = worksheet.createRow(0);
 
-				headers.createCell(0).setCellValue("SERVER BUILD NUMBER");
-				headers.createCell(1).setCellValue("CLIENT BUILD NUMBER");
-				headers.createCell(2).setCellValue("FLOW NAME");
-				headers.createCell(3).setCellValue("TCID");
-				headers.createCell(4).setCellValue("TEST DESCRIPTION");
-				headers.createCell(5).setCellValue("RESULT");
-				headers.createCell(6).setCellValue("(WARNING) REASON OF FAILURE");
-				headers.createCell(7).setCellValue("TEST START TIME");
-				headers.createCell(8).setCellValue("TEST END TIME");
+				headers.createCell(0).setCellValue("Flow ID");
+				headers.createCell(1).setCellValue("Flow Name");
+				headers.createCell(2).setCellValue("Contract");
+				headers.createCell(3).setCellValue("Feature");
+				headers.createCell(4).setCellValue("Vendor");
+				headers.createCell(5).setCellValue("Status");
+				headers.createCell(6).setCellValue("Failure Reason");
+				headers.createCell(7).setCellValue("Start Time");
+				headers.createCell(8).setCellValue("End Time");
 				FileOutputStream fileOut = new FileOutputStream(file);
 				workbook.write(fileOut);
 				workbook.close();

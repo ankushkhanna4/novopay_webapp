@@ -4,12 +4,14 @@ import java.awt.AWTException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.MongoDBUtils;
+import in.novopay.platform_ui.utils.ServerUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -21,6 +23,7 @@ import org.testng.Assert;
 public class RechargesStatusEnquiryPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
 	CommonUtils commonUtils = new CommonUtils(wdriver);
+	ServerUtils srvUtils = new ServerUtils();
 	MongoDBUtils mongoDbUtils = new MongoDBUtils();
 	DecimalFormat df = new DecimalFormat("#.00");
 
@@ -60,28 +63,16 @@ public class RechargesStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//h4[contains(text(),'!')]")
 	WebElement seTxnTitle;
 
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Biller Name')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenBillerName;
-
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Account ID')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenAccountID;
-
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Consumer Number')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenConsumerNumber;
-
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Bill Number')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenBillNumber;
-
 	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div/div")
 	WebElement txnScreenCustomerName;
 
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Bill Amount')]/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Bill Amount')]/parent::strong/parent::div/following-sibling::div/span")
 	WebElement txnScreenBillAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Charges')]/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Charges')]/parent::strong/parent::div/following-sibling::div/span")
 	WebElement txnScreenCharges;
 
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Txn ID')]/parent::div/following-sibling::div/div")
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Txn ID')]/parent::strong/parent::div/following-sibling::div/div")
 	WebElement txnScreenTxnId;
 
 	@FindBy(xpath = "//div/button[contains(text(),'Ok')]")
@@ -167,6 +158,21 @@ public class RechargesStatusEnquiryPage extends BasePage {
 	public void rechargesStatusEnquiry(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
+			if (!usrData.get("VENDOR").equalsIgnoreCase("")) {
+				String batchConfigSection = "";
+				if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")) {
+					batchConfigSection = "goRechargeStatusEnquiry";
+				} else if (usrData.get("VENDOR").equalsIgnoreCase("Multilink")) {
+					batchConfigSection = "multilinkStatusEnquiry";
+				}
+				HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
+				batchFileConfig = readSectionFromIni(batchConfigSection);
+				if (usrData.get("KEY").equalsIgnoreCase("Success") || usrData.get("KEY").equalsIgnoreCase("Pending")
+						|| usrData.get("KEY").equalsIgnoreCase("Failure")) {
+					srvUtils.uploadFileToNode(batchFileConfig, usrData.get("KEY"), "node_simulator");
+				}
+			}
+
 			if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
 				statusEnquirySection(usrData);
 				clickElement(menu);
@@ -296,5 +302,4 @@ public class RechargesStatusEnquiryPage extends BasePage {
 				rechargeDataFromIni("GetAmount", "") + ".00");
 		System.out.println("Bill Amount: " + rechargeDataFromIni("GetAmount", ""));
 	}
-
 }

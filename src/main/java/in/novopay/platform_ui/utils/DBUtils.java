@@ -353,10 +353,11 @@ public class DBUtils extends JavaUtils {
 			} else if (txnType.equalsIgnoreCase("Withdrawal")) {
 				code = partner + "_AEPS_WITHDRAWAL_AGENT_COMM";
 			}
-			String query = "SELECT IF(" + amount + "*`percentage`/10000<`max_charge`/100, ROUND(" + amount
-					+ "*`percentage`/10000,2), ROUND(`max_charge`/100,2)) charge FROM `limit_charges`.`charge_category_slabs` "
+			String query = "SELECT IF(" + amount + " < 200, 0.00, (SELECT `base_charge`/100 + IF(" + amount
+					+ "*`percentage`/10000<`max_charge`/100, ROUND(" + amount
+					+ "*`percentage`/10000,2), ROUND(`max_charge`/100,2)) comm FROM `limit_charges`.`charge_category_slabs` "
 					+ "WHERE `category_code`='" + code + "' AND " + amount
-					+ " BETWEEN `slab_from_amount`/100+1 AND `slab_to_amount`/100;";
+					+ " BETWEEN `slab_from_amount`/100+1 AND `slab_to_amount`/100)) comm FROM `limit_charges`.`charge_category_slabs` LIMIT 1;";
 			stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
 			while (rs.next()) {
@@ -2127,10 +2128,10 @@ public class DBUtils extends JavaUtils {
 	public void insertIntoOrgAttribute(String mobNum, String key, String value) throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));
-			String query = "INSERT INTO master.master.organization_attribute (`attr_key`, `attr_value`, `orgnization_id`) "
+			String query = "INSERT INTO master.organization_attribute (`attr_key`, `attr_value`, `orgnization_id`) "
 					+ "VALUES('" + key + "','" + value + "',(SELECT organization FROM master.user "
 					+ "WHERE id IN (SELECT user_id FROM master.user_attribute WHERE attr_value = '" + mobNum
-					+ "') AND `status` = 'ACTIVE');";
+					+ "') AND `status` = 'ACTIVE'));";
 			stmt = conn.createStatement();
 			stmt.executeUpdate(query);
 			System.out.println("Inserting attribute key as " + key + " and value as " + value);
@@ -2206,7 +2207,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String getDeleteAccountDays() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));
@@ -2224,7 +2225,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String getSettlementCharge() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));
@@ -2241,7 +2242,7 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
-	
+
 	public String getMaxAccounts() throws ClassNotFoundException {
 		try {
 			conn = createConnection(configProperties.get("master"));

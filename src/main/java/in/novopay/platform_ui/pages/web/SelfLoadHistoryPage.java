@@ -38,16 +38,16 @@ public class SelfLoadHistoryPage extends BasePage {
 
 	@FindBy(xpath = "//tbody/tr[1]/td[4]")
 	WebElement comments;
-	
+
 	@FindBy(xpath = "//span[contains(text(),'Reports')]")
 	WebElement reports;
-	
+
 	@FindBy(xpath = "//label[contains(text(),'Select Report to View')]")
 	WebElement reportsPage;
-	
+
 	@FindBy(xpath = "//button[contains(text(),'Manage Wallet')]")
 	WebElement manageWalletButton;
-	
+
 	@FindBy(xpath = "//h1[contains(text(),'Manage Wallet')]")
 	WebElement pageTitle;
 
@@ -61,9 +61,9 @@ public class SelfLoadHistoryPage extends BasePage {
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
 			commonUtils.selectFeatureFromMenu1(reports, reportsPage);
-			
+
 			commonUtils.selectFeatureFromMenu1(manageWalletButton, pageTitle);
-			
+
 			waitUntilElementIsVisible(sectionTitle);
 			System.out.println(sectionTitle.getText() + " section dispayed");
 
@@ -81,7 +81,10 @@ public class SelfLoadHistoryPage extends BasePage {
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Rejected")) {
 				Assert.assertEquals(comments.getText(), "Duplicate Request");
-			} else {
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Success")) {
+				Assert.assertEquals(comments.getText(), "Wallet Loaded. Old UTR: "
+						+ dbUtils.requestIdFromTopUpRequest(getEmailIdFromIni("GetEmailId")));
+			} else if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")) {
 				Assert.assertEquals(comments.getText(), "NA");
 			}
 			System.out.println("Comments: " + comments.getText());

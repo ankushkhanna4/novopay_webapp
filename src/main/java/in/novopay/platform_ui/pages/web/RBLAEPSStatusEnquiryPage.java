@@ -203,7 +203,7 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//li[contains(text(),'Banking - Status Enquiry')]")
 	WebElement billpaymentDropdown;
 
-	String txnID = "", batchConfigSection = "rblaepsstatusenquiry";
+	String txnID = "";
 
 	public RBLAEPSStatusEnquiryPage(WebDriver wdriver) {
 		super(wdriver);
@@ -214,10 +214,12 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 	public void rBLAEPSStatusEnquiry(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
+			String batchConfigSection = "bankingstatusenquiry";
+
 			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
 			batchFileConfig = readSectionFromIni(batchConfigSection);
 			if (!usrData.get("KEY").isEmpty()) {
-				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
+				srvUtils.uploadFileToTomcat(batchFileConfig, usrData.get("KEY"));
 			}
 
 			if (usrData.get("STATUS").equalsIgnoreCase("REFUNDED")
@@ -520,7 +522,8 @@ public class RBLAEPSStatusEnquiryPage extends BasePage {
 		}
 
 		if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
-			Assert.assertEquals(dataFromUI[0][2], "SUCCESS");
+			Assert.assertEquals(dataFromUI[0][5],
+					"transaction with RRN: " + txnDetailsFromIni("GetTxnRefNo", "") + " is successful");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
 			Assert.assertEquals(dataFromUI[0][5], "Status enquiry - txn has failed: Failed to perform transaction(M3)");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Deemed Success")) {

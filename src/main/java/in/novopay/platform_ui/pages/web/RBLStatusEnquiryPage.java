@@ -178,9 +178,9 @@ public class RBLStatusEnquiryPage extends BasePage {
 	public void rBLStatusEnquiry(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
-			
+
 			commonUtils.closeToast();
-			
+
 			if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")
 					|| usrData.get("STATUS").equalsIgnoreCase("Refund")) {
 				dbUtils.updateRemittanceOutwardStatus(txnID, "FAIL", "NP_INITIATED");
@@ -228,7 +228,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 				Thread.sleep(3000);
 				commonUtils.waitForSpinner();
 			}
-			if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid")) {
 				waitUntilElementIsVisible(toasterMsg);
 				Assert.assertEquals("No Transaction available", toasterMsg.getText());
 			} else {
@@ -278,7 +278,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 						waitUntilElementIsClickableAndClickTheElement(otpConfirmBtn);
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(seTxnTitle);
-						Assert.assertEquals("Invalid Verification Code", failSeTxnMsg.getText());
+						Assert.assertEquals("OTP does not match", failSeTxnMsg.getText());
 						System.out.println(failSeTxnMsg.getText());
 						if (usrData.get("OTP").equalsIgnoreCase("Retry")) {
 							seRetryBtn.click();
@@ -401,7 +401,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
 			Assert.assertEquals(statusData.getText(), "PENDING");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
-			Assert.assertEquals(statusData.getText(), "FAILED");
+			Assert.assertEquals(statusData.getText(), "FAIL");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")
 				|| usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
 			Assert.assertEquals(statusData.getText(), "REVERSED");
@@ -487,7 +487,7 @@ public class RBLStatusEnquiryPage extends BasePage {
 			System.out.println("Failed Amount: " + replaceSymbols(seTxnScreenFailedAmount.getText()));
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
 			Assert.assertEquals(replaceSymbols(seTxnScreenRefundedAmount.getText()),
-					txnDetailsFromIni("GetTxfAmount", "") + ".00");
+					txnDetailsFromIni("GetTxfAmount", ""));
 			System.out.println("Refunded Amount: " + replaceSymbols(seTxnScreenRefundedAmount.getText()));
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Queued to Fail")) {
 			Assert.assertEquals(replaceSymbols(seTxnScreenRefundedAmount.getText()),

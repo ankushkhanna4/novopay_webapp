@@ -175,7 +175,7 @@ public class AxisStatusEnquiryPage extends BasePage {
 			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
 			batchFileConfig = readSectionFromIni(batchConfigSection);
 			if (!usrData.get("KEY").isEmpty()) {
-				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
+				srvUtils.uploadFileToTomcat(batchFileConfig, usrData.get("KEY"));
 			}
 
 			if (usrData.get("ASSERTION").contains("FCM")) {

@@ -373,17 +373,17 @@ public class FinoStatusEnquiryPage extends BasePage {
 			Assert.assertEquals(statusData.getText(),
 					usrData.get("TXNDETAILS").equalsIgnoreCase("TxnID") ? "TXN_SUCCESS" : "SUCCESS");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Auto-Refunded")) {
-			Assert.assertEquals(statusData.getText(), "TXN_REVERSED");
+			Assert.assertEquals(statusData.getText(), "REVERSED");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Timeout")) {
-			Assert.assertEquals(statusData.getText(), "91");
+			Assert.assertEquals(statusData.getText(), "PENDING");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("To_Be_Refunded")) {
-			Assert.assertEquals(statusData.getText(), "TXN_REVERSAL_INITIATED");
+			Assert.assertEquals(statusData.getText(), "FAIL");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Late-Refunded")) {
-			Assert.assertEquals(statusData.getText(), "TXN_REVERSED");
+			Assert.assertEquals(statusData.getText(), "REVERSED");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Queued")) {
-			Assert.assertEquals(statusData.getText(), "TXN_INQUEUE");
+			Assert.assertEquals(statusData.getText(), "PENDING");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")) {
-			Assert.assertEquals(statusData.getText(), "TXN_FAIL");
+			Assert.assertEquals(statusData.getText(), "REVERSED");
 		}
 		System.out.println(statusData.getText());
 

@@ -4,12 +4,14 @@ import java.awt.AWTException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.MongoDBUtils;
+import in.novopay.platform_ui.utils.ServerUtils;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -21,6 +23,7 @@ import org.testng.Assert;
 public class ElectricityStatusEnquiryPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
 	CommonUtils commonUtils = new CommonUtils(wdriver);
+	ServerUtils srvUtils = new ServerUtils();
 	MongoDBUtils mongoDbUtils = new MongoDBUtils();
 	DecimalFormat df = new DecimalFormat("#.00");
 
@@ -75,8 +78,11 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div/div")
 	WebElement txnScreenCustomerName;
 
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Bill Amount')]/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Bill Amount')]/parent::strong/parent::div/following-sibling::div/span")
 	WebElement txnScreenBillAmount;
+	
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Total Amount')]/parent::strong/parent::div/following-sibling::div/div")
+	WebElement refundScreenBillAmount;
 
 	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Charges')]/parent::div/following-sibling::div/span")
 	WebElement txnScreenCharges;
@@ -167,6 +173,21 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 	public void electricityStatusEnquiry(Map<String, String> usrData)
 			throws InterruptedException, AWTException, IOException, ClassNotFoundException {
 		try {
+			if (!usrData.get("VENDOR").equalsIgnoreCase("")) {
+				String batchConfigSection = "";
+				if (usrData.get("VENDOR").equalsIgnoreCase("Cyberplat")) {
+					batchConfigSection = "cyberplatBbpsStatusEnquiry";
+				} else if (usrData.get("VENDOR").equalsIgnoreCase("Axis")) {
+					batchConfigSection = "axisBbpsStatusEnquiry";
+				}
+				HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
+				batchFileConfig = readSectionFromIni(batchConfigSection);
+				if (usrData.get("KEY").equalsIgnoreCase("Success") || usrData.get("KEY").equalsIgnoreCase("Pending")
+						|| usrData.get("KEY").equalsIgnoreCase("Failure")) {
+					srvUtils.uploadFileToNode(batchFileConfig, usrData.get("KEY"), "node_simulator");
+				}
+			}
+			
 			if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
 				statusEnquirySection(usrData);
 				clickElement(menu);
@@ -209,7 +230,7 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 			}
 			if (usrData.get("TXNDETAILS").equalsIgnoreCase("11112222")) {
 				waitUntilElementIsVisible(toasterMsg);
-				Assert.assertEquals("No transaction history for this transaction id", toasterMsg.getText());
+				Assert.assertEquals("No transaction history for this transaction Id", toasterMsg.getText());
 			} else {
 				reportsData(usrData);
 				commonUtils.selectTxn();
@@ -236,6 +257,8 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 					waitUntilElementIsClickableAndClickTheElement(failSeInitiateRefundBtn);
 					System.out.println("Initiate Refund button clicked");
 					Thread.sleep(1000);
+					waitUntilElementIsClickableAndClickTheElement(confirmRefundOkBtn);
+					System.out.println("Ok button clicked on Confirm Screen");
 					waitUntilElementIsVisible(custOTPScreen);
 					waitUntilElementIsClickableAndClickTheElement(custOTP);
 					System.out.println("OTP field clicked");
@@ -375,7 +398,7 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 		Assert.assertEquals(seTxnTitle.getText(), "Success!");
 		System.out.println("Title: " + seTxnTitle.getText());
 
-		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), txnDetailsFromIni("GetTxfAmount", ""));
+		Assert.assertEquals(replaceSymbols(refundScreenBillAmount.getText()), txnDetailsFromIni("GetTxfAmount", ""));
 		System.out.println("Bill Amount: " + txnDetailsFromIni("GetTxfAmount", ""));
 	}
 
@@ -383,8 +406,9 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 	public void assertionOnSMS() throws ClassNotFoundException, InterruptedException {
 		String pendingToFailedSMS = "Dear User, Payment of Rs. "
 				+ txnDetailsFromIni("GetTxfAmount", "").substring(0, txnDetailsFromIni("GetTxfAmount", "").length() - 3)
-				+ " against Bangalore Electricity Supply Company  has failed with Txn ID " + txnID
-				+ ". Please use this Verification Code " + getAuthfromIni(otpFromIni()) + " to avail refund";
+				+ " against " + billpayDataFromIni("BillpayBiller", "") + " has failed with Txn ID " + txnID
+				+ ". Please use this Verification Code " + getAuthfromIni(otpFromIni())
+				+ " to avail refund at Novopay Outlet.";
 		Thread.sleep(5000);
 		Assert.assertEquals(pendingToFailedSMS, dbUtils.sms());
 		System.out.println(pendingToFailedSMS);

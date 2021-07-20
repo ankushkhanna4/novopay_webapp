@@ -18,7 +18,6 @@ import org.testng.annotations.Test;
 import in.novopay.platform_ui.pages.web.AxisStatusEnquiryPage;
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.JavaUtils;
-import in.novopay.platform_ui.utils.ServerUtils;
 
 public class AxisStatusEnquiryTest {
 	String featureName = "Axis Status Enquiry page";
@@ -27,7 +26,6 @@ public class AxisStatusEnquiryTest {
 	private AxisStatusEnquiryPage wAxisStatusEnquiryPage;
 	private Map<String, String> usrData;
 	public String sheetname = "AxisStatusEnquiryPage", workbook = "WebAppUITestData";
-	ServerUtils srvUtils = new ServerUtils();
 	private JavaUtils javaUtils = new JavaUtils();
 
 	// Start adding all the page objects below this line
@@ -45,11 +43,6 @@ public class AxisStatusEnquiryTest {
 			wdriver = mBasePage.launchBrowser();
 		} else if ((wdriver != null)) {
 			System.out.println("LAUNCHING THE WEB APP FOR FLOW : " + usrData.get("TCID"));
-		}
-
-		HashMap<String, String> batchFileConfig = javaUtils.readSectionFromIni("axisimpsstatusenquiry");
-		if (!usrData.get("KEY").isEmpty()) {
-			srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
 		}
 
 		wAxisStatusEnquiryPage = new AxisStatusEnquiryPage(wdriver);

@@ -50,14 +50,11 @@ public class ElectricityPage extends BasePage {
 	@FindBy(xpath = "//span[contains(text(),'ELECTRICITY')]/parent::li")
 	WebElement electricityIcon;
 
-	@FindBy(id = "money-transfer-mobile-number")
+	@FindBy(id = "payerMobNumberId")
 	WebElement payerMobNum;
 
-	@FindBy(id = "money-transfer-customer-name")
+	@FindBy(id = "payerNameID")
 	WebElement payerName;
-
-	@FindBy(xpath = "//label[contains(text(),'Payer Name')]/parent::div/div/input")
-	WebElement disabledPayerName;
 
 	@FindBy(xpath = "//div[contains(text(),'Pay New Bill')]")
 	WebElement payNewBillButton;
@@ -65,59 +62,56 @@ public class ElectricityPage extends BasePage {
 	@FindBy(className = "biller-cards")
 	WebElement billerCards;
 
-	@FindBy(xpath = "//*[@id='ifsc-search-state']//span[contains(text(),'Select...')]/parent::span")
+	@FindBy(xpath = "//*[@id='ifsc-search-state']//span[contains(text(),'Select..')]/parent::span")
 	WebElement billerList;
 
-	@FindBy(xpath = "(//input[@id='money-transfer-beneficiary-name'])[1]")
+	@FindBy(xpath = "(//label[contains(text(),'Electricity Biller')]/parent::div/following-sibling::div//input)[1]")
 	WebElement id1;
 
-	@FindBy(xpath = "(//input[@id='money-transfer-beneficiary-name'])[2]")
+	@FindBy(xpath = "(//label[contains(text(),'Electricity Biller')]/parent::div/following-sibling::div//input)[2]")
 	WebElement id2;
 
-	@FindBy(xpath = "(//input[@id='money-transfer-beneficiary-name'])[3]")
+	@FindBy(xpath = "(//label[contains(text(),'Electricity Biller')]/parent::div/following-sibling::div//input)[3]")
 	WebElement id3;
 
-	@FindBy(xpath = "(//input[@id='money-transfer-beneficiary-name'])[1]/parent::div/preceding-sibling::label")
+	@FindBy(xpath = "(//label[contains(text(),'Electricity Biller')]/parent::div/following-sibling::div//label)[1]")
 	WebElement idLabel1;
 
-	@FindBy(xpath = "(//input[@id='money-transfer-beneficiary-name'])[2]/parent::div/preceding-sibling::label")
+	@FindBy(xpath = "(//label[contains(text(),'Electricity Biller')]/parent::div/following-sibling::div//label)[2]")
 	WebElement idLabel2;
 
-	@FindBy(xpath = "(//input[@id='money-transfer-beneficiary-name'])[3]/parent::div/preceding-sibling::label")
+	@FindBy(xpath = "(//label[contains(text(),'Electricity Biller')]/parent::div/following-sibling::div//label)[3]")
 	WebElement idLabel3;
 
-	@FindBy(xpath = "//div[contains(text(),'Biller Name')]/following-sibling::div[contains(@class,'bill-value')]")
+	@FindBy(xpath = "//div[contains(text(),'Biller Name')]/following-sibling::div")
 	WebElement fetchedBillerName;
 
-	@FindBy(xpath = "//electricity-form//div[contains(text(),'Account ID')]/following-sibling::div")
+	@FindBy(xpath = "//div[contains(text(),'Account ID')]/following-sibling::div")
 	WebElement fetchedBillerIdBescom;
 
-	@FindBy(xpath = "//electricity-form//div[contains(text(),'Consumer Number')]/following-sibling::div")
+	@FindBy(xpath = "//div[contains(text(),'Consumer Number')]/following-sibling::div")
 	WebElement fetchedBillerIdMsedc;
 
-	@FindBy(xpath = "//electricity-form//div[contains(text(),'Bill Number')]/following-sibling::div")
+	@FindBy(xpath = "//div[contains(text(),'Biller Number')]/following-sibling::div")
 	WebElement fetchedBillNumber;
 
-	@FindBy(xpath = "//electricity-form//div[contains(text(),'Customer Name')]/following-sibling::div")
+	@FindBy(xpath = "//div[contains(text(),'Customer Name')]/following-sibling::div")
 	WebElement fetchedCustomerName;
 
-	@FindBy(xpath = "//electricity-form//div[contains(text(),'Bill Amount')]/following-sibling::div")
+	@FindBy(xpath = "//div[contains(text(),'Bill Amount')]/following-sibling::div")
 	WebElement fetchedBillAmount;
 
-	@FindBy(xpath = "//electricity-form//div[contains(text(),'Charges')]/following-sibling::div")
+	@FindBy(xpath = "//div[contains(text(),'Charges')]/following-sibling::div")
 	WebElement fetchedCharges;
 
-	@FindBy(xpath = "//electricity-form//div[contains(@class,'final-payment-amount')]")
-	WebElement fetchedFinalAmount;
+	@FindBy(id = "amount")
+	WebElement payableAmount;
 
 	@FindBy(xpath = "//button[contains(text(),'Proceed')]")
 	WebElement proceedButton;
 
 	@FindBy(xpath = "//button[contains(text(),'Clear')]")
 	WebElement clearButton;
-
-	@FindBy(xpath = "//button[contains(text(),'Proceed to Pay')]")
-	WebElement proceedToPayButton;
 
 	@FindBy(xpath = "//h5[contains(text(),'Enter 4 digit PIN')]")
 	WebElement MPINScreen;
@@ -134,44 +128,47 @@ public class ElectricityPage extends BasePage {
 	@FindBy(xpath = "//pin-modal/div//button[contains(text(),'Submit')]")
 	WebElement mpinSubmitButton;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]/div/div/div/h4[contains(text(),'!')]")
+	@FindBy(xpath = "//novopay-electricity//h4[contains(@class,'modal-title')]")
 	WebElement elecTxnScreen;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]/div/div/div")
+	@FindBy(xpath = "//novopay-electricity//h4[contains(@class,'modal-title')]/parent::div")
 	WebElement elecTxnScreenType;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//div[contains(@class,'transaction-title')]")
+	@FindBy(xpath = "//novopay-electricity//div[contains(@class,'transaction-title')]")
 	WebElement elecTxnScreenMessage;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//i[contains(@class,'failure-cross')]/parent::span")
+	@FindBy(xpath = "//novopay-electricity//i[contains(@class,'failure-cross')]/parent::span")
 	WebElement elecTxnScreenFailureMessage;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Biller Name')]/parent::div/following-sibling::div/div")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Biller Name')]/parent::div/following-sibling::div")
 	WebElement txnScreenBillerName;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Account ID')]/parent::div/following-sibling::div/div")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Account ID')]/parent::div/following-sibling::div")
 	WebElement txnScreenAccountID;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Consumer Number')]/parent::div/following-sibling::div/div")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Consumer Number')]/parent::div/following-sibling::div")
 	WebElement txnScreenConsumerNumber;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Bill Number')]/parent::div/following-sibling::div/div")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Bill Number')]/parent::div/following-sibling::div")
 	WebElement txnScreenBillNumber;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div/div")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div")
 	WebElement txnScreenCustomerName;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Bill Amount')]/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Bill Amount')]/parent::div/following-sibling::div")
 	WebElement txnScreenBillAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Charges')]/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Charges')]/parent::div/following-sibling::div")
 	WebElement txnScreenCharges;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Txn ID')]/parent::div/following-sibling::div/div")
+	@FindBy(xpath = "//novopay-electricity//strong[contains(text(),'Txn ID')]/parent::div/following-sibling::div")
 	WebElement txnScreenTxnId;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//p[contains(@class,'cashCollected')]")
+	@FindBy(xpath = "//novopay-electricity//div[@class='amount-value']/span")
 	WebElement txnScreenFinalAmount;
+
+	@FindBy(xpath = "//h4[contains(text(),'Confirm Payment')]/parent::div/following-sibling::div/button[contains(text(),'Submit')]")
+	WebElement submitButton;
 
 	@FindBy(xpath = "//button[contains(text(),'Exit')]")
 	WebElement exitButton;
@@ -218,7 +215,7 @@ public class ElectricityPage extends BasePage {
 			}
 
 			// Click on electricity icon
-			waitUntilElementIsClickableAndClickTheElement(electricityIcon);
+			commonUtils.selectBillpayBiller();
 			System.out.println("Electricity icon clicked");
 
 			commonUtils.waitForSpinner();
@@ -227,15 +224,22 @@ public class ElectricityPage extends BasePage {
 			waitUntilElementIsClickableAndClickTheElement(payerMobNum);
 			payerMobNum.clear();
 			payerMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("PAYERMOBILENUMBER")));
-			System.out.println("Payer mobile number " + payerMobNum.getText() + " entered");
+			System.out.println("Payer mobile number " + payerMobNum.getAttribute("value") + " entered");
 
 			commonUtils.waitForSpinner();
+
+			waitUntilElementIsClickableAndClickTheElement(payerName);
+			payerName.clear();
+			payerName.sendKeys(getCustomerDetailsFromIni(usrData.get("PAYERNAME")));
+			System.out.println("Payer name " + payerName.getAttribute("value") + " entered");
+			
+			billpayDataFromIni("StoreBillpayBiller", usrData.get("BILLERNAME"));
 
 			if (usrData.get("BILLTYPE").equalsIgnoreCase("Existing")) {
 				waitUntilElementIsClickableAndClickTheElement(billerCards);
 				System.out.println("Biller Card is clicked");
 
-				if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
+				if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Co. Ltd (BESCOM)")) {
 					waitUntilElementIsVisible(idLabel1);
 					Assert.assertTrue(idLabel1.getText().contains("Account ID"));
 					System.out.println("Account Id verified");
@@ -252,9 +256,9 @@ public class ElectricityPage extends BasePage {
 				}
 			} else if (usrData.get("BILLTYPE").equalsIgnoreCase("New")) {
 				// Click on pay new bill button
-				waitUntilElementIsClickableAndClickTheElement(payNewBillButton);
-				System.out.println("Pay New Bill button clicked");
-				Thread.sleep(1000);
+//				waitUntilElementIsClickableAndClickTheElement(payNewBillButton);
+//				System.out.println("Pay New Bill button clicked");
+//				Thread.sleep(1000);
 
 				waitUntilElementIsClickableAndClickTheElement(billerList);
 				System.out.println("Biller drop down clicked");
@@ -263,7 +267,7 @@ public class ElectricityPage extends BasePage {
 				ifscSearchState.click();
 				System.out.println(usrData.get("BILLERNAME") + " selected");
 
-				if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
+				if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Co. Ltd (BESCOM)")) {
 					waitUntilElementIsClickableAndClickTheElement(id1);
 					id1.sendKeys(usrData.get("ACCOUNTID"));
 					System.out.println(usrData.get("ACCOUNTID") + " Account Id entered");
@@ -290,14 +294,14 @@ public class ElectricityPage extends BasePage {
 
 				if (usrData.get("ASSERTION").equalsIgnoreCase("Bill not fetched")) {
 					waitUntilElementIsVisible(toasterMsg);
-					Assert.assertEquals(toasterMsg.getText(), "Bill was not fetched");
+					Assert.assertEquals(toasterMsg.getText(), "Failed to fetch bill details");
 					System.out.println(toasterMsg.getText());
 				} else {
 					waitUntilElementIsVisible(fetchedBillerName);
 					Assert.assertEquals(fetchedBillerName.getText(), usrData.get("BILLERNAME"));
 					System.out.println("Biller name is " + usrData.get("BILLERNAME"));
 
-					if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
+					if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Co. Ltd (BESCOM)")) {
 						Assert.assertEquals(fetchedBillerIdBescom.getText(), usrData.get("ACCOUNTID"));
 						System.out.println("Account Id fetched: " + usrData.get("ACCOUNTID"));
 
@@ -334,8 +338,13 @@ public class ElectricityPage extends BasePage {
 					double charges = Double.parseDouble(chrges);
 					double totalAmount = amount + charges;
 					String cashToBeCollected = df.format(totalAmount);
-					Assert.assertEquals(replaceSymbols(fetchedFinalAmount.getText()), cashToBeCollected);
-					System.out.println("Cash to be Collected: " + replaceSymbols(fetchedFinalAmount.getText()));
+					if (usrData.get("VENDOR").equalsIgnoreCase("CYBERPLAT")) {
+						Assert.assertEquals(replaceSymbols(payableAmount.getAttribute("value")), cashToBeCollected);
+					} else {
+						Assert.assertEquals(replaceSymbols(payableAmount.getAttribute("value") + ".00"),
+								cashToBeCollected);
+					}
+					System.out.println("Bill Amount Payable: " + replaceSymbols(payableAmount.getAttribute("value")));
 				}
 			} else if (usrData.get("FETCHBUTTON").equalsIgnoreCase("Clear")) {
 				// Click on Clear button
@@ -345,97 +354,106 @@ public class ElectricityPage extends BasePage {
 			if (usrData.get("PAYBUTTON").equalsIgnoreCase("Yes")) {
 
 				// Click on Proceed to pay button
-				waitUntilElementIsClickableAndClickTheElement(proceedToPayButton);
+				waitUntilElementIsClickableAndClickTheElement(proceedButton);
 
-				if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
-					System.out.println("Cashout Balance is 0, hence money will be deducted from Main Wallet");
-				} else {
-					commonUtils.chooseWalletScreen(usrData);
-				}
+				if (usrData.get("CONFIRMBUTTON").equalsIgnoreCase("YES")) {
+					waitUntilElementIsClickableAndClickTheElement(submitButton);
+					System.out.println("Submit button clicked on Confirm Screen");
 
-				if (!getWalletFromIni("GetWallet", "").equalsIgnoreCase("-")) {
-					waitUntilElementIsVisible(MPINScreen);
-					System.out.println("MPIN screen displayed");
-					waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-						enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-					} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-						enterMPIN.sendKeys("9999");
+					if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
+						System.out.println("Cashout Balance is 0, hence money will be deducted from Main Wallet");
+					} else {
+						commonUtils.chooseWalletScreen(usrData);
 					}
-					System.out.println("MPIN entered");
 
-					String mpinButtonName = usrData.get("MPINSCREENBUTTON");
-					String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
-							+ "following-sibling::div/following-sibling::div/button[contains(text(),'" + mpinButtonName
-							+ "')]";
-					WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
-					waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
-					System.out.println(mpinButtonName + " button clicked");
-					if (mpinButtonName.equalsIgnoreCase("Submit")) {
-						commonUtils.waitForSpinner();
-
-						waitUntilElementIsVisible(elecTxnScreen);
-						System.out.println("Txn screen displayed");
-
-						// Update retailer wallet balance to 1000000 for scenario where amount > wallet
-						if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
-							dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
+					if (!getWalletFromIni("GetWallet", "").equalsIgnoreCase("-")) {
+						waitUntilElementIsVisible(MPINScreen);
+						System.out.println("MPIN screen displayed");
+						waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+						if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+							enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+						} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+							enterMPIN.sendKeys("9999");
 						}
+						System.out.println("MPIN entered");
 
-						// Verify the details on transaction screen
-						if (elecTxnScreen.getText().equalsIgnoreCase("Success!")
-								|| elecTxnScreen.getText().equalsIgnoreCase("Pending!")) {
-							assertionOnSuccessScreen(usrData);
-							if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
-								assertionOnSMS(usrData);
+						String mpinButtonName = usrData.get("MPINSCREENBUTTON");
+						String mpinScreenButtonXpath = "//h5[contains(text(),'Enter 4 digit PIN')]/parent::div/"
+								+ "following-sibling::div/following-sibling::div/button[contains(text(),'"
+								+ mpinButtonName + "')]";
+						WebElement mpinScreenButton = wdriver.findElement(By.xpath(mpinScreenButtonXpath));
+						waitUntilElementIsClickableAndClickTheElement(mpinScreenButton);
+						System.out.println(mpinButtonName + " button clicked");
+						if (mpinButtonName.equalsIgnoreCase("Submit")) {
+							commonUtils.waitForSpinner();
+
+							waitUntilElementIsVisible(elecTxnScreen);
+							System.out.println("Txn screen displayed");
+
+							// Update retailer wallet balance to 1000000 for scenario where amount > wallet
+							if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
+								dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 							}
-							if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Print")) {
-								printButton.click();
-								System.out.println("Print button clicked");
-							}
-							doneButton.click();
-							System.out.println("Done button clicked");
-							if (usrData.get("ASSERTION").contains("FCM")) {
-								assertionOnFCM(usrData);
-							}
-							commonUtils.refreshBalance();
-							verifyUpdatedBalanceAfterSuccessTxn(usrData);
-						} else if (elecTxnScreen.getText().equalsIgnoreCase("Failed!")) {
-							if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
-								assertionOnFailedScreen(usrData);
-								waitUntilElementIsClickableAndClickTheElement(exitButton);
-								System.out.println("Exit button clicked");
+
+							// Verify the details on transaction screen
+							if (elecTxnScreen.getText().equalsIgnoreCase("Success!")
+									|| elecTxnScreen.getText().equalsIgnoreCase("Pending")) {
+								assertionOnSuccessScreen(usrData);
+								if (usrData.get("ASSERTION").equalsIgnoreCase("Success SMS")) {
+									assertionOnSMS(usrData);
+								}
+								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Print")) {
+									printButton.click();
+									System.out.println("Print button clicked");
+								}
+								doneButton.click();
+								System.out.println("Done button clicked");
+								if (usrData.get("ASSERTION").contains("FCM")) {
+									assertionOnFCM(usrData);
+								}
 								commonUtils.refreshBalance();
-								verifyUpdatedBalanceAfterFailTxn(usrData);
-							} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
-								assertionOnFailedScreen(usrData);
-								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
-									exitButton.click();
+								verifyUpdatedBalanceAfterSuccessTxn(usrData);
+							} else if (elecTxnScreen.getText().equalsIgnoreCase("Failed!")) {
+								if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+									assertionOnFailedScreen(usrData);
+									waitUntilElementIsClickableAndClickTheElement(exitButton);
 									System.out.println("Exit button clicked");
-								} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
-									retryButton.click();
-									waitUntilElementIsVisible(MPINScreen);
-									System.out.println("MPIN screen displayed");
-									waitUntilElementIsClickableAndClickTheElement(enterMPIN);
-									enterMPIN.sendKeys(getAuthfromIni("MPIN"));
-									System.out.println("MPIN entered");
-									waitUntilElementIsClickableAndClickTheElement(submitMPIN);
-									System.out.println("Submit button clicked");
-									waitUntilElementIsVisible(elecTxnScreen);
-									System.out.println("Txn screen displayed");
-									assertionOnSuccessScreen(usrData);
-									doneButton.click();
-									System.out.println("Done button clicked");
 									commonUtils.refreshBalance();
-									verifyUpdatedBalanceAfterSuccessTxn(usrData);
+									verifyUpdatedBalanceAfterFailTxn(usrData);
+								} else if (usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
+									assertionOnFailedScreen(usrData);
+									if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Exit")) {
+										exitButton.click();
+										System.out.println("Exit button clicked");
+									} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
+										retryButton.click();
+										waitUntilElementIsVisible(MPINScreen);
+										System.out.println("MPIN screen displayed");
+										waitUntilElementIsClickableAndClickTheElement(enterMPIN);
+										enterMPIN.sendKeys(getAuthfromIni("MPIN"));
+										System.out.println("MPIN entered");
+										waitUntilElementIsClickableAndClickTheElement(submitMPIN);
+										System.out.println("Submit button clicked");
+										waitUntilElementIsVisible(elecTxnScreen);
+										System.out.println("Txn screen displayed");
+										assertionOnSuccessScreen(usrData);
+										doneButton.click();
+										System.out.println("Done button clicked");
+										commonUtils.refreshBalance();
+										verifyUpdatedBalanceAfterSuccessTxn(usrData);
+									}
 								}
 							}
 						}
 					}
-				} else if (usrData.get("PAYBUTTON").equalsIgnoreCase("Clear")) {
-					clearButton.click();
-					System.out.println("Clear button clicked");
+				} else if (usrData.get("CONFIRMBUTTON").equalsIgnoreCase("Cancel")) {
+					waitUntilElementIsClickable(cancelButton);
+					cancelButton.click();
+					System.out.println("Cancel button clicked on Confirm Screen");
 				}
+			} else if (usrData.get("PAYBUTTON").equalsIgnoreCase("Clear")) {
+				clearButton.click();
+				System.out.println("Clear button clicked");
 			}
 		} catch (Exception e) {
 			wdriver.navigate().refresh();
@@ -457,9 +475,9 @@ public class ElectricityPage extends BasePage {
 		System.out.println(elecTxnScreenMessage.getText());
 
 		Assert.assertEquals(txnScreenBillerName.getText(), usrData.get("BILLERNAME"));
-		System.out.println("Biller Name: " + usrData.get("BILLERNAME"));
+		System.out.println("Biller Name: " + txnScreenBillerName.getText());
 
-		if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
+		if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Co. Ltd (BESCOM)")) {
 			Assert.assertEquals(txnScreenAccountID.getText(), usrData.get("ACCOUNTID"));
 			System.out.println("Account Id: " + usrData.get("ACCOUNTID"));
 
@@ -480,7 +498,8 @@ public class ElectricityPage extends BasePage {
 			}
 		}
 
-		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), txnDetailsFromIni("GetTxfAmount", ""));
+		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()) + ".00",
+				txnDetailsFromIni("GetTxfAmount", ""));
 		System.out.println("Bill Amount: " + txnDetailsFromIni("GetTxfAmount", ""));
 
 		if (!txnDetailsFromIni("GetCharges", "").equals("0.00")) {
@@ -502,22 +521,23 @@ public class ElectricityPage extends BasePage {
 	public void assertionOnFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid MPIN")) {
-			Assert.assertEquals(elecTxnScreenFailureMessage.getText(), "Authentication Failed Invalid MPIN  ");
-			System.out.println(elecTxnScreenFailureMessage.getText());
+			Assert.assertEquals(elecTxnScreenMessage.getText(),
+					"Invalid MPIN. Please retry with the unique 4-digit MPIN.");
+			System.out.println(elecTxnScreenMessage.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(elecTxnScreenFailureMessage.getText(), "Insufficient balance  ");
 			System.out.println(elecTxnScreenFailureMessage.getText());
 			dbUtils.updateWalletBalance(mobileNumFromIni(), "retailer", "1000000");
 		} else {
-			Assert.assertEquals(elecTxnScreenMessage.getText(), "Bill Payment failed");
+			Assert.assertEquals(elecTxnScreenMessage.getText(), "Bill Payment Failed!");
 			System.out.println(elecTxnScreenMessage.getText());
 
 			Assert.assertEquals(txnScreenBillerName.getText(), usrData.get("BILLERNAME"));
 			System.out.println("Biller Name: " + usrData.get("BILLERNAME"));
 
-			if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Company")) {
+			if (usrData.get("BILLERNAME").equalsIgnoreCase("Bangalore Electricity Supply Co. Ltd (BESCOM)")) {
 				Assert.assertEquals(txnScreenAccountID.getText(), usrData.get("ACCOUNTID"));
-				System.out.println("Account Id: " + usrData.get("ACCOUNTID"));
+				System.out.println("Customer ID / Account Id: " + usrData.get("ACCOUNTID"));
 
 				if (usrData.get("VENDOR").equalsIgnoreCase("BILLAVENUE")) {
 					Assert.assertEquals(txnScreenBillNumber.getText(), usrData.get("BILLNUMBER"));
@@ -536,7 +556,8 @@ public class ElectricityPage extends BasePage {
 				}
 			}
 
-			Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), txnDetailsFromIni("GetTxfAmount", ""));
+			Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()) + ".00",
+					txnDetailsFromIni("GetTxfAmount", ""));
 			System.out.println("Bill Amount: " + txnDetailsFromIni("GetTxfAmount", ""));
 
 			if (!txnDetailsFromIni("GetCharges", "").equals("0.00")) {
@@ -550,9 +571,15 @@ public class ElectricityPage extends BasePage {
 
 	// SMS assertion
 	public void assertionOnSMS(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
-		String successSMS = "Thank you for payment of INR " + txnDetailsFromIni("GetTxfAmount", "") + " against "
-				+ usrData.get("BILLERNAME") + ", Account ID - " + usrData.get("ACCOUNTID") + ", Txn Ref ID "
-				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + ".";
+		String id = "";
+		if (usrData.get("VENDOR").equalsIgnoreCase("CYBERPLAT")) {
+			id = "Account ID";
+		} else if (usrData.get("VENDOR").equalsIgnoreCase("BILLAVENUE")) {
+			id = "Customer ID / Account ID";
+		}
+		String successSMS = "Success! Rs." + txnDetailsFromIni("GetTxfAmount", "") + " paid for "
+				+ usrData.get("BILLERNAME") + " at Novopay agent outlet, " + id + " - " + usrData.get("ACCOUNTID")
+				+ ", Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + ".";
 		Assert.assertEquals(successSMS, dbUtils.sms());
 		System.out.println(successSMS);
 	}

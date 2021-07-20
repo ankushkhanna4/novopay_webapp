@@ -2,7 +2,11 @@ package in.novopay.platform_ui.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,15 +27,18 @@ public class MongoDBUtils extends JavaUtils {
 	private MongoClient mongo_client;
 	private MongoClientURI uri;
 
+	Date date = Calendar.getInstance().getTime();
+	DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+
 	// private static Logger log = Logger.getLogger(MongoDBUtils.class);
 
 	public void connectMongo(String mongoDbUsername, String mongoDbPassword, String db_name, String db_col_name) {
 
 		BasicConfigurator.configure();
 
-		Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
+		Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
 		mongoLogger.setLevel(Level.OFF); // e.g. or Log.WARNING, etc.
-		
+
 		// Mongodb initialization parameters.
 		String auth_user = getValueFromIni(mongoDbUsername), auth_pwd = getValueFromIni(mongoDbPassword),
 				dbUrl = getValueFromIni("mongoDbUrl"), encoded_pwd = "";
@@ -147,7 +154,7 @@ public class MongoDBUtils extends JavaUtils {
 
 	public void updateBillpayVendor(String biller, String vendor) {
 
-		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
+		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_data");
 
 		BasicDBObject billVendor = new BasicDBObject("vendor", vendor);
 
@@ -170,7 +177,7 @@ public class MongoDBUtils extends JavaUtils {
 		}
 		return arr.get(0);
 	}
-	
+
 	public String getCmsTxnStatus(String refNum) {
 
 		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "transaction_audit");
@@ -186,7 +193,7 @@ public class MongoDBUtils extends JavaUtils {
 		}
 		return arr.get(0);
 	}
-	
+
 	public void updateRechargeVendor(String operator, String vendor) {
 
 		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
@@ -196,7 +203,7 @@ public class MongoDBUtils extends JavaUtils {
 		coll.updateMany(new BasicDBObject("name", operator), new BasicDBObject("$set", rechargeVendor));
 		System.out.println("Record updated to " + rechargeVendor);
 	}
-	
+
 	public void updateCMSBillerOrder(String biller, String order) {
 
 		connectMongo("mongoDbUserNameCms", "mongoDbPasswordCms", "novopayCms", "biller_info");
@@ -205,5 +212,32 @@ public class MongoDBUtils extends JavaUtils {
 
 		coll.updateMany(new BasicDBObject("billerName", biller), new BasicDBObject("$set", orderName));
 		System.out.println("Record updated to " + orderName);
+	}
+
+	public String getBillPayTxnUpdatedOn(String refNum) {
+
+		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "transaction_audit");
+
+		// Performing a read operation on the collection.
+		FindIterable<Document> fi = coll.find(new BasicDBObject("novopayReferenceNumber", refNum));
+		MongoCursor<Document> cursor = fi.iterator();
+		ArrayList<String> arr = new ArrayList<String>();
+		String str;
+		while (cursor.hasNext()) {
+			str = dateFormat.format(cursor.next().getDate("updatedOn"));
+			arr.add(str);
+		}
+		return arr.get(0);
+	}
+
+	public void changeUpdatedOn(String referenceNum, String updatedOn) {
+
+		connectMongo("mongoDbUserNameBillpay", "mongoDbPasswordBillpay", "novopayBillpay", "biller_info");
+
+		BasicDBObject updatedOnTime = new BasicDBObject("updatedOn", updatedOn);
+
+		coll.updateMany(new BasicDBObject("novopayReferenceNumber", referenceNum),
+				new BasicDBObject("$set", updatedOnTime));
+		System.out.println("Record updated to " + updatedOnTime);
 	}
 }

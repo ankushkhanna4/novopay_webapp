@@ -98,7 +98,7 @@ public class CommonUtils extends BasePage {
 
 	@FindBy(xpath = "//button[@class='toast-close-button']")
 	WebElement toastCloseButton;
-	
+
 	@FindBy(id = "site-search")
 	WebElement searchBiller;
 
@@ -202,8 +202,8 @@ public class CommonUtils extends BasePage {
 		String initialCashoutBal = replaceSymbols(cashoutWalletBalance.getText());
 
 		// Compare wallet balance shown in WebApp to DB
-		Assert.assertEquals(walletBal, initialWalletBal);
-		Assert.assertEquals(cashoutBal, initialCashoutBal);
+		Assert.assertEquals(initialWalletBal, walletBal);
+		Assert.assertEquals(initialCashoutBal, cashoutBal);
 
 		if (wallet.equalsIgnoreCase("retailer")) {
 			System.out.println("Retailer Balance: " + initialWalletBal);
@@ -322,7 +322,7 @@ public class CommonUtils extends BasePage {
 		Thread.sleep(2000);
 		waitUntilElementIsClickableAndClickTheElement(image);
 		Thread.sleep(2000);
-		String uploadFile = "./test-data/UploadFile.exe";
+		String uploadFile = "./test-data/autoit/UploadFile.exe";
 		Runtime.getRuntime().exec(uploadFile);
 		Thread.sleep(500);
 	}
@@ -342,13 +342,25 @@ public class CommonUtils extends BasePage {
 	public void selectCmsBiller() {
 		waitForSpinner();
 		waitUntilElementIsClickableAndClickTheElement(searchBiller);
-		searchBiller.sendKeys(cmsDetailsFromIni("CmsBiller",""));
+		searchBiller.clear();
+		searchBiller.sendKeys(cmsDetailsFromIni("CmsBiller", ""));
 		String billerXpath = "//form[@id='money-transfer-credit-card-form']//div[contains(text(),'"
-				+ cmsDetailsFromIni("CmsBiller","") + "')]";
+				+ cmsDetailsFromIni("CmsBiller", "") + "')]";
 		WebElement biller = wdriver.findElement(By.xpath(billerXpath));
 		waitUntilElementIsClickableAndClickTheElement(biller);
 	}
-	
+
+	public void selectBillpayBiller() {
+		waitForSpinner();
+		waitUntilElementIsClickableAndClickTheElement(searchBiller);
+		searchBiller.clear();
+		searchBiller.sendKeys(billpayDataFromIni("BillpayCategory", ""));
+		String billerXpath = "//section[@id='recharge-billers-form']//span[contains(text(),'"
+				+ billpayDataFromIni("BillpayCategory", "") + "')]/parent::li";
+		WebElement biller = wdriver.findElement(By.xpath(billerXpath));
+		waitUntilElementIsClickableAndClickTheElement(biller);
+	}
+
 	public void verifyAndInsertValueInOrgAttribute(String key, String value) throws ClassNotFoundException {
 		if (dbUtils.getOrgAttributeValue(mobileNumFromIni(), key) != null) {
 			System.out.println(key + " with the value " + value + " is already present");

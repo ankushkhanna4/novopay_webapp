@@ -59,10 +59,10 @@ public class FlowMapper {
 	public void flowMapperTest(HashMap<String, String> usrData) throws Throwable {
 		this.usrData = usrData;
 		Log.info("Executing --> " + usrData.get("TCID"));
-		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
-			dbUtils.modifyContract(usrData.get("CONTRACT"), javaUtils.getLoginMobileFromIni("RetailerMobNum"));
-		} else if (usrData.get("CONTRACT").equalsIgnoreCase("ALL")) {
-			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));
+		String contract = usrData.get("CONTRACT");
+		javaUtils.getContract(contract);
+		if (!contract.equalsIgnoreCase("-")) {
+			dbUtils.modifyContract(contract, javaUtils.getLoginMobileFromIni("RetailerMobNum"));
 		}
 		if (usrData.get("FEATURE").equalsIgnoreCase("EKYC")) {
 			dbUtils.updateAepsPartner("RBL", mobileNumFromIni());
@@ -75,18 +75,28 @@ public class FlowMapper {
 			if (usrData.get("FEATURE").equalsIgnoreCase("Money Transfer")) {
 				dbUtils.updateDmtBcAgentId("NOV1000704", mobileNumFromIni());
 			} else if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
-				dbUtils.updateAepsPartner(usrData.get("CONTRACT"), mobileNumFromIni());
-				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_TERMINAL_ID","567765667126757");
-				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_ID","NOV112200");
-				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_DEVICE_ID","UP000102");
-				commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_PASSWORD","40bd001563085fc35165329ea1ff5c5ecbdbbeef");
-			} else if (usrData.get("CONTRACT").equalsIgnoreCase("CMS")) {
+				dbUtils.updateAepsPartner(contract, mobileNumFromIni());
+				if (contract.equalsIgnoreCase("RBL")) {
+					commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_TERMINAL_ID", "567765667126757");
+					commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_ID", "NOV112200");
+					commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_DEVICE_ID", "UP000102");
+					commonUtils.verifyAndInsertValueInOrgAttribute("RBL_AEPS_AGENT_PASSWORD",
+							"40bd001563085fc35165329ea1ff5c5ecbdbbeef");
+				} else if (contract.equalsIgnoreCase("YBL")) {
+					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_REMITTANCE_TUTORIAL_WATCHED", "YES");
+					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_AEPS_USER_ID", "42");
+				}
+			} else if (contract.equalsIgnoreCase("CMS")) {
 				javaUtils.cmsDetailsFromIni("StoreCmsBiller", usrData.get("FEATURE"));
-			} else if (usrData.get("CONTRACT").equalsIgnoreCase("BILLPAY")) {
-				commonUtils.verifyAndInsertValueInOrgAttribute("BILL_AVENUE_AGENT_ID","123456");
+			} else if (contract.equalsIgnoreCase("BILLPAY")) {
+				javaUtils.billpayDataFromIni("StoreBillpayCategory", usrData.get("FEATURE"));
+				if (usrData.get("VENDOR").equalsIgnoreCase("BILLAVENUE")) {
+					commonUtils.verifyAndInsertValueInOrgAttribute("BILL_AVENUE_AGENT_ID", "123456");
+				} else if (usrData.get("VENDOR").equalsIgnoreCase("AXIS")) {
+					commonUtils.verifyAndInsertValueInOrgAttribute("AXIS_BBPS_AGENT_ID", "1234567");
+				}
 			}
 		}
-		
 
 		javaUtils.getWalletFromIni("StoreWallet", usrData.get("WALLET"));
 
@@ -168,7 +178,7 @@ public class FlowMapper {
 
 			@SuppressWarnings("unchecked")
 			HashMap<String, String> datamap = (HashMap<String, String>) data[0][0];
-			flows = new TreeSet<>(datamap.keySet());
+//			flows = new TreeSet<>(datamap.keySet());
 			flows = new TreeSet<>(datamap.keySet().stream().filter(s -> s.toLowerCase().startsWith("step"))
 					.collect(Collectors.toSet()));
 		}
@@ -195,9 +205,9 @@ public class FlowMapper {
 			failureReason = errMsg;
 			failureReason = stepNo + ": " + testCaseID + ": " + result.getThrowable() + "";
 		}
-		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("CONTRACT"), usrData.get("FEATURE"),
-				usrData.get("DESCRIPTION"), javaUtils.getExecutionResultStatus(result.getStatus()), failureReason,
-				testStartTime, testEndTime };
+		String[] execeutionDtls = { usrData.get("TCID"), usrData.get("DESCRIPTION"), usrData.get("CONTRACT"),
+				usrData.get("FEATURE"), usrData.get("VENDOR"), javaUtils.getExecutionResultStatus(result.getStatus()),
+				failureReason, testStartTime, testEndTime };
 		javaUtils.writeExecutionStatusToExcel(execeutionDtls);
 
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {

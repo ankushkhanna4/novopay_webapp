@@ -358,7 +358,7 @@ public class AxisMoneyTransferPage extends BasePage {
 			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
 			batchFileConfig = readSectionFromIni(batchConfigSection);
 			if (!usrData.get("KEY").isEmpty()) {
-				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
+				srvUtils.uploadFileToTomcat(batchFileConfig, usrData.get("KEY"));
 			}
 
 			String moneyTransferXpath = "//a[@href='/newportal/" + partner().toLowerCase()

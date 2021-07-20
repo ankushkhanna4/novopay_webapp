@@ -193,14 +193,24 @@ public class ServerUtils {
 		return null;
 	}
 
-	public void uploadFile(HashMap<String, String> batchConfig, String status) throws InterruptedException {
-		session = connectServer(JavaUtils.configProperties);
-		uploadFile(session, batchConfig.get("testdata.dir") + batchConfig.get("batch.file." + status.toLowerCase()),
+	public void uploadFileToTomcat(HashMap<String, String> batchConfig, String status) throws InterruptedException {
+		uploadFileToTomcat(connectServer(JavaUtils.configProperties),
+				batchConfig.get("testdata.dir") + batchConfig.get("batch.file." + status.toLowerCase()),
 				batchConfig.get("batch.destination.file.name"), batchConfig.get("batch.destination.tmp.dir"),
 				batchConfig.get("batch.destination.config.dir"));
 	}
 
-	public boolean uploadFile(Session session, String source, String destFileName, String tmpDir, String configDir) throws InterruptedException {
+	public void uploadFileToNode(HashMap<String, String> batchConfig, String status, String server)
+			throws InterruptedException {
+		uploadFileToNode(connectServer(JavaUtils.configProperties),
+				batchConfig.get("testdata.dir") + batchConfig.get("batch.file." + status.toLowerCase()),
+				batchConfig.get("batch.destination.file.name"), batchConfig.get("batch.destination.tmp.dir"),
+				batchConfig.get("batch.destination.config.dir"));
+		restartNodeSever(connectServer(JavaUtils.configProperties), server);
+	}
+
+	public boolean uploadFileToTomcat(Session session, String source, String destFileName, String tmpDir,
+			String configDir) throws InterruptedException {
 		if ((null != jsch) && (null != session)) {
 			ChannelSftp m_channelSftp;
 			ChannelExec m_channelExec;
@@ -214,16 +224,16 @@ public class ServerUtils {
 				m_channelSftp.connect();
 				m_channelSftp.put(fin, tmpDir + destFileName, ChannelSftp.OVERWRITE);
 				m_channelSftp.exit();
-				
+
 				String cmd = "sudo -H -u tomcat bash -c 'cp -rf " + tmpDir + destFileName + " /apps/appconfig/'";
 				System.out.println(cmd);
-				
+
 				m_channelExec = (ChannelExec) session.openChannel("exec");
 				System.out.println("Open Channel");
 				m_channelExec.setCommand(cmd);
 				m_channelExec.setInputStream(null);
-	            ((ChannelExec) m_channelExec).setErrStream(System.err);
-	            ((ChannelExec) m_channelExec).setPty(true);
+				((ChannelExec) m_channelExec).setErrStream(System.err);
+				((ChannelExec) m_channelExec).setPty(true);
 				m_channelExec.connect();
 				System.out.println("Connecting...");
 				Thread.sleep(2000);
@@ -235,6 +245,74 @@ public class ServerUtils {
 			} catch (SftpException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	public boolean uploadFileToNode(Session session, String source, String destFileName, String tmpDir,
+			String configDir) throws InterruptedException {
+		if ((null != jsch) && (null != session)) {
+			ChannelSftp m_channelSftp;
+			ChannelExec m_channelExec;
+			try {
+				File file = new File(source);
+				if (!file.exists()) {
+					System.out.println("Source file doesn't exists");
+				}
+				FileInputStream fin = new FileInputStream(file);
+				m_channelSftp = (ChannelSftp) session.openChannel("sftp");
+				m_channelSftp.connect();
+				m_channelSftp.put(fin, tmpDir + destFileName, ChannelSftp.OVERWRITE);
+				m_channelSftp.exit();
+
+				String cmd = "sudo -H -u node bash -c 'cp -rf " + tmpDir + destFileName + " /apps/node_simulator/'";
+				System.out.println(cmd);
+
+				m_channelExec = (ChannelExec) session.openChannel("exec");
+				System.out.println("Open Channel");
+				m_channelExec.setCommand(cmd);
+				m_channelExec.setInputStream(null);
+				((ChannelExec) m_channelExec).setErrStream(System.err);
+				((ChannelExec) m_channelExec).setPty(true);
+				m_channelExec.connect();
+				System.out.println("Connecting...");
+				Thread.sleep(2000);
+				m_channelExec.disconnect();
+				System.out.println("Disconnected");
+				return true;
+			} catch (JSchException e) {
+				e.printStackTrace();
+			} catch (SftpException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+
+	public boolean restartNodeSever(Session session, String server) throws InterruptedException {
+		if ((null != jsch) && (null != session)) {
+			ChannelExec m_channelExec;
+			try {
+				String cmd = "sudo -H -u node bash -c 'pm2 restart " + server + "'";
+				System.out.println(cmd);
+
+				m_channelExec = (ChannelExec) session.openChannel("exec");
+				System.out.println("Open Channel");
+				m_channelExec.setCommand(cmd);
+				m_channelExec.setInputStream(null);
+				((ChannelExec) m_channelExec).setErrStream(System.err);
+				((ChannelExec) m_channelExec).setPty(true);
+				m_channelExec.connect();
+				System.out.println("Connecting...");
+				Thread.sleep(2000);
+				m_channelExec.disconnect();
+				System.out.println("Disconnected");
+				return true;
+			} catch (JSchException e) {
 				e.printStackTrace();
 			}
 		}

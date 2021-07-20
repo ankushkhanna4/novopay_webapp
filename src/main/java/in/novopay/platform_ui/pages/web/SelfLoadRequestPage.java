@@ -148,8 +148,7 @@ public class SelfLoadRequestPage extends BasePage {
 		try {
 			if (usrData.get("ASSERTION").contains("Balance")) {
 				commonUtils.refreshBalance(); // refresh wallet balances
-				verifyUpdatedBalanceAfterTxn(usrData,
-						Double.parseDouble(getWalletBalanceFromIni("GetRetailer", "")));
+				verifyUpdatedBalanceAfterTxn(usrData, Double.parseDouble(getWalletBalanceFromIni("GetRetailer", "")));
 			} else {
 				commonUtils.displayInitialBalance("retailer"); // display main wallet balance
 				commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
@@ -219,7 +218,7 @@ public class SelfLoadRequestPage extends BasePage {
 				amount.sendKeys(usrData.get("AMOUNT"));
 				txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
 				System.out.println("Amount entered");
-				
+
 				getCodeFromIni(usrData.get("CODE"));
 
 				waitUntilElementIsClickableAndClickTheElement(date);
@@ -230,8 +229,10 @@ public class SelfLoadRequestPage extends BasePage {
 					dayMonth = getTodaysDateOfMonth(0);
 				}
 				date.sendKeys(dayMonth);
-				date.sendKeys(getTodaysMonth());
-				System.out.println("DATE entered");
+				if (Integer.parseInt(dayMonth) < 10) {
+					date.sendKeys(getTodaysMonth());
+					System.out.println("DATE entered");
+				}
 
 				commonUtils.uploadFile(uploadFile);
 				System.out.println("Image selected");

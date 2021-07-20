@@ -4,6 +4,7 @@ import java.awt.AWTException;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.openqa.selenium.By;
@@ -12,14 +13,17 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.Assert;
+
 import in.novopay.platform_ui.utils.BasePage;
 import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.MongoDBUtils;
+import in.novopay.platform_ui.utils.ServerUtils;
 
 public class RechargesPage extends BasePage {
 	DBUtils dbUtils = new DBUtils();
 	CommonUtils commonUtils = new CommonUtils(wdriver);
+	ServerUtils srvUtils = new ServerUtils();
 	MongoDBUtils mongoDbUtils = new MongoDBUtils();
 	DecimalFormat df = new DecimalFormat("#.00");
 
@@ -188,7 +192,7 @@ public class RechargesPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'location')]//span[@role='textbox']")
 	WebElement locationDropdown;
 
-	@FindBy(xpath = "//div[@class='plans']//span[@role='textbox']")
+	@FindBy(xpath = "//div[@class='plans']//span[@role='combobox']")
 	WebElement planTypesDropdown;
 
 	@FindBy(xpath = "//div[@class='custom-scroll']//td[1]")
@@ -214,6 +218,21 @@ public class RechargesPage extends BasePage {
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
 			mongoDbUtils.updateRechargeVendor(usrData.get("OPERATOR"), usrData.get("VENDOR"));
+
+			String batchConfigSection = "";
+			if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")) {
+				batchConfigSection = "goRechargeStatusEnquiry";
+			} else if (usrData.get("VENDOR").equalsIgnoreCase("Multilink")) {
+				batchConfigSection = "multilinkStatusEnquiry";
+			}
+			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
+			batchFileConfig = readSectionFromIni(batchConfigSection);
+			if (usrData.get("ASSERTION").equalsIgnoreCase("Success")
+					|| usrData.get("ASSERTION").equalsIgnoreCase("Pending")
+					|| usrData.get("ASSERTION").equalsIgnoreCase("Failure")
+					|| usrData.get("ASSERTION").equalsIgnoreCase("Failed")) {
+				srvUtils.uploadFileToNode(batchFileConfig, usrData.get("ASSERTION"), "node_simulator");
+			}
 
 			// Click on icon
 			switch (usrData.get("RECHARGETYPE")) {
@@ -247,12 +266,12 @@ public class RechargesPage extends BasePage {
 				// Click on payer mobile number field
 				waitUntilElementIsClickableAndClickTheElement(mobileMobNum);
 				mobileMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("PAYERMOBNUM")));
-				System.out.println("Payer mobile number " + mobileMobNum.getText() + " entered");
+				System.out.println("Payer mobile number " + mobileMobNum.getAttribute("value") + " entered");
 				rechargeDataFromIni("StoreMobNum", mobileMobNum.getAttribute("value"));
 			} else {
 				waitUntilElementIsClickableAndClickTheElement(dthDataCardMobNum);
 				dthDataCardMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("PAYERMOBNUM")));
-				System.out.println("Payer mobile number " + dthDataCardMobNum.getText() + " entered");
+				System.out.println("Payer mobile number " + dthDataCardMobNum.getAttribute("value") + " entered");
 				rechargeDataFromIni("StoreMobNum", dthDataCardMobNum.getAttribute("value"));
 			}
 
@@ -292,6 +311,7 @@ public class RechargesPage extends BasePage {
 				System.out.println("View Available Plans link clicked");
 				waitUntilElementIsVisible(availablePlansScreen);
 				System.out.println("Avialble Plan screen displayed");
+				commonUtils.waitForSpinner();
 				Thread.sleep(2000);
 				if (!usrData.get("LOCATION").equalsIgnoreCase("SKIP")) {
 					waitUntilElementIsClickableAndClickTheElement(locationDropdown);
@@ -343,8 +363,7 @@ public class RechargesPage extends BasePage {
 //				commonUtils.waitForLoader();
 
 				if (usrData.get("CONFIRMBUTTON").equalsIgnoreCase("YES")) {
-					waitUntilElementIsClickable(submitButton);
-					submitButton.click();
+					waitUntilElementIsClickableAndClickTheElement(submitButton);
 					System.out.println("Submit button clicked on Confirm Screen");
 
 					if (getWalletBalanceFromIni("GetCashout", "").equals("0.00")) {
@@ -406,7 +425,7 @@ public class RechargesPage extends BasePage {
 										System.out.println("Done button clicked");
 										commonUtils.refreshBalance();
 										verifyUpdatedBalanceAfterSuccessTxn(usrData);
-									} else if (usrData.get("ASSERTION").equalsIgnoreCase("Failed")) {
+									} else if (usrData.get("ASSERTION").equalsIgnoreCase("Failure")) {
 										assertionOnFailedScreen(usrData);
 										exitButton.click();
 										System.out.println("Exit button clicked");
@@ -453,6 +472,10 @@ public class RechargesPage extends BasePage {
 							}
 						}
 					}
+				} else if (usrData.get("CONFIRMBUTTON").equalsIgnoreCase("Cancel")) {
+					waitUntilElementIsClickable(cancelButton);
+					cancelButton.click();
+					System.out.println("Cancel button clicked on Confirm Screen");
 				}
 			}
 		} catch (Exception e) {
@@ -467,7 +490,13 @@ public class RechargesPage extends BasePage {
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (rechTxnScreen.getText().equalsIgnoreCase("Success!")) {
-			Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction Completed Successfully.");
+			try {
+				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction Completed Successfully.");
+				System.out.println("normal success screen");
+			} catch (AssertionError e) {
+				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction completed successfully.");
+				System.out.println("check status success screen");
+			}
 		} else if (rechTxnScreen.getText().equalsIgnoreCase("Pending!")) {
 			Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction is pending.");
 		}
@@ -498,7 +527,8 @@ public class RechargesPage extends BasePage {
 	public void assertionOnFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid MPIN")) {
-			Assert.assertEquals(rechTxnScreenFailureMessage.getText(), "Authentication Failed Invalid MPIN  ");
+			Assert.assertEquals(rechTxnScreenFailureMessage.getText(),
+					"Invalid MPIN. Please retry with the unique 4-digit MPIN.  ");
 			System.out.println(rechTxnScreenFailureMessage.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Insufficient Balance")) {
 			Assert.assertEquals(rechTxnScreenFailureMessage.getText(), "Insufficient balance  ");
@@ -553,7 +583,8 @@ public class RechargesPage extends BasePage {
 				+ ". Check status after some time.";
 		String successSms2 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
 				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is successful. Txn Ref ID "
-				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime() + " via cash.";
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime()
+				+ " via cash.";
 		String pendingSms2 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
 				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID "
 				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime()

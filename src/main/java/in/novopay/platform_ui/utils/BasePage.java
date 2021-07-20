@@ -345,25 +345,15 @@ public class BasePage extends JavaUtils {
 	 * Wait until web element is visible
 	 */
 	public void waitUntilElementIsVisible(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 90);
+		WebDriverWait wait = new WebDriverWait(wdriver, 60);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
-	
-	
 	
 	/**
 	 * Wait until rbl account validation element is visible
 	 */
 	public void waitUntilRblAccountValElementIsVisible(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 150);
-		wait.until(ExpectedConditions.visibilityOf(element));
-	}
-
-	/**
-	 * Wait until web element is visible for Fino
-	 */
-	public void waitUntilElementIsVisibleForFino(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 90);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
 
@@ -385,45 +375,19 @@ public class BasePage extends JavaUtils {
 	}
 
 	/**
-	 * Wait until web element is clickable and click the element for Fino
+	 * Wait until element is clickable for 5 sec and click the element
 	 */
-	public void waitUntilElementIsClickableForFinoAndClickTheElement(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 90);
+	public void waitUntilElementIsClickableFor5secAndClickTheElement(WebElement element) {
+		WebDriverWait wait = new WebDriverWait(wdriver, 5);
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 		clickElement(element);
 	}
 	
-	/**
-	 * Wait until Submit element is clickable and click the element
-	 */
-	public void waitUntilSubmitIsClickableAndClickTheElement(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 10);
-		wait.until(ExpectedConditions.elementToBeClickable(element));
-		clickElement(element);
-	}
-	
-	/**
-	 * Wait until Submit element is clickable and click the element for Fino
-	 */
-	public void waitUntilSubmitIsClickableForFinoAndClickTheElement(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 10);
-		wait.until(ExpectedConditions.elementToBeClickable(element));
-		clickElement(element);
-	}
-
 	/**
 	 * Wait until web element is clickable
 	 */
 	public void waitUntilElementIsClickable(WebElement element) {
 		WebDriverWait wait = new WebDriverWait(wdriver, 60);
-		wait.until(ExpectedConditions.elementToBeClickable(element));
-	}
-
-	/**
-	 * Wait until web element is clickable for Fino
-	 */
-	public void waitUntilElementIsClickableForFino(WebElement element) {
-		WebDriverWait wait = new WebDriverWait(wdriver, 90);
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 	}
 

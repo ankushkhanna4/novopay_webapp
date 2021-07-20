@@ -17,7 +17,7 @@ public class LogoutPage extends BasePage {
 		PageFactory.initElements(wdriver, this);
 	}
 
-	@FindBy(xpath = "//span[contains(text(),'Logout')]")
+	@FindBy(xpath = "//span[contains(text(),'Logout')]/parent::a")
 	WebElement logout;
 
 	@FindBy(id = "regMobileNumber")

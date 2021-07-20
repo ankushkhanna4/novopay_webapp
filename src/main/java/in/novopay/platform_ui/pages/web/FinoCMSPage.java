@@ -106,7 +106,7 @@ public class FinoCMSPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Reference ID:')]/parent::div/following-sibling::div")
 	WebElement cmsTxnScreenRefId;
 
-	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//p[contains(text(),'Cash to be')]/parent::div/p[2]")
+	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//span[contains(text(),'Cash to be')]/parent::div/following-sibling::div/span")
 	WebElement cmsTxnScreenAmount;
 
 	@FindBy(xpath = "//div[contains(@class,'cms-modal')]//strong[contains(text(),'Txn ID')]/parent::span/parent::div/following-sibling::div//span")
