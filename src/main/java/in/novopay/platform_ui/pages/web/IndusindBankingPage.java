@@ -444,10 +444,6 @@ public class IndusindBankingPage extends BasePage {
 			waitUntilElementIsVisible(withdrawalAadhaarNumError);
 			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Required Field");
 			System.out.println(withdrawalAadhaarNumError.getText());
-//		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
-//			waitUntilElementIsVisible(withdrawalAadhaarNumError);
-//			Assert.assertEquals(withdrawalAadhaarNumError.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
-//			System.out.println(withdrawalAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
 			waitUntilElementIsVisible(withdrawalAadhaarNumError2);
@@ -545,13 +541,6 @@ public class IndusindBankingPage extends BasePage {
 					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenRetryButton);
 						System.out.println("Retry button clicked");
-//						waitUntilElementIsVisible(withdrawalScanSuccessScreen);
-//						Assert.assertEquals("Fingerprints scanned successfully",
-//								withdrawalFingerprintSuccess.getText());
-//						System.out.println(withdrawalFingerprintSuccess.getText());
-//						withdrawalFingerprintScreenOkButton);
-//						System.out.println("Ok button clicked");
-//						waitUntilElementIsInvisible("//*[@id='aeps-withdrawl-form']//button[contains(text(),'Ok')]");
 						waitUntilElementIsVisible(withdrawalFingerprintGreen);
 						Assert.assertEquals("Fingerprint scanned successfully!", withdrawalFingerprintGreen.getText());
 						waitUntilElementIsClickableAndClickTheElement(withdrawalSubmit);
@@ -626,10 +615,6 @@ public class IndusindBankingPage extends BasePage {
 			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError);
 			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Required Field");
 			System.out.println(balanceEnquiryAadhaarNumError.getText());
-//		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
-//			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError);
-//			Assert.assertEquals(balanceEnquiryAadhaarNumError.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
-//			System.out.println(balanceEnquiryAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
 			waitUntilElementIsVisible(balanceEnquiryAadhaarNumError2);
@@ -709,12 +694,6 @@ public class IndusindBankingPage extends BasePage {
 					} else if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Retry")) {
 						waitUntilElementIsClickableAndClickTheElement(aepsTxnScreenRetryButton);
 						System.out.println("Retry button clicked");
-//						waitUntilElementIsVisible(balanceEnquiryScanSuccessScreen);
-//						Assert.assertEquals("Fingerprints scanned successfully",
-//								balanceEnquiryFingerprintSuccess.getText());
-//						System.out.println(balanceEnquiryFingerprintSuccess.getText());
-//						balanceEnquiryFingerprintScreenOkButton);
-//						System.out.println("Ok button clicked");
 						waitUntilElementIsVisible(balanceEnquiryFingerprintGreen);
 						Assert.assertEquals("Fingerprint scanned successfully!",
 								balanceEnquiryFingerprintGreen.getText());
@@ -782,10 +761,6 @@ public class IndusindBankingPage extends BasePage {
 			waitUntilElementIsVisible(miniStatementAadhaarNumError);
 			Assert.assertEquals(miniStatementAadhaarNumError.getText(), "Required Field");
 			System.out.println(miniStatementAadhaarNumError.getText());
-//		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
-//			waitUntilElementIsVisible(miniStatementAadhaarNumError);
-//			Assert.assertEquals(miniStatementAadhaarNumError.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
-//			System.out.println(miniStatementAadhaarNumError.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")) {
 			waitUntilElementIsVisible(miniStatementAadhaarNumError2);
@@ -1199,7 +1174,7 @@ public class IndusindBankingPage extends BasePage {
 	// Verify details on failure screen
 	public void assertionOnMiniStatementFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(aepsTxnScreenMessage.getText().substring(0, 64),
+		Assert.assertEquals(aepsTxnScreenMessage.getText().substring(0, 65),
 				"Mini Statement generation failed - Failed to perform transaction(");
 		System.out.println(aepsTxnScreenMessage.getText());
 	}
