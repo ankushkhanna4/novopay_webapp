@@ -160,7 +160,6 @@ public class FOPWalletLoadPage extends BasePage {
 			System.out.println(toastMessage.getText());
 
 		} catch (Exception e) {
-			wdriver.navigate().refresh();
 			e.printStackTrace();
 			System.out.println("Test Case Failed");
 			Assert.fail();

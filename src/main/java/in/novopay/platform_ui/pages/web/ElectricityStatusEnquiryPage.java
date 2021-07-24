@@ -322,7 +322,6 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 				}
 			}
 		} catch (Exception e) {
-			wdriver.navigate().refresh();
 			e.printStackTrace();
 			System.out.println("Test Case Failed");
 			Assert.fail();

@@ -27,28 +27,20 @@ import in.novopay.platform_ui.utils.CommonUtils;
 import in.novopay.platform_ui.utils.DBUtils;
 import in.novopay.platform_ui.utils.JavaUtils;
 import in.novopay.platform_ui.utils.Log;
-import in.novopay.platform_ui.utils.MongoDBUtils;
-import io.appium.java_client.MobileElement;
-import io.appium.java_client.android.AndroidDriver;
 
 public class FlowMapper {
-	public AndroidDriver<MobileElement> mdriver;
 	public WebDriver wdriver;
-	private String sheetName = "FLOWMAPPER";
-	private JavaUtils javaUtils = new JavaUtils();
-	private DBUtils dbUtils = new DBUtils();
-	private CommonUtils commonUtils = new CommonUtils(wdriver);
-	MongoDBUtils mongoDbUtils = new MongoDBUtils();
-	private Map<String, String> usrData;
-	private Object obj;
-	private String errMsg;
-	private String testCaseID = "";
-	private String stepNo = "";
-	private String className = "";
-	private String currentPackage = "";
-	private String classNameWithPackage, workbook = "WebAppUITestData", pack;
 	private Set<String> flows;
+	private Map<String, String> usrData;
+	private DBUtils dbUtils = new DBUtils();
+	private JavaUtils javaUtils = new JavaUtils();
 	private BasePage wBasePage = new BasePage(wdriver);
+	private CommonUtils commonUtils = new CommonUtils(wdriver);
+	private Object obj;
+	private String sheetName = "FLOWMAPPER";
+	private String workbook = "WebAppUITestData";
+	private String currentPackage = "", classNameWithPackage, pack;
+	private String errMsg, stepNo = "", className = "", testCaseID = "";
 
 	@BeforeSuite
 	public void generateIniFile() throws EncryptedDocumentException, InvalidFormatException, IOException {
@@ -69,9 +61,9 @@ public class FlowMapper {
 			dbUtils.updateRBLEKYCStatus("PENDING", mobileNumFromIni());
 			dbUtils.updateDmtBcAgentId("NOV2160858", mobileNumFromIni());
 		} else if (!usrData.get("FEATURE").equalsIgnoreCase("-")) {
-			dbUtils.updateAepsPartner("RBL", mobileNumFromIni());
 			dbUtils.updateRBLEKYCStatus("APPROVED", mobileNumFromIni());
 			dbUtils.updateDmtPartner("RBL", mobileNumFromIni());
+			dbUtils.updateAepsPartner("RBL", mobileNumFromIni());
 			if (usrData.get("FEATURE").equalsIgnoreCase("Money Transfer")) {
 				dbUtils.updateDmtBcAgentId("NOV1000704", mobileNumFromIni());
 			} else if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
@@ -84,9 +76,7 @@ public class FlowMapper {
 							"40bd001563085fc35165329ea1ff5c5ecbdbbeef");
 				} else if (contract.equalsIgnoreCase("YBL")) {
 					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_REMITTANCE_TUTORIAL_WATCHED", "YES");
-					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_AEPS_USER_ID", "NOV112200");
-				} else if (contract.equalsIgnoreCase("INDUSIND")) {
-					commonUtils.verifyAndInsertValueInOrgAttribute("INDUSIND_AEPS_TERMINAL_ID", "211890000315");
+					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_AEPS_USER_ID", "42");
 				}
 			} else if (contract.equalsIgnoreCase("CMS")) {
 				javaUtils.cmsDetailsFromIni("StoreCmsBiller", usrData.get("FEATURE"));
@@ -107,10 +97,10 @@ public class FlowMapper {
 				testCaseID = usrData.get(flowTestID);
 				currentPackage = getClass().getPackage().getName();
 				className = testCaseID.split("_")[0];
-
 				classNameWithPackage = currentPackage + ".api." + className;
 				Class<?> flow = null;
 				stepNo = flowTestID;
+
 				try {
 					flow = Class.forName(classNameWithPackage);
 					pack = "api";
@@ -141,32 +131,26 @@ public class FlowMapper {
 							} else {
 								HashMap<String, String> data = javaUtils.readExcelData(workbook, sheetname,
 										usrData.get(flowTestID));
-
 								Field webDriver = obj.getClass().getDeclaredField("wdriver");
 								webDriver.set(obj, wdriver);
 								method[i].invoke(obj, data);
 								wdriver = (WebDriver) webDriver.get(obj);
 							}
-
 						}
 					}
-
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				} catch (NoSuchFieldException e) {
-					wdriver.navigate().refresh();
 					e.printStackTrace();
 				} catch (SecurityException e) {
 					e.printStackTrace();
 				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (WebDriverException e) {
-					wdriver.navigate().refresh();
 					e.printStackTrace();
 				} catch (Exception e) {
-					wdriver.navigate().refresh();
 					throw e.getCause();
 				}
 			}
@@ -177,10 +161,8 @@ public class FlowMapper {
 	public Object[][] getData() throws EncryptedDocumentException, InvalidFormatException, IOException {
 		Object[][] data = javaUtils.returnAllUniqueValuesInMap(workbook, sheetName, "no-check");
 		if (data.length != 0) {
-
 			@SuppressWarnings("unchecked")
 			HashMap<String, String> datamap = (HashMap<String, String>) data[0][0];
-//			flows = new TreeSet<>(datamap.keySet());
 			flows = new TreeSet<>(datamap.keySet().stream().filter(s -> s.toLowerCase().startsWith("step"))
 					.collect(Collectors.toSet()));
 		}
@@ -189,7 +171,6 @@ public class FlowMapper {
 
 	@AfterClass
 	public void killDriver() {
-
 		if (wdriver != null) {
 			wBasePage.closeBrowser();
 		}
@@ -198,7 +179,6 @@ public class FlowMapper {
 	// STORING EXECUTION RESULTS IN EXCEL
 	@AfterMethod
 	public void result(ITestResult result) throws InvalidFormatException, IOException, ClassNotFoundException {
-
 		String failureReason = "";
 		String testStartTime = javaUtils.getTestExcutionTime(result.getStartMillis());
 		String testEndTime = javaUtils.getTestExcutionTime(result.getEndMillis());
@@ -211,7 +191,6 @@ public class FlowMapper {
 				usrData.get("FEATURE"), usrData.get("VENDOR"), javaUtils.getExecutionResultStatus(result.getStatus()),
 				failureReason, testStartTime, testEndTime };
 		javaUtils.writeExecutionStatusToExcel(execeutionDtls);
-
 		if (!usrData.get("CONTRACT").equalsIgnoreCase("-")) {
 			System.out.println("Inserting all contracts");
 			dbUtils.insertContract(javaUtils.getLoginMobileFromIni("RetailerMobNum"));

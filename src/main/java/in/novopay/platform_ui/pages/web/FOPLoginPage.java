@@ -58,7 +58,6 @@ public class FOPLoginPage extends BasePage {
 			waitUntilElementIsVisible(menu);
 			System.out.println("Page displayed");
 		} catch (Exception e) {
-			wdriver.navigate().refresh();
 			e.printStackTrace();
 			System.out.println("Test Case Failed");
 			Assert.fail();

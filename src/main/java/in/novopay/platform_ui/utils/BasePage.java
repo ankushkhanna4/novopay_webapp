@@ -454,6 +454,7 @@ public class BasePage extends JavaUtils {
 			} catch (Exception e) {
 				System.out.println("Exception while taking screenshot " + e.getMessage());
 			}
+			wdriver.navigate().refresh();
 		}
 	}
 }

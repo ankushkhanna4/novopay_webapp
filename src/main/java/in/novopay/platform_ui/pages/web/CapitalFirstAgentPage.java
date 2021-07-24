@@ -307,7 +307,6 @@ public class CapitalFirstAgentPage extends BasePage {
 				System.out.println("Clear button clicked");
 			}
 		} catch (Exception e) {
-			wdriver.navigate().refresh();
 			e.printStackTrace();
 			System.out.println("Test Case Failed");
 			Assert.fail();

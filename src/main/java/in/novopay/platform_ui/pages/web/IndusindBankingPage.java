@@ -376,11 +376,6 @@ public class IndusindBankingPage extends BasePage {
 		try {
 			commonUtils.selectFeatureFromMenu2(banking, pageTitle);
 
-//			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
-//			if (!usrData.get("KEY").isEmpty()) {
-//				srvUtils.uploadFile(batchFileConfig, usrData.get("KEY"));
-//			}
-
 			// Refresh wallet balances whenever required
 			if (usrData.get("REFRESH").equalsIgnoreCase("YES")) {
 				commonUtils.refreshBalance(); // refresh wallet balances
@@ -403,7 +398,6 @@ public class IndusindBankingPage extends BasePage {
 			}
 
 		} catch (Exception e) {
-			wdriver.navigate().refresh();
 			e.printStackTrace();
 			System.out.println("Test Case Failed");
 			Assert.fail();
@@ -1205,7 +1199,7 @@ public class IndusindBankingPage extends BasePage {
 	// Verify details on failure screen
 	public void assertionOnMiniStatementFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(aepsTxnScreenMessage.getText().substring(0, 65),
+		Assert.assertEquals(aepsTxnScreenMessage.getText().substring(0, 64),
 				"Mini Statement generation failed - Failed to perform transaction(");
 		System.out.println(aepsTxnScreenMessage.getText());
 	}

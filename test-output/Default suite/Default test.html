@@ -57,9 +57,9 @@ function toggleAllBoxes() {
 <tr>
 <td>Tests passed/Failed/Skipped:</td><td>1/1/0</td>
 </tr><tr>
-<td>Started on:</td><td>Sat Jul 24 13:25:42 IST 2021</td>
+<td>Started on:</td><td>Sat Jul 24 13:57:34 IST 2021</td>
 </tr>
-<tr><td>Total time:</td><td>153 seconds (153076 ms)</td>
+<tr><td>Total time:</td><td>147 seconds (147816 ms)</td>
 </tr><tr>
 <td>Included groups:</td><td></td>
 </tr><tr>
@@ -76,22 +76,22 @@ function toggleAllBoxes() {
 </tr>
 <tr>
 <td title='tests.FlowMapper.flowMapperTest()'><b>flowMapperTest</b><br>Test class: tests.FlowMapper<br>Parameters: {CONTRACT=INDUSIND, PRIORITY=P3, STEP02=IndusindBankingTest_069, TCID=FlowMapper_287, STEP03=LogoutTest_001, STEP01=LoginTest_001, STEP06=, FCM=, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=-, DESCRIPTION=Mini Statement - Failed transaction (partner), TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Banking, VENDOR=}</td>
-<td><div><pre>java.lang.AssertionError: expected [Cash withdrawn from customer failed - Failed to perform transaction(] but found [Mini Statement generation failed - Failed to perform transaction(nul]
+<td><div><pre>java.lang.AssertionError: expected [Mini Statement generation failed - Failed to perform transaction(] but found [Mini Statement generation failed - Failed to perform transaction]
 	at org.testng.Assert.fail(Assert.java:99)
 	at org.testng.Assert.failNotEquals(Assert.java:1037)
 	at org.testng.Assert.assertEqualsImpl(Assert.java:140)
 	at org.testng.Assert.assertEquals(Assert.java:122)
 	at org.testng.Assert.assertEquals(Assert.java:629)
 	at org.testng.Assert.assertEquals(Assert.java:639)
-	at in.novopay.platform_ui.pages.web.IndusindBankingPage.assertionOnMiniStatementFailedScreen(IndusindBankingPage.java:1208)
-	at in.novopay.platform_ui.pages.web.IndusindBankingPage.miniStatementTxns(IndusindBankingPage.java:861)
+	at in.novopay.platform_ui.pages.web.IndusindBankingPage.assertionOnMiniStatementFailedScreen(IndusindBankingPage.java:1207)
+	at in.novopay.platform_ui.pages.web.IndusindBankingPage.miniStatementTxns(IndusindBankingPage.java:860)
 	at in.novopay.platform_ui.pages.web.IndusindBankingPage.indusindBanking(IndusindBankingPage.java:402)
 	at tests.ui.IndusindBankingTest.indusindBankingTest(IndusindBankingTest.java:50)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
-	at tests.FlowMapper.flowMapperTest(FlowMapper.java:147)
+	at tests.FlowMapper.flowMapperTest(FlowMapper.java:136)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -120,23 +120,23 @@ function toggleAllBoxes() {
 	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:115)
 	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
 	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
-</pre></div><a href='#' onClick='toggleBox("stack-trace477942836", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
-<div class='stack-trace' id='stack-trace477942836'><pre>java.lang.AssertionError: expected [Cash withdrawn from customer failed - Failed to perform transaction(] but found [Mini Statement generation failed - Failed to perform transaction(nul]
+</pre></div><a href='#' onClick='toggleBox("stack-trace528372433", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace528372433'><pre>java.lang.AssertionError: expected [Mini Statement generation failed - Failed to perform transaction(] but found [Mini Statement generation failed - Failed to perform transaction]
 	at org.testng.Assert.fail(Assert.java:99)
 	at org.testng.Assert.failNotEquals(Assert.java:1037)
 	at org.testng.Assert.assertEqualsImpl(Assert.java:140)
 	at org.testng.Assert.assertEquals(Assert.java:122)
 	at org.testng.Assert.assertEquals(Assert.java:629)
 	at org.testng.Assert.assertEquals(Assert.java:639)
-	at in.novopay.platform_ui.pages.web.IndusindBankingPage.assertionOnMiniStatementFailedScreen(IndusindBankingPage.java:1208)
-	at in.novopay.platform_ui.pages.web.IndusindBankingPage.miniStatementTxns(IndusindBankingPage.java:861)
+	at in.novopay.platform_ui.pages.web.IndusindBankingPage.assertionOnMiniStatementFailedScreen(IndusindBankingPage.java:1207)
+	at in.novopay.platform_ui.pages.web.IndusindBankingPage.miniStatementTxns(IndusindBankingPage.java:860)
 	at in.novopay.platform_ui.pages.web.IndusindBankingPage.indusindBanking(IndusindBankingPage.java:402)
 	at tests.ui.IndusindBankingTest.indusindBankingTest(IndusindBankingTest.java:50)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
-	at tests.FlowMapper.flowMapperTest(FlowMapper.java:147)
+	at tests.FlowMapper.flowMapperTest(FlowMapper.java:136)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -166,8 +166,8 @@ function toggleAllBoxes() {
 	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
 	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
 </pre></div></td>
-<td>141</td>
-<td>tests.FlowMapper@f78a47e</td></tr>
+<td>134</td>
+<td>tests.FlowMapper@7b36aa0c</td></tr>
 </table><p>
 <table width='100%' border='1' class='invocation-passed'>
 <tr><td colspan='4' align='center'><b>PASSED TESTS</b></td></tr>
@@ -179,8 +179,8 @@ function toggleAllBoxes() {
 <tr>
 <td title='tests.FlowMapper.flowMapperTest()'><b>flowMapperTest</b><br>Test class: tests.FlowMapper<br>Parameters: {CONTRACT=-, PRIORITY=P, STEP02=, TCID=FlowMapper_000, STEP03=, STEP01=EnvTest_QA1, STEP06=, FCM=-, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=-, DESCRIPTION=Set environment to run test cases, TESTTYPE=no-check, STEP08=, STEP09=, FEATURE=-, VENDOR=-}</td>
 <td></td>
-<td>3</td>
-<td>tests.FlowMapper@f78a47e</td></tr>
+<td>2</td>
+<td>tests.FlowMapper@7b36aa0c</td></tr>
 </table><p>
 </body>
 </html>
