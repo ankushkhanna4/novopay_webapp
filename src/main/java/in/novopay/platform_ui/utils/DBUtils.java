@@ -2259,4 +2259,27 @@ public class DBUtils extends JavaUtils {
 		}
 		return null;
 	}
+
+	public void deleteAndInsertBioAuthDetails(String mobNum) throws ClassNotFoundException {
+		try {
+			conn = createConnection(configProperties.get("master"));
+			String deleteQuery = "DELETE FROM `np_aepstxn`.`aeps_bio_auth_details` WHERE `agent_id_value` = '"
+					+ getOrgCodeFromMobNum(mobNum) + "';";
+
+			String insertQuery = "INSERT INTO `np_aepstxn`.`aeps_bio_auth_details` (`agent_id_type`, `agent_id_value`, `partner`, "
+					+ "`novopay_ref_number`, `aadhaar`, `status`, `partner_response_code`, `uidai_token`, "
+					+ "`external_ref_number`, `created_by`, `created_on`, `updated_by`, `updated_on`, `is_deleted`) "
+					+ "VALUES('ORG_CODE','" + getOrgCodeFromMobNum(mobNum)
+					+ "','INDUSIND','120011001100','abcd','SUCCESS','00',NULL,NULL,'" + mobNum + "',NOW(),'" + mobNum
+					+ "',NOW(),'0');";
+
+			stmt = conn.createStatement();
+			stmt.executeUpdate(deleteQuery);
+			System.out.println("Deleting all records for the org code: " + getOrgCodeFromMobNum(mobNum));
+			stmt.executeUpdate(insertQuery);
+			System.out.println("Inserting one record");
+		} catch (SQLException sqe) {
+			System.out.println("Error occurred");
+		}
+	}
 }

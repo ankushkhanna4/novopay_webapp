@@ -69,9 +69,9 @@ public class FlowMapper {
 			dbUtils.updateRBLEKYCStatus("PENDING", mobileNumFromIni());
 			dbUtils.updateDmtBcAgentId("NOV2160858", mobileNumFromIni());
 		} else if (!usrData.get("FEATURE").equalsIgnoreCase("-")) {
+			dbUtils.updateAepsPartner("RBL", mobileNumFromIni());
 			dbUtils.updateRBLEKYCStatus("APPROVED", mobileNumFromIni());
 			dbUtils.updateDmtPartner("RBL", mobileNumFromIni());
-			dbUtils.updateAepsPartner("RBL", mobileNumFromIni());
 			if (usrData.get("FEATURE").equalsIgnoreCase("Money Transfer")) {
 				dbUtils.updateDmtBcAgentId("NOV1000704", mobileNumFromIni());
 			} else if (usrData.get("FEATURE").equalsIgnoreCase("Banking")) {
@@ -84,7 +84,9 @@ public class FlowMapper {
 							"40bd001563085fc35165329ea1ff5c5ecbdbbeef");
 				} else if (contract.equalsIgnoreCase("YBL")) {
 					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_REMITTANCE_TUTORIAL_WATCHED", "YES");
-					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_AEPS_USER_ID", "42");
+					commonUtils.verifyAndInsertValueInOrgAttribute("YBL_AEPS_USER_ID", "NOV112200");
+				} else if (contract.equalsIgnoreCase("INDUSIND")) {
+					commonUtils.verifyAndInsertValueInOrgAttribute("INDUSIND_AEPS_TERMINAL_ID", "211890000315");
 				}
 			} else if (contract.equalsIgnoreCase("CMS")) {
 				javaUtils.cmsDetailsFromIni("StoreCmsBiller", usrData.get("FEATURE"));

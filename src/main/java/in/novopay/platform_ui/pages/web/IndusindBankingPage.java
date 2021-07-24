@@ -55,7 +55,7 @@ public class IndusindBankingPage extends BasePage {
 	@FindBy(xpath = "//a[contains(text(),'Withdrawal')]")
 	WebElement withdrawalTab;
 
-	@FindBy(xpath = "//*[@id='aeps-withdrawl-form']//span[contains(text(),'Select Bank')]/parent::span")
+	@FindBy(xpath = "//*[@id='aeps-withdrawl-form']//span[contains(text(),'Select...')]/parent::span")
 	WebElement withdrawalDropdown;
 
 	@FindBy(xpath = "//*[@id='aeps-withdrawl-form']//*[@id='2']")
@@ -268,7 +268,7 @@ public class IndusindBankingPage extends BasePage {
 	@FindBy(xpath = "//app-aepscomponent//span[contains(text(),'Charges:')]/parent::div/following-sibling::div")
 	WebElement aepsTxnScreenCharges;
 
-	@FindBy(xpath = "//app-aepscomponent//span[contains(text(),'Failed Amount:')]/parent::div/following-sibling::div")
+	@FindBy(xpath = "//app-aepscomponent//span[contains(text(),'Failed Amount:')]/parent::div/following-sibling::div/span")
 	WebElement aepsTxnScreenFailedAmount;
 
 	@FindBy(xpath = "//app-aepscomponent//p[contains(text(),'Cash to be')]/parent::div/p[2]")
@@ -392,10 +392,13 @@ public class IndusindBankingPage extends BasePage {
 			double initialCashoutBalance = Double.parseDouble(getWalletBalanceFromIni("GetCashout", ""));
 
 			if (usrData.get("TXNTYPE").equalsIgnoreCase("Withdrawal")) {
+				dbUtils.deleteAndInsertBioAuthDetails(getLoginMobileFromIni("GetRetailerMobNum"));
 				withdrawalTxns(usrData, initialCashoutBalance);
 			} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Balance Enquiry")) {
+				dbUtils.deleteAndInsertBioAuthDetails(getLoginMobileFromIni("GetRetailerMobNum"));
 				balanceEnquiryTxns(usrData, initialCashoutBalance);
 			} else if (usrData.get("TXNTYPE").equalsIgnoreCase("Mini Statement")) {
+				dbUtils.deleteAndInsertBioAuthDetails(getLoginMobileFromIni("GetRetailerMobNum"));
 				miniStatementTxns(usrData, initialCashoutBalance);
 			}
 
@@ -424,7 +427,7 @@ public class IndusindBankingPage extends BasePage {
 		waitUntilElementIsClickableAndClickTheElement(withdrawalMobNum);
 		withdrawalMobNum.sendKeys(usrData.get("MOBNUM"));
 		System.out.println("Mobile number " + usrData.get("MOBNUM") + " entered");
-		withdrawalAadhaarNum.click();
+		waitUntilElementIsClickableAndClickTheElement(withdrawalAadhaarNum);
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank MN")) {
@@ -434,13 +437,13 @@ public class IndusindBankingPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("MN < 10 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid MN")) {
 			waitUntilElementIsVisible(withdrawalMobNumError);
-			Assert.assertEquals(withdrawalMobNumError.getText(), "Invalid Mobile Number");
+			Assert.assertEquals(withdrawalMobNumError.getText(), "Invalid mobile number");
 			System.out.println(withdrawalMobNumError.getText());
 		}
 
 		withdrawalAadhaarNum.sendKeys(usrData.get("AADHAAR"));
 		System.out.println("Aadhaar number " + usrData.get("AADHAAR") + " entered");
-		withdrawalAmount.click();
+		waitUntilElementIsClickableAndClickTheElement(withdrawalAmount);
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank Aadhaar")) {
@@ -454,7 +457,7 @@ public class IndusindBankingPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Aadhaar < 12 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid Aadhaar")) {
 			waitUntilElementIsVisible(withdrawalAadhaarNumError2);
-			Assert.assertEquals(withdrawalAadhaarNumError2.getText(), "Enter a valid Aadhaar number or VID");
+			Assert.assertEquals(withdrawalAadhaarNumError2.getText(), "Enter 12 digit Aadhaar or 16 digit VID");
 			System.out.println(withdrawalAadhaarNumError2.getText());
 		}
 
@@ -463,13 +466,13 @@ public class IndusindBankingPage extends BasePage {
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Amount > Max")) {
-			withdrawalAadhaarNum.click();
+			waitUntilElementIsClickableAndClickTheElement(withdrawalAadhaarNum);
 			waitUntilElementIsVisible(withdrawalAmountError2);
 			Assert.assertEquals(withdrawalAmountError2.getText(),
 					"Amount entered exceeds your transaction limit ₹10,000.00");
 			System.out.println(withdrawalAmountError2.getText());
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Amount < Min")) {
-			withdrawalAadhaarNum.click();
+			waitUntilElementIsClickableAndClickTheElement(withdrawalAadhaarNum);
 			waitUntilElementIsVisible(withdrawalAmountError);
 			Assert.assertEquals(withdrawalAmountError.getText(), "Minimum amount should be ₹100.00");
 			System.out.println(withdrawalAmountError.getText());
@@ -483,18 +486,18 @@ public class IndusindBankingPage extends BasePage {
 			Assert.assertEquals(withdrawalConsentError.getText(), "Required Field");
 			System.out.println(withdrawalConsentError.getText());
 		} else {
-			withdrawalConsentCheckbox.click();
+			waitUntilElementIsClickableAndClickTheElement(withdrawalConsentCheckbox);
 			System.out.println("Checkbox selected");
 		}
 
 		if (usrData.get("SCAN").equalsIgnoreCase("Yes")) {
 			Assert.assertEquals("Click to scan fingerprint", withdrawalFingerprintUnscanned.getText());
-			withdrawalScanFingerprint.click();
+			waitUntilElementIsClickableAndClickTheElement(withdrawalScanFingerprint);
 			System.out.println("Scan fingerprint button clicked");
 			waitUntilElementIsVisible(withdrawalScanSuccessScreen);
 			Assert.assertEquals("Fingerprints scanned successfully", withdrawalFingerprintSuccess.getText());
 			System.out.println(withdrawalFingerprintSuccess.getText());
-			withdrawalFingerprintScreenOkButton.click();
+			waitUntilElementIsClickableAndClickTheElement(withdrawalFingerprintScreenOkButton);
 			System.out.println("Ok button clicked");
 			waitUntilElementIsVisible(withdrawalFingerprintGreen);
 			Assert.assertEquals("Fingerprint scanned successfully!", withdrawalFingerprintGreen.getText());
@@ -552,7 +555,7 @@ public class IndusindBankingPage extends BasePage {
 //						Assert.assertEquals("Fingerprints scanned successfully",
 //								withdrawalFingerprintSuccess.getText());
 //						System.out.println(withdrawalFingerprintSuccess.getText());
-//						withdrawalFingerprintScreenOkButton.click();
+//						withdrawalFingerprintScreenOkButton);
 //						System.out.println("Ok button clicked");
 //						waitUntilElementIsInvisible("//*[@id='aeps-withdrawl-form']//button[contains(text(),'Ok')]");
 						waitUntilElementIsVisible(withdrawalFingerprintGreen);
@@ -581,7 +584,7 @@ public class IndusindBankingPage extends BasePage {
 						verifyUpdatedBalanceAfterWithdrawalFailTxn(usrData, walletBalance);
 					}
 				} else {
-					withdrawalClear.click();
+					waitUntilElementIsClickableAndClickTheElement(withdrawalClear);
 					System.out.println("Clear button clicked");
 					waitUntilElementIsVisible(withdrawalDropdown);
 					System.out.println("Data cleared");
@@ -606,7 +609,7 @@ public class IndusindBankingPage extends BasePage {
 		waitUntilElementIsClickableAndClickTheElement(balanceEnquiryMobNum);
 		balanceEnquiryMobNum.sendKeys(usrData.get("MOBNUM"));
 		System.out.println("Mobile number " + usrData.get("MOBNUM") + " entered");
-		balanceEnquiryAadhaarNum.click();
+		waitUntilElementIsClickableAndClickTheElement(balanceEnquiryAadhaarNum);
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank MN")) {
@@ -616,13 +619,13 @@ public class IndusindBankingPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("MN < 10 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid MN")) {
 			waitUntilElementIsVisible(balanceEnquiryMobNumError);
-			Assert.assertEquals(balanceEnquiryMobNumError.getText(), "Invalid Mobile Number");
+			Assert.assertEquals(balanceEnquiryMobNumError.getText(), "Invalid mobile number");
 			System.out.println(balanceEnquiryMobNumError.getText());
 		}
 
 		balanceEnquiryAadhaarNum.sendKeys(usrData.get("AADHAAR"));
 		System.out.println("Aadhaar number " + usrData.get("AADHAAR") + " entered");
-		balanceEnquiryMobNum.click();
+		waitUntilElementIsClickableAndClickTheElement(balanceEnquiryMobNum);
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank Aadhaar")) {
@@ -648,18 +651,18 @@ public class IndusindBankingPage extends BasePage {
 			Assert.assertEquals(balanceEnquiryConsentError.getText(), "Required Field");
 			System.out.println(balanceEnquiryConsentError.getText());
 		} else {
-			balanceEnquiryConsentCheckbox.click();
+			waitUntilElementIsClickableAndClickTheElement(balanceEnquiryConsentCheckbox);
 			System.out.println("Checkbox selected");
 		}
 
 		if (usrData.get("SCAN").equalsIgnoreCase("Yes")) {
 			Assert.assertEquals("Click to scan fingerprint", balanceEnquiryFingerprintUnscanned.getText());
-			balanceEnquiryScanFingerprint.click();
+			waitUntilElementIsClickableAndClickTheElement(balanceEnquiryScanFingerprint);
 			System.out.println("Scan fingerprint button clicked");
 			waitUntilElementIsVisible(balanceEnquiryScanSuccessScreen);
 			Assert.assertEquals("Fingerprints scanned successfully", balanceEnquiryFingerprintSuccess.getText());
 			System.out.println(balanceEnquiryFingerprintSuccess.getText());
-			balanceEnquiryFingerprintScreenOkButton.click();
+			waitUntilElementIsClickableAndClickTheElement(balanceEnquiryFingerprintScreenOkButton);
 			System.out.println("Ok button clicked");
 			waitUntilElementIsVisible(balanceEnquiryFingerprintGreen);
 			Assert.assertEquals("Fingerprint scanned successfully!", balanceEnquiryFingerprintGreen.getText());
@@ -668,13 +671,13 @@ public class IndusindBankingPage extends BasePage {
 		if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
 			Thread.sleep(1000);
 			waitUntilElementIsVisible(balanceEnquirySubmit);
-			balanceEnquirySubmit.click();
+			waitUntilElementIsClickableAndClickTheElement(balanceEnquirySubmit);
 			System.out.println("Submit button clicked");
 			commonUtils.processingScreen();
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 				waitUntilElementIsVisible(processInBackgroundButton);
-				processInBackgroundButton.click();
+				waitUntilElementIsClickableAndClickTheElement(processInBackgroundButton);
 				System.out.println("Process in Background button clicked");
 			} else {
 				waitUntilElementIsVisible(aepsTxnScreen);
@@ -716,13 +719,13 @@ public class IndusindBankingPage extends BasePage {
 //						Assert.assertEquals("Fingerprints scanned successfully",
 //								balanceEnquiryFingerprintSuccess.getText());
 //						System.out.println(balanceEnquiryFingerprintSuccess.getText());
-//						balanceEnquiryFingerprintScreenOkButton.click();
+//						balanceEnquiryFingerprintScreenOkButton);
 //						System.out.println("Ok button clicked");
 						waitUntilElementIsVisible(balanceEnquiryFingerprintGreen);
 						Assert.assertEquals("Fingerprint scanned successfully!",
 								balanceEnquiryFingerprintGreen.getText());
 						Thread.sleep(1000);
-						balanceEnquirySubmit.click();
+						waitUntilElementIsClickableAndClickTheElement(balanceEnquirySubmit);
 						System.out.println("Submit button clicked");
 						commonUtils.processingScreen();
 						waitUntilElementIsVisible(aepsTxnScreen);
@@ -737,7 +740,7 @@ public class IndusindBankingPage extends BasePage {
 					commonUtils.refreshBalance();
 					verifyUpdatedBalanceAfterBalanceEnquiryFailTxn(usrData, walletBalance);
 				} else {
-					balanceEnquiryClear.click();
+					waitUntilElementIsClickableAndClickTheElement(balanceEnquiryClear);
 					System.out.println("Clear button clicked");
 					waitUntilElementIsVisible(balanceEnquiryDropdown);
 					System.out.println("Data cleared");
@@ -762,7 +765,7 @@ public class IndusindBankingPage extends BasePage {
 		waitUntilElementIsClickableAndClickTheElement(miniStatementMobNum);
 		miniStatementMobNum.sendKeys(usrData.get("MOBNUM"));
 		System.out.println("Mobile number " + usrData.get("MOBNUM") + " entered");
-		miniStatementAadhaarNum.click();
+		waitUntilElementIsClickableAndClickTheElement(miniStatementAadhaarNum);
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank MN")) {
@@ -772,13 +775,13 @@ public class IndusindBankingPage extends BasePage {
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("MN < 10 digits")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Invalid MN")) {
 			waitUntilElementIsVisible(miniStatementMobNumError);
-			Assert.assertEquals(miniStatementMobNumError.getText(), "Invalid Mobile Number");
+			Assert.assertEquals(miniStatementMobNumError.getText(), "Invalid mobile number");
 			System.out.println(miniStatementMobNumError.getText());
 		}
 
 		miniStatementAadhaarNum.sendKeys(usrData.get("AADHAAR"));
 		System.out.println("Aadhaar number " + usrData.get("AADHAAR") + " entered");
-		miniStatementMobNum.click();
+		waitUntilElementIsClickableAndClickTheElement(miniStatementMobNum);
 
 		// Field level validation in Amount field
 		if (usrData.get("ASSERTION").equalsIgnoreCase("Blank Aadhaar")) {
@@ -804,18 +807,18 @@ public class IndusindBankingPage extends BasePage {
 			Assert.assertEquals(miniStatementConsentError.getText(), "Required Field");
 			System.out.println(miniStatementConsentError.getText());
 		} else {
-			miniStatementConsentCheckbox.click();
+			waitUntilElementIsClickableAndClickTheElement(miniStatementConsentCheckbox);
 			System.out.println("Checkbox selected");
 		}
 
 		if (usrData.get("SCAN").equalsIgnoreCase("Yes")) {
 			Assert.assertEquals("Click to scan fingerprint", miniStatementFingerprintUnscanned.getText());
-			miniStatementScanFingerprint.click();
+			waitUntilElementIsClickableAndClickTheElement(miniStatementScanFingerprint);
 			System.out.println("Scan fingerprint button clicked");
 			waitUntilElementIsVisible(miniStatementScanSuccessScreen);
 			Assert.assertEquals("Fingerprints scanned successfully", miniStatementFingerprintSuccess.getText());
 			System.out.println(miniStatementFingerprintSuccess.getText());
-			miniStatementFingerprintScreenOkButton.click();
+			waitUntilElementIsClickableAndClickTheElement(miniStatementFingerprintScreenOkButton);
 			System.out.println("Ok button clicked");
 			waitUntilElementIsVisible(miniStatementFingerprintGreen);
 			Assert.assertEquals("Fingerprint scanned successfully!", miniStatementFingerprintGreen.getText());
@@ -824,13 +827,13 @@ public class IndusindBankingPage extends BasePage {
 		if (usrData.get("SUBMIT").equalsIgnoreCase("Yes")) {
 			Thread.sleep(1000);
 			waitUntilElementIsVisible(miniStatementSubmit);
-			miniStatementSubmit.click();
+			waitUntilElementIsClickableAndClickTheElement(miniStatementSubmit);
 			System.out.println("Submit button clicked");
 			commonUtils.processingScreen();
 
 			if (usrData.get("TXNSCREENBUTTON").equals("Process in Background")) {
 				waitUntilElementIsVisible(processInBackgroundButton);
-				processInBackgroundButton.click();
+				waitUntilElementIsClickableAndClickTheElement(processInBackgroundButton);
 				System.out.println("Process in Background button clicked");
 			} else {
 				waitUntilElementIsVisible(aepsTxnScreen);
@@ -869,7 +872,7 @@ public class IndusindBankingPage extends BasePage {
 						Assert.assertEquals("Fingerprint scanned successfully!",
 								miniStatementFingerprintGreen.getText());
 						Thread.sleep(1000);
-						miniStatementSubmit.click();
+						waitUntilElementIsClickableAndClickTheElement(miniStatementSubmit);
 						System.out.println("Submit button clicked");
 						commonUtils.processingScreen();
 						waitUntilElementIsVisible(aepsTxnScreen);
@@ -884,7 +887,7 @@ public class IndusindBankingPage extends BasePage {
 					commonUtils.refreshBalance();
 					verifyUpdatedBalanceAfterMiniStatementFailTxn(usrData, walletBalance);
 				} else {
-					miniStatementClear.click();
+					waitUntilElementIsClickableAndClickTheElement(miniStatementClear);
 					System.out.println("Clear button clicked");
 					waitUntilElementIsVisible(miniStatementDropdown);
 					System.out.println("Data cleared");
@@ -896,7 +899,7 @@ public class IndusindBankingPage extends BasePage {
 	public void dropdownSelect(Map<String, String> usrData) {
 		String dropdownXpath = "//li[contains(text(),'" + usrData.get("BANKNAME") + "')]";
 		WebElement dropdownValue = wdriver.findElement(By.xpath(dropdownXpath));
-		dropdownValue.click();
+		waitUntilElementIsClickableAndClickTheElement(dropdownValue);
 	}
 
 	// Get Partner name
@@ -1054,10 +1057,11 @@ public class IndusindBankingPage extends BasePage {
 	// Verify details on failure screen
 	public void assertionOnWithdrawalFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		Assert.assertEquals(aepsTxnScreenMessage.getText(), "Failed to perform transaction(68)");
+		Assert.assertEquals(aepsTxnScreenMessage.getText().substring(0, 68),
+				"Cash withdrawn from customer failed - Failed to perform transaction(");
 		System.out.println(aepsTxnScreenMessage.getText());
-//		Assert.assertEquals(replaceSymbols(aepsTxnScreenFailedAmount.getText()), usrData.get("AMOUNT") + ".00");
-//		System.out.println("Failed Amount: " + replaceSymbols(aepsTxnScreenFailedAmount.getText()));
+		Assert.assertEquals(replaceSymbols(aepsTxnScreenFailedAmount.getText()), usrData.get("AMOUNT") + ".00");
+		System.out.println("Failed Amount: " + replaceSymbols(aepsTxnScreenFailedAmount.getText()));
 	}
 
 	// Assertion after success screen is displayed
@@ -1128,7 +1132,8 @@ public class IndusindBankingPage extends BasePage {
 	// Verify details on failure screen
 	public void assertionOnBalanceEnquiryFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-//		Assert.assertEquals(aepsTxnScreenMessage.getText(), "Failed to perform transaction(M3)");
+		Assert.assertEquals(aepsTxnScreenMessage.getText().substring(0, 55),
+				"Balance enquiry failed - Failed to perform transaction(");
 		System.out.println(aepsTxnScreenMessage.getText());
 	}
 
@@ -1200,7 +1205,8 @@ public class IndusindBankingPage extends BasePage {
 	// Verify details on failure screen
 	public void assertionOnMiniStatementFailedScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-//		Assert.assertEquals(aepsTxnScreenMessage.getText(), "Failed to perform transaction(M3)");
+		Assert.assertEquals(aepsTxnScreenMessage.getText().substring(0, 65),
+				"Mini Statement generation failed - Failed to perform transaction(");
 		System.out.println(aepsTxnScreenMessage.getText());
 	}
 
@@ -1255,7 +1261,7 @@ public class IndusindBankingPage extends BasePage {
 		System.out.println("Confirm the details screen displayed");
 		Assert.assertEquals(replaceSymbols(confirmScreenAmount.getText()), usrData.get("AMOUNT") + ".00");
 		waitUntilElementIsVisible(confirmScreenSubmit);
-		confirmScreenSubmit.click();
+		waitUntilElementIsClickableAndClickTheElement(confirmScreenSubmit);
 		Thread.sleep(2000);
 		System.out.println("Submit button clicked");
 	}

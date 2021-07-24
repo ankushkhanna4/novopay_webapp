@@ -9,20 +9,26 @@
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Retried</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
 <tr><th colspan="8">Default suite</th></tr>
-<tr><td><a href="#t0">Default test</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">70,565</td><td></td><td></td></tr>
+<tr><td><a href="#t0">Default test</a></td><td class="num">1</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">153,076</td><td></td><td></td></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Default suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Default test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">tests.FlowMapperFCM</td><td><a href="#m0">flowMapperTest</a></td><td rowspan="1">1626815833461</td><td rowspan="1">61279</td></tr><tr><th colspan="4">Default test &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">tests.FlowMapperFCM</td><td><a href="#m1">flowMapperTest</a></td><td rowspan="1">1626815830569</td><td rowspan="1">2480</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Default suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Default test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">tests.FlowMapper</td><td><a href="#m0">flowMapperTest</a></td><td rowspan="1">1627113349166</td><td rowspan="1">141335</td></tr><tr><th colspan="4">Default test &#8212; passed</th></tr><tr class="passedeven"><td rowspan="1">tests.FlowMapper</td><td><a href="#m1">flowMapperTest</a></td><td rowspan="1">1627113345726</td><td rowspan="1">3078</td></tr></tbody>
 </table>
-<h2>Default test</h2><h3 id="m0">tests.FlowMapperFCM#flowMapperTest</h3><table class="result"><tr class="param"><th>Parameter #1</th></tr><tr class="param stripe"><td>{CONTRACT=RECHARGES, PRIORITY=FCM, STEP02=RechargesTest_043, TCID=FlowMapper_001, STEP03=LogoutTest_001, STEP01=LoginTest_001, STEP06=, FCM=Yes, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Verify FCM for success transaction for Mobile Prepaid, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Mobile Prepaid, VENDOR=Gorecharge}</td></tr><tr><th>Exception</th></tr><tr><td><div class="stacktrace">java.lang.AssertionError: null
+<h2>Default test</h2><h3 id="m0">tests.FlowMapper#flowMapperTest</h3><table class="result"><tr class="param"><th>Parameter #1</th></tr><tr class="param stripe"><td>{CONTRACT=INDUSIND, PRIORITY=P3, STEP02=IndusindBankingTest_069, TCID=FlowMapper_287, STEP03=LogoutTest_001, STEP01=LoginTest_001, STEP06=, FCM=, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=-, DESCRIPTION=Mini Statement - Failed transaction (partner), TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Banking, VENDOR=}</td></tr><tr><th>Exception</th></tr><tr><td><div class="stacktrace">java.lang.AssertionError: expected [Cash withdrawn from customer failed - Failed to perform transaction(] but found [Mini Statement generation failed - Failed to perform transaction(nul]
 	at org.testng.Assert.fail(Assert.java:99)
-	at org.testng.Assert.fail(Assert.java:106)
-	at in.novopay.platform_ui.pages.web.RechargesPage.recharges(RechargesPage.java:485)
-	at tests.ui.RechargesTest.rechargesTest(RechargesTest.java:50)
+	at org.testng.Assert.failNotEquals(Assert.java:1037)
+	at org.testng.Assert.assertEqualsImpl(Assert.java:140)
+	at org.testng.Assert.assertEquals(Assert.java:122)
+	at org.testng.Assert.assertEquals(Assert.java:629)
+	at org.testng.Assert.assertEquals(Assert.java:639)
+	at in.novopay.platform_ui.pages.web.IndusindBankingPage.assertionOnMiniStatementFailedScreen(IndusindBankingPage.java:1208)
+	at in.novopay.platform_ui.pages.web.IndusindBankingPage.miniStatementTxns(IndusindBankingPage.java:861)
+	at in.novopay.platform_ui.pages.web.IndusindBankingPage.indusindBanking(IndusindBankingPage.java:402)
+	at tests.ui.IndusindBankingTest.indusindBankingTest(IndusindBankingTest.java:50)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
-	at tests.FlowMapperFCM.flowMapperTest(FlowMapperFCM.java:145)
+	at tests.FlowMapper.flowMapperTest(FlowMapper.java:147)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -52,6 +58,6 @@
 	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
 	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
 </div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
-<h3 id="m1">tests.FlowMapperFCM#flowMapperTest</h3><table class="result"><tr class="param"><th>Parameter #1</th></tr><tr class="param stripe"><td>{CONTRACT=-, PRIORITY=P, STEP02=, TCID=FlowMapper_000, STEP03=, STEP01=EnvTest_QA1, STEP06=, FCM=-, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=-, DESCRIPTION=Set environment to run test cases, TESTTYPE=no-check, STEP08=, STEP09=, FEATURE=-, VENDOR=-}</td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
+<h3 id="m1">tests.FlowMapper#flowMapperTest</h3><table class="result"><tr class="param"><th>Parameter #1</th></tr><tr class="param stripe"><td>{CONTRACT=-, PRIORITY=P, STEP02=, TCID=FlowMapper_000, STEP03=, STEP01=EnvTest_QA1, STEP06=, FCM=-, STEP07=, STEP04=, STEP05=, RUNMODE=Yes, WALLET=-, DESCRIPTION=Set environment to run test cases, TESTTYPE=no-check, STEP08=, STEP09=, FEATURE=-, VENDOR=-}</td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
 </body>
 </html>
