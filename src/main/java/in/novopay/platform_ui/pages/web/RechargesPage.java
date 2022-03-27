@@ -129,25 +129,16 @@ public class RechargesPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//i[contains(@class,'failure-cross')]/parent::span")
 	WebElement rechTxnScreenFailureMessage;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Biller Name')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenBillerName;
+	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Operator Name')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenOperatorName;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Account ID')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenAccountID;
+	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Operator ID')]/parent::div/following-sibling::div/div")
+	WebElement txnScreenOperatorId;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Consumer Number')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenConsumerNumber;
-
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Bill Number')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenBillNumber;
-
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div/div")
-	WebElement txnScreenCustomerName;
-
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Bill Amount')]/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Amount')]/parent::div/following-sibling::div/div")
 	WebElement txnScreenBillAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Charges')]/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Charges')]/parent::div/following-sibling::div/div")
 	WebElement txnScreenCharges;
 
 	@FindBy(xpath = "//div[contains(@class,'recharge-modal')]//strong[contains(text(),'Txn ID')]/parent::div/following-sibling::div/div")
@@ -218,21 +209,6 @@ public class RechargesPage extends BasePage {
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
 			mongoDbUtils.updateRechargeVendor(usrData.get("OPERATOR"), usrData.get("VENDOR"));
-
-			String batchConfigSection = "";
-			if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")) {
-				batchConfigSection = "goRechargeStatusEnquiry";
-			} else if (usrData.get("VENDOR").equalsIgnoreCase("Multilink")) {
-				batchConfigSection = "multilinkStatusEnquiry";
-			}
-			HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
-			batchFileConfig = readSectionFromIni(batchConfigSection);
-			if (usrData.get("ASSERTION").equalsIgnoreCase("Success")
-					|| usrData.get("ASSERTION").equalsIgnoreCase("Pending")
-					|| usrData.get("ASSERTION").equalsIgnoreCase("Failure")
-					|| usrData.get("ASSERTION").equalsIgnoreCase("Failed")) {
-				srvUtils.uploadFileToNode(batchFileConfig, usrData.get("ASSERTION"), "node_simulator");
-			}
 
 			// Click on icon
 			switch (usrData.get("RECHARGETYPE")) {
@@ -413,6 +389,21 @@ public class RechargesPage extends BasePage {
 									System.out.println("Print button clicked");
 								}
 								if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Check Status Now")) {
+									String batchConfigSection = "";
+									if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")) {
+										batchConfigSection = "goRechargeStatusEnquiry";
+									} else if (usrData.get("VENDOR").equalsIgnoreCase("Multilink")) {
+										batchConfigSection = "multilinkStatusEnquiry";
+									}
+									HashMap<String, String> batchFileConfig = readSectionFromIni(batchConfigSection);
+									batchFileConfig = readSectionFromIni(batchConfigSection);
+									if (usrData.get("ASSERTION").equalsIgnoreCase("Success")
+											|| usrData.get("ASSERTION").equalsIgnoreCase("Pending")
+											|| usrData.get("ASSERTION").equalsIgnoreCase("Failure")
+											|| usrData.get("ASSERTION").equalsIgnoreCase("Failed")) {
+										srvUtils.uploadFileToNode(batchFileConfig, usrData.get("ASSERTION"),
+												"node_simulator");
+									}
 									checkStatusButton.click();
 									System.out.println("Check Status Now button clicked");
 									commonUtils.waitForSpinner();
@@ -489,20 +480,25 @@ public class RechargesPage extends BasePage {
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
 		if (rechTxnScreen.getText().equalsIgnoreCase("Success!")) {
-			try {
-				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction Completed Successfully.");
-				System.out.println("normal success screen");
-			} catch (AssertionError e) {
+			if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Check Status Now")) {
 				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction completed successfully.");
-				System.out.println("check status success screen");
+				System.out.println("Check status success screen displayed");
+				Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
+						rechargeDataFromIni("GetAmount", ""));
+			} else {
+				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction Completed Successfully.");
+				System.out.println("Normal success screen displayed");
+				Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
+						rechargeDataFromIni("GetAmount", "") + ".00");
 			}
+			if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")
+					&& !usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Check Status Now"))
+				rechargeDataFromIni("StoreOperatorId", txnScreenOperatorId.getText());
 		} else if (rechTxnScreen.getText().equalsIgnoreCase("Pending!")) {
 			Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction is pending.");
+			Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), rechargeDataFromIni("GetAmount", ""));
 		}
 		System.out.println(rechTxnScreenMessage.getText());
-
-		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
-				rechargeDataFromIni("GetAmount", "") + ".00");
 		System.out.println("Recharge Amount: " + replaceSymbols(txnScreenBillAmount.getText()));
 
 		String chrges = dbUtils.getRechargeChargesAndComm("charges", usrData.get("VENDOR"), usrData.get("MOBILETYPE"),
@@ -537,12 +533,14 @@ public class RechargesPage extends BasePage {
 			if (usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Check Status Now")) {
 				Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction is unsuccessful.");
 				System.out.println(rechTxnScreenMessage.getText());
+				Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
+						rechargeDataFromIni("GetAmount", ""));
 			} else {
 				Assert.assertEquals(rechTxnScreenMessage.getText(), "Bill Payment failed");
 				System.out.println(rechTxnScreenMessage.getText());
+				Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
+						rechargeDataFromIni("GetAmount", "") + ".00");
 			}
-			Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
-					rechargeDataFromIni("GetAmount", "") + ".00");
 			System.out.println("Recharge Amount: " + replaceSymbols(txnScreenBillAmount.getText()));
 			txnDetailsFromIni("StoreTxfAmount", replaceSymbols(txnScreenBillAmount.getText()));
 
@@ -573,28 +571,39 @@ public class RechargesPage extends BasePage {
 			rechargeType = "Mobile";
 			id = rechargeDataFromIni("GetMobNum", "");
 		}
-		String successSms1 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
-				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is successful. Txn Ref ID "
-				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + " via cash.";
-		String pendingSms1 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
-				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID "
+		String successSms1 = "", successSms2 = "", pendingSms1 = "", pendingSms2 = "";
+		if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")) {
+			successSms1 = "Success! Rs." + rechargeDataFromIni("GetAmount", "") + ".00 paid for "
+					+ usrData.get("OPERATOR") + " " + mobiletype + " " + id + " at Novopay agent outlet, Txn Ref ID "
+					+ txnDetailsFromIni("GetTxnRefNo", "") + ", Operator ID " + rechargeDataFromIni("GetOperatorId", "")
+					+ " on " + dbUtils.doTransferDate() + ".";
+			successSms2 = "Success! Rs." + rechargeDataFromIni("GetAmount", "") + ".00 paid for "
+					+ usrData.get("OPERATOR") + " " + mobiletype + " " + id + " at Novopay agent outlet, Txn Ref ID "
+					+ txnDetailsFromIni("GetTxnRefNo", "") + ", Operator ID " + rechargeDataFromIni("GetOperatorId", "")
+					+ " on " + dbUtils.doTransferDateWithIncreasedTime() + ".";
+		} else if (usrData.get("VENDOR").equalsIgnoreCase("Multilink")) {
+			successSms1 = "Success! Rs." + rechargeDataFromIni("GetAmount", "") + ".00 paid for "
+					+ usrData.get("OPERATOR") + " " + mobiletype + " " + id + " at Novopay agent outlet, Txn Ref ID "
+					+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + ".";
+			successSms2 = "Success! Rs." + rechargeDataFromIni("GetAmount", "") + ".00 paid for "
+					+ usrData.get("OPERATOR") + " " + mobiletype + " " + id + " at Novopay agent outlet, Txn Ref ID "
+					+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime() + ".";
+		}
+		pendingSms1 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "") + ".00 to "
+				+ rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID "
 				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate()
 				+ ". Check status after some time.";
-		String successSms2 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
-				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is successful. Txn Ref ID "
-				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime()
-				+ " via cash.";
-		String pendingSms2 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "")
-				+ ".00 to " + rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID "
+		pendingSms2 = "Your " + mobiletype + " recharge of Rs." + rechargeDataFromIni("GetAmount", "") + ".00 to "
+				+ rechargeType + " " + id + " at Novopay Outlet is pending. Txn Ref ID "
 				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime()
 				+ ". Check status after some time.";
 		if (usrData.get("ASSERTION").contains("Success")) {
 			try {
+				System.out.println("Trying with Actual time");
 				Assert.assertEquals(dbUtils.sms(), successSms1);
-				System.out.println("Actual time taken");
 			} catch (AssertionError e) {
+				System.out.println("Trying with Increased time");
 				Assert.assertEquals(dbUtils.sms(), successSms2);
-				System.out.println("Increased time taken");
 			}
 		} else if (usrData.get("ASSERTION").contains("Pending")) {
 			try {

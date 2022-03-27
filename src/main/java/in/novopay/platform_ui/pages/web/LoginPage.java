@@ -113,12 +113,16 @@ public class LoginPage extends BasePage {
 				waitUntilElementIsClickableAndClickTheElement(mPin);
 				mPin.clear();
 				System.out.println("entering MPIN");
-				mPin.sendKeys(usrData.get("MPIN"));
+				if (usrData.get("MPIN").equalsIgnoreCase("Valid") || usrData.get("MPIN").equalsIgnoreCase("New")) {
+					mPin.sendKeys(getAuthfromIni("MPIN"));
+				} else {
+					mPin.sendKeys(usrData.get("MPIN"));
+				}
 				System.out.println("clicking on LOGIN button");
 				waitUntilElementIsClickableAndClickTheElement(login);
 				if (mobNumValidation(mobNumFromSheet).equalsIgnoreCase("valid")
 						&& checkMobNumExistence(mobNumFromSheet).equalsIgnoreCase("exists")
-						&& (usrData.get("MPIN").equals("1111") || usrData.get("MPIN").equals("2222"))) {
+						&& (usrData.get("MPIN").equals("Valid") || usrData.get("MPIN").equalsIgnoreCase("New"))) {
 					commonUtils.waitForSpinner();
 					String txnOtp = "";
 					Thread.sleep(1000);
@@ -141,10 +145,6 @@ public class LoginPage extends BasePage {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(hambergerMenu);
 						System.out.println("Page displayed");
-						/*
-						 * if (usrData.get("NEWPIN").equalsIgnoreCase("1111")) {
-						 * dbUtils.updateMPIN(getLoginMobileFromIni(mobNumFromSheet)); }
-						 */
 					} else if (txnOtp.equals("")) {
 						waitUntilElementIsVisible(otpErrorMsg);
 						Assert.assertEquals(otpErrorMsg.getText(), "Required Field");
@@ -189,7 +189,7 @@ public class LoginPage extends BasePage {
 						Assert.assertEquals(passwordErrorMsg.getText(), "Invalid MPIN");
 						System.out.println(passwordErrorMsg.getText());
 					}
-				} else if (!usrData.get("MPIN").equals("1111")) {
+				} else if (!usrData.get("MPIN").equals(getAuthfromIni("MPIN"))) {
 					commonUtils.waitForSpinner();
 					waitUntilElementIsVisible(toasterMsg);
 					Assert.assertEquals(toasterMsg.getText(), "Invalid credentials");
@@ -216,32 +216,50 @@ public class LoginPage extends BasePage {
 				System.out.println("clicking on PROCEED button");
 				waitUntilElementIsClickableAndClickTheElement(proceedPan);
 				if (panValidation(pan).equalsIgnoreCase("valid")) {
+					commonUtils.waitForSpinner();
+					waitUntilElementIsClickableAndClickTheElement(otp);
+					otp.clear();
+					System.out.println("entering OTP");
+					String onetimepw = usrData.get("OTP");
+					if (onetimepw.equalsIgnoreCase("Yes")) {
+						onetimepw = getAuthfromIni("ForgotMpinOTP");
+					}
+					otp.sendKeys(onetimepw);
+					System.out.println("clicking on PROCEED button");
+					waitUntilElementIsClickableAndClickTheElement(proceedOTP);
+					waitUntilElementIsClickableAndClickTheElement(newpin);
+					System.out.println("entering New PIN");
+					newpin.sendKeys(usrData.get("NEWPIN"));
+					waitUntilElementIsClickableAndClickTheElement(reenterpin);
+					System.out.println("Re-entering PIN");
+					reenterpin.sendKeys(usrData.get("REENTERPIN"));
+					dbUtils.deleteMpinHistory(getLoginMobileFromIni(mobNumFromSheet));
+					if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+						dbUtils.insertMpin(getLoginMobileFromIni(mobNumFromSheet));
+					}
+					System.out.println("clicking on FINISH button");
+					waitUntilElementIsClickableAndClickTheElement(finish);
 					if (pan.equalsIgnoreCase(dbUtils.getPanNumber(getLoginMobileFromIni(mobNumFromSheet)))) {
-						commonUtils.waitForSpinner();
-						waitUntilElementIsClickableAndClickTheElement(otp);
-						otp.clear();
-						System.out.println("entering OTP");
-						otp.sendKeys(getAuthfromIni("ForgotMpinOTP"));
-						System.out.println("clicking on PROCEED button");
-						waitUntilElementIsClickableAndClickTheElement(proceedOTP);
-						waitUntilElementIsClickableAndClickTheElement(newpin);
-						System.out.println("entering New PIN");
-						newpin.sendKeys(usrData.get("NEWPIN"));
-						waitUntilElementIsClickableAndClickTheElement(reenterpin);
-						System.out.println("Re-entering PIN");
-						reenterpin.sendKeys(usrData.get("REENTERPIN"));
-						dbUtils.deleteMpinHistory(getLoginMobileFromIni(mobNumFromSheet));
-						System.out.println("clicking on FINISH button");
-						waitUntilElementIsClickableAndClickTheElement(finish);
-						waitUntilElementIsVisible(toasterMsg);
-						if (usrData.get("NEWPIN").equals(usrData.get("REENTERPIN"))) {
-							System.out.println(toasterMsg.getText());
-							toastCloseButton.click();
-							waitUntilElementIsVisible(mobNum);
+						if (onetimepw.equalsIgnoreCase(getAuthfromIni("ForgotMpinOTP"))) {
+							if (usrData.get("NEWPIN").equals(usrData.get("REENTERPIN"))) {
+								waitUntilElementIsVisible(toasterMsg);
+								if (usrData.get("MPIN").equalsIgnoreCase("New")) {
+									Assert.assertEquals(toasterMsg.getText(), "Login Successful");
+								} else if (usrData.get("MPIN").equalsIgnoreCase("Valid")) {
+									Assert.assertEquals(toasterMsg.getText(),
+											"mPIN already created in past, please create a new mPIN");
+								}
+								System.out.println(toasterMsg.getText());
+								waitUntilElementIsVisible(mobNum);
+							} else {
+								Assert.assertEquals(mpinErrorMsg.getText(), "mpin doesn't match!");
+								System.out.println(mpinErrorMsg.getText());
+								waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
+							}
 						} else {
-							Assert.assertEquals(mpinErrorMsg.getText(), "mpin doesn't match!");
-							System.out.println(mpinErrorMsg.getText());
-							waitUntilElementIsClickableAndClickTheElement(goBackToLogin);
+							Assert.assertEquals(toasterMsg.getText(), "Invalid OTP, Try Again!");
+							System.out.println(toasterMsg.getText());
+							waitUntilElementIsVisible(mobNum);
 						}
 					} else {
 						commonUtils.waitForSpinner();
@@ -249,6 +267,7 @@ public class LoginPage extends BasePage {
 						Assert.assertEquals(toasterMsg.getText(),
 								"Entered document id not matching with our records. Please try again.");
 						System.out.println(toasterMsg.getText());
+						waitUntilElementIsVisible(mobNum);
 					}
 				} else if (panValidation(usrData.get("PAN")).equalsIgnoreCase("invalid")) {
 					waitUntilElementIsVisible(panErrorMsg);

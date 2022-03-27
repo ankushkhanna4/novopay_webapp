@@ -266,33 +266,33 @@ public class SettingsPage extends BasePage {
 			// Updating org_stlmnt_info table as per test case
 			if (usrData.get("TYPE").equalsIgnoreCase("Mode")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "1", "1234567890",
-						"NOW()");
+				dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "2", "1", mobileNumFromIni(),
+						"1", "1234567890", "NOW()");
 			} else if (usrData.get("TYPE").equalsIgnoreCase("Details")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
 				if (usrData.get("ACCOUNT").equalsIgnoreCase("No exisitng account")) {
 					System.out.println("No new entry inserted");
 				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One pending account")) {
-					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "1", "1", mobileNumFromIni(), "0",
-							"1234567890", "NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "1", "1",
+							mobileNumFromIni(), "0", "1234567890", "NOW()");
 					System.out.println("One pending and non-primary account inserted");
 				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One deleted account")) {
-					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "6", "1", mobileNumFromIni(), "0",
-							"1234567890", "NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "6", "1",
+							mobileNumFromIni(), "0", "1234567890", "NOW()");
 					System.out.println("One deleted account inserted");
 				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("One rejected account")) {
-					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "3", "1", mobileNumFromIni(), "0",
-							"1234567890", "NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "3", "1",
+							mobileNumFromIni(), "0", "1234567890", "NOW()");
 					System.out.println("One rejected account inserted");
 				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("Two verified accounts")) {
-					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "1",
-							"1234567890", "NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "2", "1",
+							mobileNumFromIni(), "1", "1234567890", "NOW()");
 					if (usrData.get("ASSERTION").equalsIgnoreCase("Delete Older")) {
-						dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "0",
-								"1234567891", "CURDATE()-" + dbUtils.getDeleteAccountDays());
+						dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "2", "1",
+								mobileNumFromIni(), "0", "1234567891", "CURDATE()-" + dbUtils.getDeleteAccountDays());
 					} else {
-						dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "0",
-								"1234567891", "NOW()");
+						dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "2", "1",
+								mobileNumFromIni(), "0", "1234567891", "NOW()");
 					}
 					System.out.println("Two verified accounts inserted");
 				} else if (usrData.get("ACCOUNT").equalsIgnoreCase("Max verified accounts")) {
@@ -300,13 +300,13 @@ public class SettingsPage extends BasePage {
 					for (int i = 1; i <= count; i++) {
 						accNum = 123456789 + i;
 						String accountNum = String.valueOf(accNum);
-						dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "0",
-								accountNum, "NOW()");
+						dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "2", "1",
+								mobileNumFromIni(), "0", accountNum, "NOW()");
 					}
 					System.out.println(count + " verified accounts inserted");
 				} else {
-					dbUtils.insertOrgSettlementInfo(usrData.get("MODE"), "2", "1", mobileNumFromIni(), "1",
-							"1234567890", "NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), usrData.get("MODE"), "2", "1",
+							mobileNumFromIni(), "1", "1234567890", "NOW()");
 					System.out.println("One verified and primary account inserted");
 				}
 			}
@@ -367,8 +367,7 @@ public class SettingsPage extends BasePage {
 					try {
 						Assert.assertTrue(noBankAccountMsg.getText().contains("There are no saved accounts"));
 					} catch (Exception e) {
-						Assert.assertTrue(noBankAccountMsg.getText()
-								.contains("Unable to fetch the Account Details"));
+						Assert.assertTrue(noBankAccountMsg.getText().contains("Unable to fetch the Account Details"));
 					}
 				} else if (usrData.get("ACCOUNT").contains("One")) {
 					Assert.assertEquals(cardsCount(), 1);
@@ -435,8 +434,8 @@ public class SettingsPage extends BasePage {
 						if (usrData.get("IFSCTYPE").equalsIgnoreCase("Manual")) {
 							waitUntilElementIsClickableAndClickTheElement(ifscCode);
 							ifscCode.clear();
-							ifscCode.sendKeys(usrData.get("IFSCCODE"));
-							System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+							ifscCode.sendKeys(usrData.get("IFSC"));
+							System.out.println("IFSC code '" + usrData.get("IFSC") + "' entered");
 						} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Search Screen")) {
 							waitUntilElementIsClickableAndClickTheElement(ifscSearchIcon);
 							System.out.println("IFSC search icon clicked");
@@ -445,43 +444,43 @@ public class SettingsPage extends BasePage {
 							ifscSearchBankList.click();
 							System.out.println("IFSC bank drop down clicked");
 							String ifscBank = "//li[contains(text(),'"
-									+ dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank") + "')]";
+									+ dbUtils.ifscCodeDetails(usrData.get("IFSC"), "bank") + "')]";
 							WebElement ifscSearchBank = wdriver.findElement(By.xpath(ifscBank));
 							ifscSearchBank.click();
 							System.out.println("IFSC bank selected");
 							ifscSearchStateList.click();
 							System.out.println("IFSC state drop down clicked");
-							String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "state");
+							String stateFromDB = dbUtils.ifscCodeDetails(usrData.get("IFSC"), "state");
 							String stateCapitalized = stateFromDB.toUpperCase();
 							String ifscState = "//li[contains(text(),'" + stateCapitalized + "')]";
 							WebElement ifscSearchState = wdriver.findElement(By.xpath(ifscState));
 							ifscSearchState.click();
 							System.out.println("IFSC state selected");
-							ifscSearchDistrict.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "district"));
+							ifscSearchDistrict.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSC"), "district"));
 							System.out.println("IFSC district entered");
-							ifscSearchBranch.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "branch"));
+							ifscSearchBranch.sendKeys(dbUtils.ifscCodeDetails(usrData.get("IFSC"), "branch"));
 							System.out.println("IFSC branch entered");
 							ifscSearchButton.click();
 							System.out.println("Search button clicked");
 							commonUtils.waitForSpinner();
 							waitUntilElementIsVisible(ifscSearchBack);
 							String searchCode = "//span[contains(@class,'add-beneficiary-list')][contains(text(),'"
-									+ usrData.get("IFSCCODE") + "')]/parent::li";
+									+ usrData.get("IFSC") + "')]/parent::li";
 							WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
 							waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-							System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' entered");
+							System.out.println("IFSC code '" + usrData.get("IFSC") + "' entered");
 							ifscSearchOK.click();
 							System.out.println("OK button clicked");
 						} else if (usrData.get("IFSCTYPE").equalsIgnoreCase("Drop Down")) {
 							waitUntilElementIsClickableAndClickTheElement(ifscCode);
 							ifscCode.clear();
 							String searchCode = "//span[contains(@class,'add-beneficiary-sublist')][contains(text(),'"
-									+ usrData.get("IFSCCODE") + "')]/parent::li";
+									+ usrData.get("IFSC") + "')]/parent::li";
 							WebElement ifscSearchCode = wdriver.findElement(By.xpath(searchCode));
 							waitUntilElementIsClickableAndClickTheElement(ifscSearchCode);
-							System.out.println("IFSC code '" + usrData.get("IFSCCODE") + "' selected");
+							System.out.println("IFSC code '" + usrData.get("IFSC") + "' selected");
 						}
-						getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSCCODE"), "bank"));
+						getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("IFSC"), "bank"));
 						waitUntilElementIsVisible(validateIFSC); // wait for Branch name
 						System.out.println(validateIFSC.getText());
 					}

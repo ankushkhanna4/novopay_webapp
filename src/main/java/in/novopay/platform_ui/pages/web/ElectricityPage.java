@@ -232,7 +232,7 @@ public class ElectricityPage extends BasePage {
 			payerName.clear();
 			payerName.sendKeys(getCustomerDetailsFromIni(usrData.get("PAYERNAME")));
 			System.out.println("Payer name " + payerName.getAttribute("value") + " entered");
-			
+
 			billpayDataFromIni("StoreBillpayBiller", usrData.get("BILLERNAME"));
 
 			if (usrData.get("BILLTYPE").equalsIgnoreCase("Existing")) {
@@ -576,11 +576,21 @@ public class ElectricityPage extends BasePage {
 		} else if (usrData.get("VENDOR").equalsIgnoreCase("BILLAVENUE")) {
 			id = "Customer ID / Account ID";
 		}
-		String successSMS = "Success! Rs." + txnDetailsFromIni("GetTxfAmount", "") + " paid for "
-				+ usrData.get("BILLERNAME") + " at Novopay agent outlet, " + id + " - " + usrData.get("ACCOUNTID")
-				+ ", Txn Ref ID " + txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + ".";
-		Assert.assertEquals(successSMS, dbUtils.sms());
-		System.out.println(successSMS);
+		String successSms1 = "", successSms2 = "";
+		successSms1 = "Success! Rs." + txnDetailsFromIni("GetTxfAmount", "") + " paid for " + usrData.get("BILLERNAME")
+				+ " at Novopay agent outlet, " + id + " - " + usrData.get("ACCOUNTID") + ", Txn Ref ID "
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDate() + ".";
+		successSms2 = "Success! Rs." + txnDetailsFromIni("GetTxfAmount", "") + " paid for " + usrData.get("BILLERNAME")
+				+ " at Novopay agent outlet, " + id + " - " + usrData.get("ACCOUNTID") + ", Txn Ref ID "
+				+ txnDetailsFromIni("GetTxnRefNo", "") + " on " + dbUtils.doTransferDateWithIncreasedTime() + ".";
+		try {
+			System.out.println("Trying with Actual time");
+			Assert.assertEquals(dbUtils.sms(), successSms1);
+		} catch (AssertionError e) {
+			System.out.println("Trying with Increased time");
+			Assert.assertEquals(dbUtils.sms(), successSms2);
+		}
+		System.out.println(dbUtils.sms());
 	}
 
 	// Assertion after success or orange screen is displayed

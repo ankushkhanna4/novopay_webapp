@@ -1,5 +1,8 @@
 package in.novopay.platform_ui.pages.web;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -417,6 +420,8 @@ public class FinoMoneyTransferPage extends BasePage {
 			dbUtils.updatePartnerStatus(usrData.get("PARTNER1"), usrData.get("P1STATUS"), usrData.get("PARTNER2"),
 					usrData.get("P2STATUS"), usrData.get("PARTNER3"), usrData.get("P3STATUS"));
 
+			dbUtils.updateIfscMode(usrData.get("BENEIFSC"), usrData.get("IFSCMODE"));
+
 			customerDetails(usrData);
 
 			// Provide beneficiary details based on user data
@@ -490,7 +495,8 @@ public class FinoMoneyTransferPage extends BasePage {
 				}
 				getBankNameFromIni(dbUtils.ifscCodeDetails(usrData.get("BENEIFSC"), "bank"));
 				try {
-					waitUntilElementIsClickableFor5secAndClickTheElement(validateIFSC); // wait for Branch name to be displayed
+					waitUntilElementIsClickableFor5secAndClickTheElement(validateIFSC); // wait for Branch name to be
+																						// displayed
 					System.out.println("Branch not visible. Pressing Tab");
 					Thread.sleep(1000);
 				} catch (Exception e) {
@@ -735,10 +741,13 @@ public class FinoMoneyTransferPage extends BasePage {
 	}
 
 	public void customerDetails(Map<String, String> usrData)
-			throws InterruptedException, NumberFormatException, ClassNotFoundException {
+			throws InterruptedException, NumberFormatException, ClassNotFoundException, AWTException {
 		// Click on customer Mobile Number field
 		waitUntilElementIsClickableAndClickTheElement(custMobNum);
 		System.out.println("Mobile number field clicked");
+		Thread.sleep(1000);
+		Robot rob = new Robot();
+		rob.keyPress(KeyEvent.VK_BACK_SPACE);
 		Thread.sleep(1000);
 		custMobNum.clear();
 		custMobNum.sendKeys(getCustomerDetailsFromIni(usrData.get("CUSTOMERNUMBER")));
@@ -748,11 +757,15 @@ public class FinoMoneyTransferPage extends BasePage {
 		limitCheck(usrData); // check limit remaining
 		partnerErrorMessage(usrData); // check if partner error message is displayed
 		if (!usrData.get("ASSERTION").equalsIgnoreCase("All partners down")) {
+			waitUntilElementIsClickableAndClickTheElement(proceedButton);
+			System.out.println("Proceed button clicked");
+			commonUtils.waitForSpinner();
 			if (!partnerUrl(usrData).endsWith("paytm-transfer")) {
 				// Provide customer details based on user data
 				if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("NewNum")) { // when customer is new
 					System.out.println("Customer is new");
 					Thread.sleep(2000);
+					waitUntilElementIsClickableAndClickTheElement(custName);
 					custName.sendKeys(getCustomerDetailsFromIni("NewName"));
 					System.out.println("Customer name " + getCustomerDetailsFromIni("ExistingName") + " entered");
 				} else if (usrData.get("CUSTOMERNUMBER").equalsIgnoreCase("ExistingNum")) { // when customer is existing
@@ -944,16 +957,15 @@ public class FinoMoneyTransferPage extends BasePage {
 				System.out.println("Txn screen displayed");
 
 				// Verify the details on transaction screen
-				if (remittanceTxnScreen.getText().equalsIgnoreCase("Success!")) {
-//					if (remittanceTxnScreenType.getAttribute("class").contains("completed")) {
+				if (usrData.get("TXNSTATUS").equalsIgnoreCase("Success")) {
 					assertionOnSuccessScreen(usrData);
 					if (usrData.get("ASSERTION").equalsIgnoreCase("EnableQueuingCheck")) {
 						Assert.assertNull(dbUtils.verifyIfQueuingIsEnabled(partner()));
 						System.out.println("Queuing auto-enabled");
 					}
-				} else if (remittanceTxnScreen.getText().equalsIgnoreCase("Pending!")
-						|| remittanceTxnScreen.getText().equalsIgnoreCase("Partial Success!")) {
-//						if (remittanceTxnScreenType.getAttribute("class").contains("ongoing")) {
+				} else if (usrData.get("TXNSTATUS").equalsIgnoreCase("Success + Failed (Partner)")
+						|| usrData.get("TXNSTATUS").contains("Pending")
+						|| usrData.get("TXNSTATUS").contains("Queued")) {
 					assertionOnWarnScreen(usrData);
 					if (usrData.get("ASSERTION").equalsIgnoreCase("DisableQueuingCheck")) {
 						Thread.sleep(90000);
@@ -1026,7 +1038,7 @@ public class FinoMoneyTransferPage extends BasePage {
 									getWalletBalanceFromIni("GetRetailer", ""));
 						} else {
 							commonUtils.refreshBalance();
-//							verifyUpdatedBalanceAfterFailTxn(usrData);
+							verifyUpdatedBalanceAfterFailTxn(usrData);
 						}
 					} else if (usrData.get("OTP").equalsIgnoreCase("Invalid")
 							|| usrData.get("MPIN").equalsIgnoreCase("Invalid")) {
@@ -1101,6 +1113,8 @@ public class FinoMoneyTransferPage extends BasePage {
 				&& dbUtils.verifyIfTxnIsQueued(partner()).equalsIgnoreCase("NotQueued")) {
 			System.out.println("Queuing for " + dbUtils.getQueuedBankName() + " is enabled");
 		}
+		Assert.assertTrue(remittanceTxnScreen.getText().equalsIgnoreCase("Success!"));
+		Assert.assertTrue(remittanceTxnScreenType.getAttribute("class").contains("completed"));
 		Assert.assertEquals(remittanceTxnScreenMessage.getText(), "Funds transferred successfully");
 		System.out.println(remittanceTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(remittanceTxnScreenTxnAmount.getText()), usrData.get("AMOUNT") + ".00");
@@ -1183,31 +1197,34 @@ public class FinoMoneyTransferPage extends BasePage {
 
 	// Verify details on warn screen
 	public void assertionOnWarnScreen(Map<String, String> usrData) throws ClassNotFoundException {
+		Assert.assertTrue(remittanceTxnScreenType.getAttribute("class").contains("ongoing"));
 		if (dbUtils.verifyIfQueuingIsEnabled(partner()) == null
 				&& dbUtils.verifyIfTxnIsQueued(partner()).equalsIgnoreCase("Queued")) {
+			Assert.assertTrue(remittanceTxnScreen.getText().equalsIgnoreCase("Pending!"));
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
 					"Status of the Pending Transaction will be updated within 1-2 hours");
 			txnDetailsFromIni("StoreTxnRefNo", dbUtils.paymentRefCode(partner()));
 		} else if (usrData.get("ASSERTION").contains("Partial Success")) {
+			Assert.assertTrue(remittanceTxnScreen.getText().equalsIgnoreCase("Partial Success!"));
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
 					"Funds Transfer Partially Successful. Retry failed transactions after sometime");
 			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
 			System.out.println("Failed Amount: " + replaceSymbols(remittanceTxnScreenFailedAmount.getText()));
 		} else if (usrData.get("ASSERTION").equalsIgnoreCase("Pending")
 				|| usrData.get("ASSERTION").equalsIgnoreCase("Success + Pending")) {
+			Assert.assertTrue(remittanceTxnScreen.getText().equalsIgnoreCase("Pending!"));
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
 					"Status of the Pending Transaction will be updated within 48 hours");
 			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
 		} else if (usrData.get("ASSERTION").contains("Pending + Failed")) {
+			Assert.assertTrue(remittanceTxnScreen.getText().equalsIgnoreCase("Pending!"));
 			Assert.assertEquals(remittanceTxnScreenMessage.getText(),
 					"Retry failed transactions after sometime. Status of the Pending Transaction will be updated within 48 hours");
 			txnDetailsFromIni("StoreTxnRefNo", refNo.getText());
 		}
 		System.out.println(remittanceTxnScreenMessage.getText());
-
 		String txfAmount = replaceSymbols(remittanceWarnScreenTxnAmount.getText());
 		System.out.println("Transferred Amount: " + txfAmount);
-
 		txnDetailsFromIni("StoreTxfAmount", txfAmount);
 		String chrges = dbUtils.getRemittanceCharges(txfAmount, dbUtils.getChargeCategory(mobileNumFromIni()),
 				partner());
@@ -1403,7 +1420,6 @@ public class FinoMoneyTransferPage extends BasePage {
 			} else if (usrData.get("ASSERTION").equalsIgnoreCase("One partner down")
 					|| usrData.get("ASSERTION").equalsIgnoreCase("Two partners down")) {
 				commonUtils.waitForSpinner();
-				Assert.assertTrue(custName.isDisplayed());
 				System.out.println("No error message displayed");
 			}
 		}

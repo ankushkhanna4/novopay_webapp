@@ -66,10 +66,10 @@ public class RechargesStatusEnquiryPage extends BasePage {
 	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//strong[contains(text(),'Customer Name')]/parent::div/following-sibling::div/div")
 	WebElement txnScreenCustomerName;
 
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Bill Amount')]/parent::strong/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Amount')]/parent::strong/parent::div/following-sibling::div/div")
 	WebElement txnScreenBillAmount;
 
-	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Charges')]/parent::strong/parent::div/following-sibling::div/span")
+	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Charges')]/parent::strong/parent::div/following-sibling::div/div")
 	WebElement txnScreenCharges;
 
 	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Txn ID')]/parent::strong/parent::div/following-sibling::div/div")
@@ -268,14 +268,18 @@ public class RechargesStatusEnquiryPage extends BasePage {
 	}
 
 	public void reportsData(Map<String, String> usrData) throws ClassNotFoundException {
-		String statusXpath = "//tbody/tr[1]/td[6]";
+		String statusXpath = "//tbody/tr[1]/td[7]";
+		String operatorIdXpath = "//tbody/tr[1]/td[5]";
 		commonUtils.waitForSpinner();
-		waitUntilElementIsClickable(wdriver.findElement(By.xpath(statusXpath)));
+		waitUntilElementIsVisible(wdriver.findElement(By.xpath(statusXpath)));
 		WebElement statusData = wdriver.findElement(By.xpath(statusXpath));
+		WebElement operatorIdData = wdriver.findElement(By.xpath(operatorIdXpath));
 		Assert.assertEquals(statusData.getText(),
 				mongoDbUtils.getBillPayTxnStatus(txnDetailsFromIni("GetTxnRefNo", "")));
 		if (usrData.get("STATUS").equalsIgnoreCase("Success")) {
 			Assert.assertEquals(statusData.getText(), "SUCCESS");
+			if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge"))
+				Assert.assertEquals(operatorIdData.getText(), rechargeDataFromIni("GetOperatorId", ""));
 		} else if (usrData.get("STATUS").contains("Pending") || usrData.get("STATUS").equalsIgnoreCase("Refund")) {
 			Assert.assertEquals(statusData.getText(), "PENDING");
 		} else if (usrData.get("STATUS").equalsIgnoreCase("Failed")
@@ -297,8 +301,7 @@ public class RechargesStatusEnquiryPage extends BasePage {
 		}
 		System.out.println("Title: " + seTxnTitle.getText());
 
-		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
-				rechargeDataFromIni("GetAmount", "") + ".00");
+		Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), rechargeDataFromIni("GetAmount", ""));
 		System.out.println("Bill Amount: " + rechargeDataFromIni("GetAmount", ""));
 	}
 }

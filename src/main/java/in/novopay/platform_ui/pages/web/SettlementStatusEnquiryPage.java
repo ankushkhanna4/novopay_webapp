@@ -93,6 +93,9 @@ public class SettlementStatusEnquiryPage extends BasePage {
 
 	@FindBy(xpath = "//*[@type='password']")
 	WebElement password;
+	
+	@FindBy(xpath = "//*[@type='submit']")
+	WebElement loginButton;
 
 	@FindBy(xpath = "//span[contains(text(),'Next')]/parent::button")
 	WebElement nextButton;
@@ -207,37 +210,40 @@ public class SettlementStatusEnquiryPage extends BasePage {
 					if (usrData.get("STATUS").contains("Success") || usrData.get("STATUS").contains("Failed")) {
 						openNewTab("RazorpayX Portal", "");
 						try {
-							wdriver.switchTo().frame(dashboard);
+//							wdriver.switchTo().frame(dashboard);
 
 							// Store the current window handle
-							String winHandleBefore = wdriver.getWindowHandle();
+//							String winHandleBefore = wdriver.getWindowHandle();
 
 							// Perform the click operation that opens new window
-							waitUntilElementIsClickableAndClickTheElement(googleLogin);
-							System.out.println("Login with Google button clicked");
+//							waitUntilElementIsClickableAndClickTheElement(googleLogin);
+//							System.out.println("Login with Google button clicked");
 
 							// Switch to new window opened
-							for (String winHandle : wdriver.getWindowHandles()) {
-								wdriver.switchTo().window(winHandle);
-							}
+//							for (String winHandle : wdriver.getWindowHandles()) {
+//								wdriver.switchTo().window(winHandle);
+//							}
 
 							// Perform the actions on new window
 							waitUntilElementIsClickableAndClickTheElement(email);
 							email.sendKeys("ankush.khanna@novopay.in");
 							System.out.println("Entering email id");
 
-							waitUntilElementIsClickableAndClickTheElement(nextButton);
-							System.out.println("Next button clicked");
+//							waitUntilElementIsClickableAndClickTheElement(nextButton);
+//							System.out.println("Next button clicked");
 
 							waitUntilElementIsClickableAndClickTheElement(password);
-							password.sendKeys("akhanna321!");
+							password.sendKeys("Razor123$");
 							System.out.println("Entering password");
+							
+							waitUntilElementIsClickableAndClickTheElement(loginButton);
+							System.out.println("Login button clicked");
 
-							waitUntilElementIsClickableAndClickTheElement(nextButton);
-							System.out.println("Next button clicked");
+//							waitUntilElementIsClickableAndClickTheElement(nextButton);
+//							System.out.println("Next button clicked");
 
 							// Switch back to original browser (first window)
-							wdriver.switchTo().window(winHandleBefore);
+//							wdriver.switchTo().window(winHandleBefore);
 
 							// Continue with original browser (first window)
 							waitUntilElementIsClickableAndClickTheElement(profileButton);
@@ -312,6 +318,7 @@ public class SettlementStatusEnquiryPage extends BasePage {
 
 							waitUntilElementIsVisible(payoutToast);
 							waitUntilElementIsVisible(payoutStatus);
+							Thread.sleep(2000);
 							Assert.assertEquals(payoutStatus.getText(), "Reversed");
 						}
 

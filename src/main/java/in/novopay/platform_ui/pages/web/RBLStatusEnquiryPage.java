@@ -368,7 +368,12 @@ public class RBLStatusEnquiryPage extends BasePage {
 			enterSetxnId.sendKeys(usrData.get("TXNDETAILS"));
 		}
 
-		waitUntilElementIsVisible(statusEnquirySubmitButton);
+		try {
+			waitUntilElementIsVisible(statusEnquirySubmitButton);
+		} catch (Exception e) {
+			clickElement(menu);
+			clickElement(menu);
+		}
 		statusEnquirySubmitButton.click();
 		System.out.println("Submit button clicked");
 		commonUtils.waitForSpinner();

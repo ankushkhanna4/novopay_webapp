@@ -107,16 +107,17 @@ public class BasePage extends JavaUtils {
 		wdriver.close();
 		System.out.println("Tab is closed");
 	}
-	
+
 	/**
 	 * Close the tab
-	 * @throws InterruptedException 
+	 * 
+	 * @throws InterruptedException
 	 */
 	public void closeTabAndSwitchBack() throws InterruptedException {
 
 		wdriver.close();
 		System.out.println("Tab is closed");
-		
+
 		ArrayList<String> tabs = new ArrayList<String>(wdriver.getWindowHandles());
 		Thread.sleep(1000);
 		wdriver.switchTo().window(tabs.get(0)); // switch to previous tab
@@ -348,7 +349,7 @@ public class BasePage extends JavaUtils {
 		WebDriverWait wait = new WebDriverWait(wdriver, 70);
 		wait.until(ExpectedConditions.visibilityOf(element));
 	}
-	
+
 	/**
 	 * Wait until rbl account validation element is visible
 	 */
@@ -382,7 +383,7 @@ public class BasePage extends JavaUtils {
 		wait.until(ExpectedConditions.elementToBeClickable(element));
 		clickElement(element);
 	}
-	
+
 	/**
 	 * Wait until web element is clickable
 	 */
@@ -420,16 +421,16 @@ public class BasePage extends JavaUtils {
 //		Actions dragger = new Actions(wdriver);
 		int numberOfPixelsToDragTheScrollbarDown = 50;
 //		while (true) {
-			try {
-				// this causes a gradual drag of the scroll bar downwards, 10 units at a time
+		try {
+			// this causes a gradual drag of the scroll bar downwards, 10 units at a time
 //				dragger.moveToElement(scrollbar).clickAndHold().moveByOffset(0, numberOfPixelsToDragTheScrollbarDown)
 //						.release().perform();
-				waitUntilElementIsClickableAndClickTheElement(elementToClick);
+			waitUntilElementIsClickableAndClickTheElement(elementToClick);
 //				break;
-			} catch (Exception e1) {
-				numberOfPixelsToDragTheScrollbarDown = numberOfPixelsToDragTheScrollbarDown + 10;
-			}
+		} catch (Exception e1) {
+			numberOfPixelsToDragTheScrollbarDown = numberOfPixelsToDragTheScrollbarDown + 10;
 		}
+	}
 //	}
 
 	// Scroll down the page
@@ -454,6 +455,7 @@ public class BasePage extends JavaUtils {
 			} catch (Exception e) {
 				System.out.println("Exception while taking screenshot " + e.getMessage());
 			}
+//			if (wdriver != null)
 			wdriver.navigate().refresh();
 		}
 	}

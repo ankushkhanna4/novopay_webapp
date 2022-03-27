@@ -80,7 +80,7 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 
 	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Bill Amount')]/parent::strong/parent::div/following-sibling::div/span")
 	WebElement txnScreenBillAmount;
-	
+
 	@FindBy(xpath = "//div[contains(@class,'billpay-modal')]//span[contains(text(),'Total Amount')]/parent::strong/parent::div/following-sibling::div/div")
 	WebElement refundScreenBillAmount;
 
@@ -177,6 +177,8 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 				String batchConfigSection = "";
 				if (usrData.get("VENDOR").equalsIgnoreCase("Cyberplat")) {
 					batchConfigSection = "cyberplatBbpsStatusEnquiry";
+				} else if (usrData.get("VENDOR").equalsIgnoreCase("Billavenue")) {
+					batchConfigSection = "billavenueBbpsStatusEnquiry";
 				} else if (usrData.get("VENDOR").equalsIgnoreCase("Axis")) {
 					batchConfigSection = "axisBbpsStatusEnquiry";
 				}
@@ -187,7 +189,7 @@ public class ElectricityStatusEnquiryPage extends BasePage {
 					srvUtils.uploadFileToNode(batchFileConfig, usrData.get("KEY"), "node_simulator");
 				}
 			}
-			
+
 			if (usrData.get("TYPE").equalsIgnoreCase("Section")) {
 				statusEnquirySection(usrData);
 				clickElement(menu);

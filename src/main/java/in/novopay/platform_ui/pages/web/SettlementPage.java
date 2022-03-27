@@ -75,6 +75,12 @@ public class SettlementPage extends BasePage {
 	@FindBy(xpath = "//button[contains(@class,'input-group-addon btn-icon')]")
 	WebElement applicableChargesButton;
 
+	@FindBy(id = "transferMode-imps")
+	WebElement imps;
+
+	@FindBy(id = "transferMode-neft")
+	WebElement neft;
+
 	@FindBy(xpath = "//*[@id='cashout-balance-form']//button[contains(text(),'Submit')]")
 	WebElement submitButton;
 
@@ -202,47 +208,49 @@ public class SettlementPage extends BasePage {
 			commonUtils.displayInitialBalance("cashout"); // display cashout wallet balance
 
 			// Updating org_stlmnt_info table as per test case
-			if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
+			if (usrData.get("STATUS").equalsIgnoreCase("Verified")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
 				if (usrData.get("ASSERTION").contains("off 2 accounts")) {
-					dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567890",
-							"NOW()");
-					dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567891",
-							"NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), "TO_BANK", "2", "1", mobileNumFromIni(), "1",
+							"1234567890", "NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), "TO_BANK", "2", "1", mobileNumFromIni(), "1",
+							"1234567891", "NOW()");
 				} else {
-					dbUtils.insertOrgSettlementInfo("TO_BANK", "2", "1", mobileNumFromIni(), "1", "1234567890",
-							"NOW()");
+					dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), "TO_BANK", "2", "1", mobileNumFromIni(), "1",
+							"1234567890", "NOW()");
 				}
-			} else if (usrData.get("MODE").equalsIgnoreCase("Pending")) {
+			} else if (usrData.get("STATUS").equalsIgnoreCase("Pending")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "1", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
-			} else if (usrData.get("MODE").equalsIgnoreCase("Rejected")) {
+				dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), "TO_BANK", "1", "1", mobileNumFromIni(), "0",
+						"1234567890", "NOW()");
+			} else if (usrData.get("STATUS").equalsIgnoreCase("Rejected")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "3", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
-			} else if (usrData.get("MODE").equalsIgnoreCase("Deleted")) {
+				dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), "TO_BANK", "3", "1", mobileNumFromIni(), "0",
+						"1234567890", "NOW()");
+			} else if (usrData.get("STATUS").equalsIgnoreCase("Deleted")) {
 				dbUtils.deleteOrgSettlementInfo(mobileNumFromIni());
-				dbUtils.insertOrgSettlementInfo("TO_BANK", "6", "1", mobileNumFromIni(), "0", "1234567890", "NOW()");
+				dbUtils.insertOrgSettlementInfo(usrData.get("IFSC"), "TO_BANK", "6", "1", mobileNumFromIni(), "0",
+						"1234567890", "NOW()");
 			}
 
-			dbUtils.updateAepsPartner(usrData.get("PARTNER").toUpperCase(), getLoginMobileFromIni("RetailerMobNum"));
+			dbUtils.updateAepsPartner(usrData.get("AEPSPARTNER").toUpperCase(),
+					getLoginMobileFromIni("RetailerMobNum"));
+			dbUtils.updateSettlementPartner(usrData.get("SETPARTNER").toUpperCase(),
+					usrData.get("AEPSPARTNER").toLowerCase(), usrData.get("MODE"));
 
-			if (usrData.get("TYPE").equalsIgnoreCase("NEFT")) {
-				dbUtils.updateSettlementModeInPlatformMasterData("Y", usrData.get("PARTNER"));
-			} else if (usrData.get("TYPE").equalsIgnoreCase("IMPS")) {
-				dbUtils.updateSettlementModeInPlatformMasterData("N", usrData.get("PARTNER"));
-			}
+			dbUtils.updateIfscMode(usrData.get("IFSC"), usrData.get("MODE"));
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Public Holiday")) {
-				dbUtils.updatePublicHoliday(usrData.get("PARTNER"), "CURDATE()");
+				dbUtils.updatePublicHoliday(usrData.get("SETPARTNER"), "CURDATE()");
 			} else {
-				dbUtils.updatePublicHoliday(usrData.get("PARTNER"), "CURDATE() - INTERVAL 1 DAY");
+				dbUtils.updatePublicHoliday(usrData.get("SETPARTNER"), "CURDATE() - INTERVAL 1 DAY");
 			}
 
 			if (usrData.get("ASSERTION").equalsIgnoreCase("Non-Working Hours")) {
-				dbUtils.updateSetllementStartAndEndTime(usrData.get("PARTNER"), "TIME_FORMAT(CURTIME()-1, '%H:%i:%s')",
-						"CURTIME()");
+				dbUtils.updateSetllementStartAndEndTime(usrData.get("SETPARTNER"), usrData.get("MODE"),
+						"TIME_FORMAT(CURTIME()-1, '%H:%i:%s')", "CURTIME()");
 			} else {
-				dbUtils.updateSetllementStartAndEndTime(usrData.get("PARTNER"), "CURTIME()",
+				dbUtils.updateSetllementStartAndEndTime(usrData.get("SETPARTNER"), usrData.get("MODE"), "CURTIME()",
 						"DATE_ADD(CURTIME(), INTERVAL 1 HOUR)");
 			}
 
@@ -253,13 +261,13 @@ public class SettlementPage extends BasePage {
 
 			commonUtils.waitForSpinner();
 
-			if (usrData.get("MODE").equalsIgnoreCase("Pending") || usrData.get("MODE").equalsIgnoreCase("Rejected")
-					|| usrData.get("MODE").equalsIgnoreCase("Deleted")) {
+			if (usrData.get("STATUS").equalsIgnoreCase("Pending") || usrData.get("STATUS").equalsIgnoreCase("Rejected")
+					|| usrData.get("STATUS").equalsIgnoreCase("Deleted")) {
 				waitUntilElementIsVisible(blockedMessage);
 				Assert.assertEquals(blockedMessage.getText(),
 						"Not allowed as settlement is blocked. Please contact customer support.");
 				System.out.println(blockedMessage.getText());
-			} else if (usrData.get("MODE").equalsIgnoreCase("Verified")) {
+			} else if (usrData.get("STATUS").equalsIgnoreCase("Verified")) {
 				waitUntilElementIsVisible(cashoutBalanceField);
 				waitUntilElementIsClickableAndClickTheElement(toDropDown);
 				System.out.println("Drop down clicked");
@@ -290,6 +298,14 @@ public class SettlementPage extends BasePage {
 					waitUntilElementIsVisible(amountErrorMsg);
 					Assert.assertEquals(amountErrorMsg.getText(), "Minimum amount should be ₹10.00");
 					System.out.println(amountErrorMsg.getText());
+				}
+
+				if (dbUtils.modeOfTransfer(usrData.get("IFSC")).equals("1")) {
+					Assert.assertEquals(imps.isSelected(), true);
+					System.out.println("IMPS mode auto-selected");
+				} else if (dbUtils.modeOfTransfer(usrData.get("IFSC")).equals("0")) {
+					Assert.assertEquals(neft.isSelected(), true);
+					System.out.println("NEFT mode auto-selected");
 				}
 
 				if (!(usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("SKIP")
@@ -425,7 +441,8 @@ public class SettlementPage extends BasePage {
 					}
 
 					dbUtils.updateAepsPartner("RBL", getLoginMobileFromIni("RetailerMobNum"));
-					dbUtils.updateSetllementStartAndEndTime(usrData.get("PARTNER"), "'00:00:00'", "'23:59:59'");
+					dbUtils.updateSetllementStartAndEndTime(usrData.get("SETPARTNER"), usrData.get("MODE"),
+							"'00:00:00'", "'23:59:59'");
 
 				} else if (usrData.get("SETTLEMENTBUTTON").equalsIgnoreCase("Charges")) {
 					waitUntilElementIsClickableAndClickTheElement(applicableChargesButton);
@@ -446,15 +463,14 @@ public class SettlementPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnSuccessScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		if (usrData.get("TYPE").equalsIgnoreCase("NEFT")) {
+		if (usrData.get("SETPARTNER").equalsIgnoreCase("RBL") && usrData.get("TYPE").equalsIgnoreCase("IMPS")) {
+			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request successful.");
+		} else if (usrData.get("SETPARTNER").equalsIgnoreCase("RBL") && usrData.get("TYPE").equalsIgnoreCase("NEFT")
+				&& dbUtils.getSettlementNeftConfig().equals("NO")) {
 			Assert.assertEquals(settlementTxnScreenMessage.getText().substring(29),
 					"Please check your bank account after 4 hours for updated balance.");
-		} else if (usrData.get("TYPE").equalsIgnoreCase("IMPS")) {
-			if (usrData.get("PARTNER").equalsIgnoreCase("RBL")) {
-				Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer request successful.");
-			} else if (usrData.get("PARTNER").equalsIgnoreCase("YBL")) {
-				Assert.assertEquals(settlementTxnScreenMessage.getText(), "");
-			}
+		} else if (usrData.get("SETPARTNER").equalsIgnoreCase("YBL")) {
+			Assert.assertEquals(settlementTxnScreenMessage.getText(), "");
 		}
 		System.out.println(settlementTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenRequestedAmount.getText()),
@@ -462,7 +478,7 @@ public class SettlementPage extends BasePage {
 		System.out.println("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
 		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()), dbUtils
-				.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"), usrData.get("AMOUNT")));
+				.getOnDemandSettlementCharges(usrData.get("MODE"), usrData.get("SETPARTNER"), usrData.get("AMOUNT")));
 		System.out.println("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
@@ -489,13 +505,11 @@ public class SettlementPage extends BasePage {
 	// Verify details on success screen
 	public void assertionOnWarnScreen(Map<String, String> usrData)
 			throws ClassNotFoundException, ParseException, InterruptedException {
-		try {
+		if (usrData.get("MODE").equals("IMPS") || usrData.get("SETPARTNER").equals("YBL")) {
 			Assert.assertEquals(settlementTxnScreenMessage.getText(), "Transfer initiated successfully.");
-		} catch (AssertionError e) {
-			Assert.assertEquals(
-					settlementTxnScreenMessage.getText().substring(0, 32)
-							+ settlementTxnScreenMessage.getText().substring(33),
-					"Your Bank does not support IMPS." + "Transaction will be settled through NEFT in 2-3 hours.");
+		} else if (usrData.get("MODE").equals("NEFT") && usrData.get("SETPARTNER").equals("RBL")) {
+			Assert.assertEquals(settlementTxnScreenMessage.getText(),
+					"Fund Transfer Initiated through NEFT. Status of the Transaction will be updated within 1-2 hours.");
 		}
 		System.out.println(settlementTxnScreenMessage.getText());
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenRequestedAmount.getText()),
@@ -503,7 +517,7 @@ public class SettlementPage extends BasePage {
 		System.out.println("Transferred Amount: " + replaceSymbols(settlementTxnScreenRequestedAmount.getText()));
 		txnDetailsFromIni("StoreTxfAmount", usrData.get("AMOUNT"));
 		Assert.assertEquals(replaceSymbols(settlementTxnScreenCharges.getText()), dbUtils
-				.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"), usrData.get("AMOUNT")));
+				.getOnDemandSettlementCharges(usrData.get("MODE"), usrData.get("SETPARTNER"), usrData.get("AMOUNT")));
 		System.out.println("Charges: " + replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreCharges", replaceSymbols(settlementTxnScreenCharges.getText()));
 		txnDetailsFromIni("StoreTxnRefNo", settlementTxnScreenRefId.getText());
@@ -537,7 +551,7 @@ public class SettlementPage extends BasePage {
 		System.out.println("Verifying charges");
 		Assert.assertEquals(replaceSymbols(applicableTxnAmount.getText()), usrData.get("AMOUNT") + ".00");
 		System.out.println("Transaction Amount: " + replaceSymbols(applicableTxnAmount.getText()));
-		String chrges = dbUtils.getOnDemandSettlementCharges(usrData.get("TYPE"), usrData.get("PARTNER"),
+		String chrges = dbUtils.getOnDemandSettlementCharges(usrData.get("MODE"), usrData.get("SETPARTNER"),
 				usrData.get("AMOUNT"));
 		Assert.assertEquals(replaceSymbols(applicableCharges.getText()), chrges);
 		System.out.println("Charges: " + replaceSymbols(applicableCharges.getText()));
