@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testng-results ignored="0" total="2" passed="2" failed="0" skipped="0">
   <reporter-output>
+    <line>
+      <![CDATA[Connecting server...]]>
+    </line>
+    <line>
+      <![CDATA[Connection established...]]>
+    </line>
   </reporter-output>
-  <suite started-at="2022-03-27T17:29:24 IST" name="Default suite" finished-at="2022-03-27T17:31:05 IST" duration-ms="100413">
+  <suite started-at="2022-03-27T17:31:27 IST" name="Default suite" finished-at="2022-03-27T17:33:41 IST" duration-ms="134334">
     <groups>
     </groups>
-    <test started-at="2022-03-27T17:29:24 IST" name="Default test" finished-at="2022-03-27T17:31:05 IST" duration-ms="100413">
+    <test started-at="2022-03-27T17:31:27 IST" name="Default test" finished-at="2022-03-27T17:33:41 IST" duration-ms="134334">
       <class name="tests.FlowMapper">
-        <test-method is-config="true" signature="generateIniFile()[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:29:24 IST" name="generateIniFile" finished-at="2022-03-27T17:29:24 IST" duration-ms="41" status="PASS">
+        <test-method is-config="true" signature="generateIniFile()[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:31:27 IST" name="generateIniFile" finished-at="2022-03-27T17:31:27 IST" duration-ms="32" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- generateIniFile -->
-        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:29:29 IST" name="flowMapperTest" data-provider="getData" finished-at="2022-03-27T17:29:32 IST" duration-ms="2872" status="PASS">
+        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:31:30 IST" name="flowMapperTest" data-provider="getData" finished-at="2022-03-27T17:31:31 IST" duration-ms="1950" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -22,7 +28,7 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- flowMapperTest -->
-        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:29:32 IST" name="result" finished-at="2022-03-27T17:29:32 IST" duration-ms="254" status="PASS">
+        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:31:31 IST" name="result" finished-at="2022-03-27T17:31:32 IST" duration-ms="171" status="PASS">
           <params>
             <param index="0">
               <value>
@@ -33,29 +39,35 @@
           <reporter-output>
           </reporter-output>
         </test-method> <!-- result -->
-        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:29:32 IST" name="flowMapperTest" data-provider="getData" finished-at="2022-03-27T17:31:00 IST" duration-ms="88337" status="PASS">
+        <test-method signature="flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:31:32 IST" name="flowMapperTest" data-provider="getData" finished-at="2022-03-27T17:33:37 IST" duration-ms="124951" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[{CONTRACT=BILLPAY, PRIORITY=P1, STEP02=ElectricityTest_005, TCID=FlowMapper_175, STEP03=ElectricityStatusEnquiryTest_017, STEP01=LoginTest_001, STEP06=, STEP07=, STEP04=LogoutTest_001, STEP05=, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Print for status enquiry for a successful transaction, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity, VENDOR=Billavenue, TYPE=Positive}]]>
+                <![CDATA[{CONTRACT=BILLPAY, PRIORITY=P2, STEP02=ElectricityTest_045, TCID=FlowMapper_165, STEP03=ElectricityStatusEnquiryTest_020, STEP01=LoginTest_001, STEP06=, STEP07=, STEP04=ElectricityStatusEnquiryTest_006, STEP05=LogoutTest_001, RUNMODE=Yes, WALLET=Main, DESCRIPTION=Refund for a later failed transaction and Status enquiry for refunded transaction, TESTTYPE=Positive, STEP08=, STEP09=, FEATURE=Electricity, VENDOR=Billavenue, TYPE=Negative}]]>
               </value>
             </param>
           </params>
           <reporter-output>
+            <line>
+              <![CDATA[Connecting server...]]>
+            </line>
+            <line>
+              <![CDATA[Connection established...]]>
+            </line>
           </reporter-output>
         </test-method> <!-- flowMapperTest -->
-        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:31:00 IST" name="result" finished-at="2022-03-27T17:31:04 IST" duration-ms="3726" status="PASS">
+        <test-method is-config="true" signature="result(org.testng.ITestResult)[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:33:37 IST" name="result" finished-at="2022-03-27T17:33:40 IST" duration-ms="3629" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[[TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@537f60bf] output={null}]]]>
+                <![CDATA[[TestResult name=flowMapperTest status=SUCCESS method=FlowMapper.flowMapperTest(java.util.HashMap)[pri:0, instance:tests.FlowMapper@537f60bf] output=Connecting server...]]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- result -->
-        <test-method is-config="true" signature="killDriver()[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:31:04 IST" name="killDriver" finished-at="2022-03-27T17:31:05 IST" duration-ms="740" status="PASS">
+        <test-method is-config="true" signature="killDriver()[pri:0, instance:tests.FlowMapper@537f60bf]" started-at="2022-03-27T17:33:40 IST" name="killDriver" finished-at="2022-03-27T17:33:41 IST" duration-ms="673" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- killDriver -->
