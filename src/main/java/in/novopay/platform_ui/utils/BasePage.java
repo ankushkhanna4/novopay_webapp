@@ -41,7 +41,7 @@ public class BasePage extends JavaUtils {
 	public BasePage(WebDriver wdriver) {
 		BasePage.wdriver = wdriver;
 	}
-
+	
 	/**
 	 * @return The web driver instance.
 	 */
@@ -60,6 +60,9 @@ public class BasePage extends JavaUtils {
 			prefs.put("profile.default_content_setting_values.notifications", 1);
 			prefs.put("profile.default_content_settings.geolocation", 1);
 			ChromeOptions options = new ChromeOptions();
+			options.addArguments("clear-cache");
+	        options.addArguments("disable-application-cache");
+	        options.addArguments("disable-cache");
 			options.setExperimentalOption("prefs", prefs);
 			wdriver = new ChromeDriver(options);
 		}

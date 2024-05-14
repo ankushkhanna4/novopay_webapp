@@ -75,7 +75,7 @@ public class CommonUtils extends BasePage {
 	@FindBy(xpath = "//h5[contains(text(),'Cashout Wallet')]/following-sibling::p[contains(text(),' ₹')]")
 	WebElement cashoutWalletScreenBalance;
 
-	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Proceed')]")
+	@FindBy(xpath = "//button[@class='button button-primary' and @type='button']")
 	WebElement chooseWalletProceedButton;
 
 	@FindBy(xpath = "//*[contains(text(),'Choose a Wallet')]/parent::div/following-sibling::div/button[contains(text(),'Cancel')]")
@@ -292,6 +292,8 @@ public class CommonUtils extends BasePage {
 			System.out.println("Cancel button clicked");
 		}
 	}
+
+
 
 	public void selectTxn() throws ClassNotFoundException {
 		waitUntilElementIsClickableAndClickTheElement(firstTxnInList);

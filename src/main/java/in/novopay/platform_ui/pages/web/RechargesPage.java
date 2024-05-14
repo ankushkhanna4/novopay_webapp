@@ -491,9 +491,9 @@ public class RechargesPage extends BasePage {
 				Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()),
 						rechargeDataFromIni("GetAmount", "") + ".00");
 			}
-			if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")
-					&& !usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Check Status Now"))
-				rechargeDataFromIni("StoreOperatorId", txnScreenOperatorId.getText());
+//			if (usrData.get("VENDOR").equalsIgnoreCase("Gorecharge")
+//					&& !usrData.get("TXNSCREENBUTTON").equalsIgnoreCase("Check Status Now"))
+//				rechargeDataFromIni("StoreOperatorId", txnScreenOperatorId.getText());
 		} else if (rechTxnScreen.getText().equalsIgnoreCase("Pending!")) {
 			Assert.assertEquals(rechTxnScreenMessage.getText(), "Transaction is pending.");
 			Assert.assertEquals(replaceSymbols(txnScreenBillAmount.getText()), rechargeDataFromIni("GetAmount", ""));
