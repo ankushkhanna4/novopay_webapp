@@ -87,9 +87,12 @@ public class LoginPage extends BasePage {
 
 	@FindBy(xpath = "//enable-location//button[contains(text(),'Ok')]")
 	WebElement location;
+<<<<<<< HEAD
 	
 /*	@FindBy(xpath = "//button[@class='close']")
 	WebElement bannerClose;*/
+=======
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 
 	public void login(Map<String, String> usrData) throws ClassNotFoundException, InterruptedException {
 
@@ -148,8 +151,11 @@ public class LoginPage extends BasePage {
 						commonUtils.waitForSpinner();
 						waitUntilElementIsVisible(hambergerMenu);
 						System.out.println("Page displayed");
+<<<<<<< HEAD
 					//	bannerCloseLogin(bannerClose);
 						
+=======
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 					} else if (txnOtp.equals("")) {
 						waitUntilElementIsVisible(otpErrorMsg);
 						Assert.assertEquals(otpErrorMsg.getText(), "Required Field");
@@ -184,7 +190,11 @@ public class LoginPage extends BasePage {
 				} else if (mobNumValidation(mobNumFromSheet).equalsIgnoreCase("invalid")) {
 					waitUntilElementIsVisible(mobNumErrorMsg);
 					Assert.assertEquals(mobNumErrorMsg.getText(), "Invalid mobile number");
+<<<<<<< HEAD
 				
+=======
+					System.out.println(mobNumErrorMsg.getText());
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 				} else if (mpinValidation(usrData.get("MPIN")).equals("invalid")) {
 					waitUntilElementIsVisible(passwordErrorMsg);
 					if (usrData.get("MPIN").length() < 4) {
@@ -291,7 +301,10 @@ public class LoginPage extends BasePage {
 			System.out.println("Test Case Failed");
 			Assert.fail();
 		}
+<<<<<<< HEAD
 		
+=======
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 	}
 
 	public String mobNumValidation(String mobNum) {
@@ -347,10 +360,13 @@ public class LoginPage extends BasePage {
 		}
 
 	}
+<<<<<<< HEAD
 	public void bannerCloseLogin(WebElement bannerClose) {
 	    System.out.println("Banner displayed");
 	    waitUntilElementIsVisible(hambergerMenu);
 	    bannerClose.click();
 	    System.out.println("Banner Closed");
 	}
+=======
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 }

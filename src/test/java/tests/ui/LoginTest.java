@@ -45,9 +45,13 @@ public class LoginTest {
 
 		wLoginPage = new LoginPage(wdriver);
 		wLoginPage.login(usrData);
+<<<<<<< HEAD
 		
 		}
 	
+=======
+	}
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 
 	@AfterClass
 	public void killDriver() {

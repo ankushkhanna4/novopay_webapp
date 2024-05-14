@@ -103,6 +103,7 @@ public class JavaUtils extends LoadableComponent {
 		Ini ini;
 		try {
 			ini = new Ini(new File("./config.ini"));
+<<<<<<< HEAD
 			if(env.equalsIgnoreCase("QA")) {
 				ini.put("Common", "env", "qa");
 				ini.put("Common", "webAppUrl", "https://qa.novopay.in/");
@@ -144,6 +145,9 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.password", "9oVYUX8%T7Z!");
 			}
 			else if(env.equalsIgnoreCase("QA1")) {
+=======
+			if (env.equalsIgnoreCase("QA1")) {
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 				ini.put("Common", "env", "qa1");
 				ini.put("Common", "webAppUrl", "https://qa1-retailer.novopay.in/");
 				ini.put("Common", "finOpsUrl", "https://qa1-finance-portal.novopay.in");
@@ -321,7 +325,10 @@ public class JavaUtils extends LoadableComponent {
 				configProperties.put("server.username", "akhanna");
 				configProperties.put("server.password", "qaonenovopay");
 			}
+<<<<<<< HEAD
 			
+=======
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 			ini.store();
 			BasePage.wdriver = null;
 

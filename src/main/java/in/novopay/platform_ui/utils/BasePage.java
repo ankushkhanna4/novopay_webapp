@@ -41,7 +41,11 @@ public class BasePage extends JavaUtils {
 	public BasePage(WebDriver wdriver) {
 		BasePage.wdriver = wdriver;
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 	/**
 	 * @return The web driver instance.
 	 */
@@ -60,9 +64,12 @@ public class BasePage extends JavaUtils {
 			prefs.put("profile.default_content_setting_values.notifications", 1);
 			prefs.put("profile.default_content_settings.geolocation", 1);
 			ChromeOptions options = new ChromeOptions();
+<<<<<<< HEAD
 			options.addArguments("clear-cache");
 	        options.addArguments("disable-application-cache");
 	        options.addArguments("disable-cache");
+=======
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 			options.setExperimentalOption("prefs", prefs);
 			wdriver = new ChromeDriver(options);
 		}
@@ -100,7 +107,10 @@ public class BasePage extends JavaUtils {
 		wdriver.switchTo().window(tabs.get(1)); // switch to new tab
 		wdriver.get(url); // hit url
 		System.out.println("Opened URL " + url);
+<<<<<<< HEAD
 	
+=======
+>>>>>>> db70c4448e43b2c1483d720d229a57be93906ca7
 	}
 
 	/**
